@@ -12,8 +12,10 @@ val webapp = crossProject.settings(
   )
 ).jsSettings(
   name := "Client",
+  resolvers += sbt.Resolver.bintrayRepo("denigma", "denigma-releases"),
   libraryDependencies ++= Seq(
-    "org.scala-js" %%% "scalajs-dom" % "0.8.0"
+    "org.scala-js" %%% "scalajs-dom" % "0.8.0",
+    "org.denigma" %%% "codemirror-facade" % "5.3-0.5"
   )
 ).jvmSettings(Revolver.settings:_*)
  .jvmSettings(
@@ -21,14 +23,19 @@ val webapp = crossProject.settings(
   libraryDependencies ++= Seq(
     "io.spray" %% "spray-can" % "1.3.3",
     "io.spray" %% "spray-routing" % "1.3.3",
-    "com.typesafe.akka" %% "akka-actor" % "2.3.11"
+    "com.typesafe.akka" %% "akka-actor" % "2.3.11",
+    "org.webjars" % "codemirror" % "5.3"
   )
 )
 
 val webappJS = webapp.js
 val webappJVM = webapp.jvm.settings(
-  (resources in Compile) += {
+  (resources in Compile) ++= {
     (fastOptJS in (webappJS, Compile)).value
-    (artifactPath in (webappJS, Compile, fastOptJS)).value
+
+    Seq(
+      (artifactPath in (webappJS, Compile, fastOptJS)).value,
+      file((artifactPath in (webappJS, Compile, fastOptJS)).value.getAbsolutePath + ".map")
+    )
   }
 )

@@ -15,9 +15,14 @@ object Template{
       head(
         title("Hi"),
         meta(httpEquiv:="Content-Type", content:="text/html; charset=UTF-8"),
-        script(`type`:="text/javascript", src:="/client-fastopt.js")
+        link(rel:="stylesheet", href:="/codemirror/lib/codemirror.css"),
+        script(`type`:="text/javascript", src:="/client-fastopt.js"),
+        script(`type`:="text/javascript", src:="/codemirror/lib/codemirror.js")
       ),
-      body(script("com.scalakata.ScalaJSExample().main()"))
+      body(
+        textarea(id:="scalakata"),
+        script("com.scalakata.ScalaJSExample().main()")
+      )
     )
 }
 object AutowireServer extends autowire.Server[String, upickle.Reader, upickle.Writer]{
@@ -37,11 +42,14 @@ object Server extends SimpleRoutingApp with Api{
             )
           }
         } ~
+        path("codemirror" / Rest) { path ⇒
+    			getFromResource(s"META-INF/resources/webjars/codemirror/5.3/$path")
+    		} ~
         getFromResourceDirectory("")
       } ~
       post {
-        path("api" / Segments){ s =>
-          extract(_.request.entity.asString) { e =>
+        path("api" / Segments){ s ⇒
+          extract(_.request.entity.asString) { e ⇒
             complete {
               AutowireServer.route[Api](Server)(
                 autowire.Core.Request(s, upickle.read[Map[String, String]](e))

@@ -15,12 +15,15 @@ object Template{
       head(
         title("Hi"),
         meta(httpEquiv:="Content-Type", content:="text/html; charset=UTF-8"),
-        link(rel:="stylesheet", href:="/codemirror/lib/codemirror.css"),
-        script(`type`:="text/javascript", src:="/client-fastopt.js"),
-        script(`type`:="text/javascript", src:="/codemirror/lib/codemirror.js")
+        link(rel:="stylesheet", href:="/codemirror/lib/codemirror.css")
       ),
       body(
         textarea(id:="scalakata"),
+        script(src:="/client-fastopt.js"),
+        script(src:="/codemirror/lib/codemirror.js"),
+        script(src:="/codemirror/mode/clike/clike.js"),
+        script(src:="/codemirror/addon/search/searchcursor.js"),
+        script(src:="/codemirror/keymap/sublime.js"),
         script("com.scalakata.ScalaJSExample().main()")
       )
     )

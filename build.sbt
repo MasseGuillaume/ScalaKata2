@@ -34,14 +34,15 @@ lazy val webapp = crossProject.settings(
 
 val webappJS = webapp.js dependsOn(codemirror)
 val webappJVM = webapp.jvm.settings(
+  Revolver.reStart <<= Revolver.reStart.dependsOn(WebKeys.assets in Assets),
   (resources in Compile) ++= {
-    (fastOptJS in (webappJS, Compile)).value
+    val go = (fastOptJS in (webappJS, Compile)).value
     Seq(
       (artifactPath in (webappJS, Compile, fastOptJS)).value,
       file((artifactPath in (webappJS, Compile, fastOptJS)).value.getAbsolutePath + ".map")
     )
   }
-)
+).enablePlugins(SbtWeb)
 
 lazy val codemirror = project
   .settings(commonSettings: _*)

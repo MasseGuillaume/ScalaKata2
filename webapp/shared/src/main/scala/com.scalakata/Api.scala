@@ -1,7 +1,5 @@
 package com.scalakata
 
-import scala.annotation.ClassfileAnnotation
-
 trait Api{
-  def hi(name: String): String
+  def eval(code: String): Map[(Int, Int), String]
 }

@@ -17,7 +17,6 @@ import scala.concurrent.Future
 
 import org.denigma.codemirror._
 
-
 object Client extends autowire.Client[String, upickle.Reader, upickle.Writer]{
   override def doCall(req: Request): Future[String] = {
     dom.ext.Ajax.post(
@@ -30,32 +29,24 @@ object Client extends autowire.Client[String, upickle.Reader, upickle.Writer]{
   def write[Result: upickle.Writer](r: Result) = upickle.write(r)
 }
 
-
-
 @JSExport
 object ScalaJSExample {
   @JSExport
   def main(): Unit = {
 
-    var code = "object A { def v = 1 }"
-
     val params = EditorConfig.
       mode("text/x-scala").
-      lineNumbers(false).
       lineNumbers(false).
       lineWrapping(true).
       tabSize(2).
       theme("solarized light").
-      smartIndent(false).
+      smartIndent(true).
       keyMap("sublime")
 
     dom.document.getElementById("scalakata") match {
       case el:HTMLTextAreaElement ⇒
         val editor = CodeMirror.fromTextArea(el, params)
-        editor.getDoc().setValue(code)
-        editor.on("change", (e: Editor) => {
-          code = e.getDoc.getValue()
-        })
+        
       case _ ⇒ dom.console.error("cannot find text area for the code!")
     }
   }

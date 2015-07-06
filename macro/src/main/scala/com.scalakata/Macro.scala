@@ -1,71 +1,81 @@
 package com.scalakata
 
-import scala.reflect.macros.whitebox.Context
-import scala.language.experimental.macros
-import scala.annotation.StaticAnnotation
+import language.experimental.macros
 
 object KataMacro {
-  def instrumentation(c: Context)(annottees: c.Expr[Any]*): c.Expr[Any] = {
+  def instrument(c: reflect.macros.whitebox.Context)(annottees: c.Expr[Any]*): c.Expr[Instrumented] = {
     import c.universe._
-    c.Expr[Any]{
-      annottees.map(_.tree).toList match {
-        case q"object $name { ..$body }" :: Nil ⇒
-          val instr = TermName("scalakata$")
 
-          val offset = 
-            c.enclosingPosition.end + (
-            " " +
-            s"""|object $name {
-                |""".stripMargin).length
+    def instrumentOne(tree: Tree, instrumentation: TermName, offset: Int) = {
+      implicit def liftq = Liftable[c.universe.Position] { p ⇒
+        q"(${p.start - offset}, ${p.end - offset})"
+      }
 
-          implicit def liftq = Liftable[c.universe.Position] { p ⇒
-            q"(${p.start - offset}, ${p.end - offset})"
-          }
+      def w(aTree: Tree) = {
+        val t = TermName(c.freshName)
+        q"""{
+          val $t = $aTree
+          ${instrumentation}(${aTree.pos}) = show($t)
+          $t
+        }"""
+      }
 
-          def instrumentOne(tree: Tree) = {
-            def wrap(aTree: Tree = tree)(pTree: Tree = tree) = {
-              val t = TermName(c.freshName)
-              q"""{
-                val $t = $aTree
-                ${instr}(${pTree.pos}) = show($t)
-                $t
-              }"""
-            }
+      // see http://docs.scala-lang.org/overviews/quasiquotes/syntax-summary.html
+      tree match {
+        case q"$expr(..$exprs) = $rhs"         => q"$expr(..$exprs) = ${w(rhs)}"
+        case q"if ($cond) $texpr else $fexpr"  => q"if ($cond) ${w(texpr)} else ${w(fexpr)}"
+        case q"for (..$enums) yield $expr"     => q"for (..$enums) yield ${w(expr)}"
+        case q"while ($_) $_"                  => tree
+        case q"$expr1 = $expr2"                => q"$expr1 = ${w(expr2)}"
+        case q"$_ match { case ..$_ }"         => w(tree)
+        case q"$expr[..$tpts]"                 => w(tree)                            // implicitly[Ordering[Int]]
+        case q"$expr: $tpt"                    => w(tree)                            // a: Int
+        case q"$expr match { case ..$cases }"  => w(tree)
+        case q"while ($cond) $expr"            => tree
+        case q"do $cond while ($expr)"         => tree
+        case q"for (..$enums) $expr"           => tree
+        case ValDef(mods, tname, tpt, expr)    => ValDef(mods, tname, tpt, w(expr))  // var / val
+        case _: Apply                          => w(tree)                            // f(1)
+        case _: Select                         => w(tree)                            // p.x
+        case _: Ident                          => w(tree)                            // p
+        case _: Block                          => w(tree)                            // {a; b}
+        case _: Try                            => w(tree)                            // try ...
+        case lit: Literal                      => lit                                // 1.0
+        case ld: LabelDef                      => ld                                 // do / while
+        case cd: ClassDef                      => cd                                 // class A / trait A
+        case md: ModuleDef                     => md                                 // object A
+        case td: TypeDef                       => td                                 // type A = List
+        case dd: DefDef                        => dd                                 // def f = 1
+        case v                                 => { println(showRaw(v)); v }
+      }
+    }
 
-            tree match {
-              case q"$expr(..$exprs) = $rhs" => q"$expr(..$exprs) = ${wrap(rhs)()}" //  todo update params
-              case ValDef(mod, name, tpe, rhs) => ValDef(mod, name, tpe, wrap(rhs)())
-              case ap: Apply => wrap(ap)()
-              case cd: ClassDef => cd
-              case md: ModuleDef => md
-              case sel: Select => wrap(sel)()
-              case td: TypeDef => td
-              case dd: DefDef => dd
-              case id: Ident => wrap(id)()
-              case m: Match => wrap(m)()
-              case lit: Literal => lit
-              case tap: TypeApply => wrap(tap)()
-              case Assign(id, rhs) => Assign(id, wrap(rhs)())
-              case t: Typed => wrap(t)()
-              case Block(stats, last) =>  Block(stats.map(s => {wrap(s)(s)}), wrap(last)())
-              case v => {
-                println(showRaw(v))
-                v
-              }
-            }
-          }
+    c.Expr[Instrumented]{
+      annottees.map(_.tree).toList match { case q"object $name { ..$body }" :: Nil ⇒
+        val instrumentation = TermName(c.freshName)
 
-          q"""
-          object $name {
-            val $instr = scala.collection.mutable.Map[(Int, Int), String]()
-            ..${body.map(t => instrumentOne(t))}
-          }
-          """
+        val offset = 
+          c.enclosingPosition.end + (
+          " " +
+          s"""|object $name {
+              |""".stripMargin).length
+
+        q"""
+        object $name extends Instrumented {
+          private val $instrumentation = scala.collection.mutable.Map[(Int, Int), String]()
+          def instrumentation$$ = ${instrumentation}.toList.sorted
+          ..${body.map(t => instrumentOne(t, instrumentation, offset))}
+        }
+        """
       }
     }
   }
 }
 
-class kata extends StaticAnnotation {
-  def macroTransform(annottees: Any*) = macro KataMacro.instrumentation
+trait Instrumented {
+  def instrumentation$: List[((Int, Int), String)]
+}
+
+class instrument extends annotation.StaticAnnotation {
+  def macroTransform(annottees: Any*): Instrumented = macro KataMacro.instrument
 }

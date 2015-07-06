@@ -1,7 +1,27 @@
 import sbt.Keys._
 
 lazy val commonSettings = Seq(
-  scalaVersion := "2.11.7"
+  scalaVersion := "2.11.7",
+  licenses := Seq("MIT" -> url("http://www.opensource.org/licenses/mit-license.html")),
+  scalacOptions ++= Seq(
+    "-deprecation",
+    "-encoding", "UTF-8",
+    "-feature",
+    "-language:existentials",
+    "-language:higherKinds",
+    "-language:implicitConversions",
+    "-language:experimental.macros",
+    "-unchecked",
+    "-Xfatal-warnings",
+    "-Xlint",
+    "-Yinline-warnings",
+    "-Yno-adapted-args",
+    "-Yrangepos",
+    "-Ywarn-dead-code",
+    "-Ywarn-numeric-widen",
+    "-Ywarn-value-discard",
+    "-Xfuture"
+  )
 )
 
 lazy val model = project
@@ -18,13 +38,13 @@ lazy val macro = project
     ),
     addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0-M5" cross CrossVersion.full),
     resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases",
-    scalacOptions in Test ++= Seq("-Yrangepos")
+    scalacOptions ~= (_ filterNot (_ == "-Ywarn-value-discard"))
   ).dependsOn(model)
 
 lazy val eval = project
   .settings(commonSettings: _*)
   .settings(
-
+    
   ).dependsOn(macro)
 
 import spray.revolver.AppProcess

@@ -92,6 +92,7 @@ lazy val webappJVM = webapp.jvm.settings(
 lazy val codemirror = project
   .settings(commonSettings: _*)
   .settings(
+  scalacOptions ~= (_ filterNot (_ == "-Ywarn-dead-code")),
   libraryDependencies ++= Seq(
     "org.scala-js" %%% "scalajs-dom"  % "0.8.1",
   	"org.querki"   %%% "querki-jsext" % "0.5"

@@ -37,5 +37,6 @@ object Server extends SimpleRoutingApp with EvalImpl {
         }
       }
     }
+    ()
   }
 }

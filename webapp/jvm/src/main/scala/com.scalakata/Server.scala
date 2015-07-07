@@ -1,42 +1,47 @@
 package com.scalakata
 
-import upickle._
-import spray.routing.SimpleRoutingApp
-import akka.actor.ActorSystem
-import scala.concurrent.ExecutionContext.Implicits.global
-import spray.http.{MediaTypes, HttpEntity}
+import akka.actor.{ActorSystem, Props}
+import akka.io.IO
+import akka.util.Timeout
+import spray.can.Http
 
-object AutowireServer extends autowire.Server[String, upickle.Reader, upickle.Writer]{
-  def read[Result: upickle.Reader](p: String) = upickle.read[Result](p)
-  def write[Result: upickle.Writer](r: Result) = upickle.write(r)
-}
-object Server extends SimpleRoutingApp with EvalImpl {
-  def main(args: Array[String]): Unit = {
-    implicit val system = ActorSystem()
-    startServer("0.0.0.0", port = 8080) {
-      get{
-        pathSingleSlash {
-          complete{
-            HttpEntity(
-              MediaTypes.`text/html`,
-              Template.txt
-            )
-          }
-        } ~
-        getFromResourceDirectory("")
-      } ~
-      post {
-        path("api" / Segments){ s ⇒
-          extract(_.request.entity.asString) { e ⇒
-            complete {
-              AutowireServer.route[Api](Server)(
-                autowire.Core.Request(s, upickle.read[Map[String, String]](e))
-              )
-            }
-          }
+import scala.concurrent.duration._
+import com.typesafe.config.{ ConfigValueFactory, ConfigFactory, Config }
+
+
+object Boot {
+  def main(args: Array[String]) = {
+    val (readyPort :: artifacts :: host :: port ::
+         production :: security :: timeoutS :: scalacOptions) = args.to[List]
+
+    val timeout = Duration(timeoutS)
+
+    val config: Config = ConfigFactory.parseString(s"""
+      spray {
+        can.server {
+          idle-timeout = ${timeout.toSeconds + 5}s
+          request-timeout = ${timeout.toSeconds + 2}s
+        }
+      }
+    """)
+
+    implicit val system = ActorSystem("scalakata-playground", config)
+
+    val service = system.actorOf(Props(
+      classOf[RouteActor], artifacts, scalacOptions, security.toBoolean, timeout
+    ), "scalakata-service")
+
+    import akka.pattern.ask
+    implicit val bindingTimeout = Timeout(5.seconds)
+    import system.dispatcher
+    (IO(Http) ? Http.Bind(service, host, port.toInt)) onSuccess {
+      case _: Http.Bound ⇒ {
+        if(!production.toBoolean) {
+          val ready = new java.net.Socket(host, readyPort.toInt)
+          ready.sendUrgentData(0)
+          ready.close()
         }
       }
     }
-    ()
   }
 }

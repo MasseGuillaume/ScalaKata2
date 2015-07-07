@@ -63,7 +63,7 @@ object KataMacro {
         q"""
         object $name extends Instrumented {
           private val $instrumentation = scala.collection.mutable.Map[(Int, Int), String]()
-          def instrumentation$$ = ${instrumentation}.toList.sorted
+          def instrumentation$$: com.scalakata.Instrumentation = ${instrumentation}.toList.sorted
           ..${body.map(t => instrumentOne(t, instrumentation, offset))}
         }
         """
@@ -73,7 +73,7 @@ object KataMacro {
 }
 
 trait Instrumented {
-  def instrumentation$: List[((Int, Int), String)]
+  def instrumentation$: Instrumentation
 }
 
 class instrument extends annotation.StaticAnnotation {

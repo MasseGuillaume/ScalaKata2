@@ -84,10 +84,10 @@ lazy val webappJVM = webapp.jvm.settings(
       aFile,
       file(aFile.getAbsolutePath + ".map")
     )
-    andSourceMap((fastOptJS in (webappJS, Compile)).value.data)    
+    andSourceMap((fastOptJS in (webappJS, Compile)).value.data)
   },
   includeFilter in (Assets, LessKeys.less) := "*.less"
-).enablePlugins(SbtWeb).dependsOn(model)
+).dependsOn(eval).enablePlugins(SbtWeb)
 
 lazy val codemirror = project
   .settings(commonSettings: _*)

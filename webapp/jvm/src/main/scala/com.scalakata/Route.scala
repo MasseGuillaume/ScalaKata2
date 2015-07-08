@@ -24,7 +24,6 @@ object AutowireServer extends autowire.Server[String, upickle.Reader, upickle.Wr
 }
 
 trait Route extends HttpService with EvalImpl {
-  // import 
   implicit val executionContext = actorRefFactory.dispatcher
 
   val index = HttpEntity(MediaTypes.`text/html`, Template.txt)

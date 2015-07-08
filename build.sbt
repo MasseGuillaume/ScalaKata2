@@ -24,6 +24,15 @@ lazy val commonSettings = Seq(
   )
 )
 
+def a(p: String) = Seq( 
+  sourceGenerators <+= buildInfo,
+  buildInfoKeys := Seq[BuildInfoKey](
+    BuildInfoKey.map((fullClasspath in classPathtest in Compile)){ case (k, v) ⇒ k -> v.map(_.data) },
+    BuildInfoKey.map((exportedProducts in Runtime in macro)){ case (k, v) ⇒ k -> v.map(_.data) },
+    (scalacOptions in Compile)
+  )
+)
+
 lazy val model = project
   .settings(commonSettings: _*)
   .enablePlugins(ScalaJSPlugin)

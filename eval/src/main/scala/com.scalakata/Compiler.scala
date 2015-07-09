@@ -1,6 +1,7 @@
 package com.scalakata
 
 import java.io.File
+import java.nio.file.Path
 import java.math.BigInteger
 import java.security.MessageDigest
 import java.util.Random
@@ -18,7 +19,7 @@ import scala.tools.nsc.interactive.Response
 
 import scala.concurrent.duration._
 
-class Compiler(artifacts: String, scalacOptions: Seq[String], security: Boolean, timeout: Duration) {
+class Compiler(artifacts: Seq[Path], scalacOptions: Seq[String], security: Boolean, timeout: Duration) {
   def eval(request: EvalRequest): EvalResponse = {
     if (request.code.isEmpty) eval.empty
     else {
@@ -145,8 +146,10 @@ class Compiler(artifacts: String, scalacOptions: Seq[String], security: Boolean,
   private val settings = new Settings()
 
   settings.processArguments(scalacOptions.to[List], true)
-  settings.bootclasspath.value = artifacts
-  settings.classpath.value = artifacts
+
+  val classpath = artifacts.map(_.toAbsolutePath.toString).mkString(File.pathSeparatorChar)
+  settings.bootclasspath.value = classpath
+  settings.classpath.value = classpath
   settings.Yrangepos.value = true
 
   private lazy val compiler = new Global(settings, reporter)

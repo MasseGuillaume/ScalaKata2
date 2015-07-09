@@ -11,46 +11,12 @@ import java.io.File
 import java.net.{URL, URLClassLoader, URLEncoder}
 
 class Eval(settings: Settings, security: Boolean) {
-
-  val empty = EvalResponse(Map.empty, false, None, Nil)
-
   if(security) { Security.start }
-
-  private val reporter = new StoreReporter()
-
-  private val artifactLoader = {
-    val loaderFiles =
-      settings.classpath.value.split(File.pathSeparator).map(a ⇒ {
-
-        val node = new java.io.File(a)
-        val endSlashed =
-          if(node.isDirectory) node.toString + "/"
-          else node.toString
-
-        val t =
-          if(sys.props("os.name") == "Window") URLEncoder.encode(endSlashed, "UTF-8")
-          else endSlashed
-        new java.net.URI(s"file://$t").toURL
-      })
-    new URLClassLoader(loaderFiles, this.getClass.getClassLoader)
-  }
-
-  private val target = new VirtualDirectory("(memory)", None)
-  private var classLoader: AbstractFileClassLoader = _
-
-  settings.outputDirs.setSingleOutput(target)
-  settings.Ymacroexpand.value = settings.MacroExpand.Normal
-
-  private val compiler = new Global(settings, reporter)
-
   def apply(code: String): EvalResponse = {
     compile(code)
-
     val infos = check()
-
     if(!infos.contains(Error)) {
-      // Look for static class with eval$ method that return
-      // an instrumentation
+      // Look for static class implementing Instrumented
       def findEval: Option[Instrumentation] = {
         def removeExt(of: String) = {
           of.slice(0, of.lastIndexOf(".class"))
@@ -147,4 +113,27 @@ class Eval(settings: Settings, security: Boolean) {
 
     run.compileSources(sourceFiles)
   }
+  private val reporter = new StoreReporter()
+  private val artifactLoader = {
+    val loaderFiles =
+      settings.classpath.value.split(File.pathSeparator).map(a ⇒ {
+
+        val node = new java.io.File(a)
+        val endSlashed =
+          if(node.isDirectory) node.toString + "/"
+          else node.toString
+
+        val t =
+          if(sys.props("os.name") == "Window") URLEncoder.encode(endSlashed, "UTF-8")
+          else endSlashed
+        new java.net.URI(s"file://$t").toURL
+      })
+    new URLClassLoader(loaderFiles, this.getClass.getClassLoader)
+  }
+  private val target = new VirtualDirectory("(memory)", None)
+  private var classLoader: AbstractFileClassLoader = _
+  settings.outputDirs.setSingleOutput(target)
+  settings.Ymacroexpand.value = settings.MacroExpand.Normal
+  private val compiler = new Global(settings, reporter)
+  private val empty = EvalResponse(Map.empty, false, None, Nil)
 }

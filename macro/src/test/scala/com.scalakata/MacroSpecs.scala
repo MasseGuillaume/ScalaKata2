@@ -2,14 +2,11 @@ package com.scalakata
 
 import scala.collection.mutable.{Map => MMap}
 
-class MacroTest extends org.specs2.Specification { def is = s2"""
-  Kata Macro Specification
+class MacroSpecs extends org.specs2.Specification { def is = s2"""
+  Kata Macro Specifications
     var/val $varVal
     full $full
 """
-
-  def show[T](v: T) = if(v != null) v.toString else "null"
-  def println[T](v: T) = show[T](v)
 
   def varVal = {
 

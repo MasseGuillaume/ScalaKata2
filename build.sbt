@@ -24,14 +24,14 @@ lazy val commonSettings = Seq(
   )
 )
 
-def a(p: String) = Seq( 
-  sourceGenerators <+= buildInfo,
-  buildInfoKeys := Seq[BuildInfoKey](
-    BuildInfoKey.map((fullClasspath in classPathtest in Compile)){ case (k, v) ⇒ k -> v.map(_.data) },
-    BuildInfoKey.map((exportedProducts in Runtime in macro)){ case (k, v) ⇒ k -> v.map(_.data) },
-    (scalacOptions in Compile)
-  )
-)
+// lazy val buildInfoMacro = Seq(
+//   buildInfoPackage := "com.scalakata.build"
+//   sourceGenerators in Test <+= buildInfo,
+//   buildInfoKeys := Seq[BuildInfoKey](
+//     BuildInfoKey.map((exportedProducts in Runtime in macro)){ case (k, v) ⇒ k -> v.map(_.data) },
+//     (scalacOptions in Compile)
+//   )
+// )
 
 lazy val model = project
   .settings(commonSettings: _*)
@@ -51,10 +51,8 @@ lazy val macro = project
   ).dependsOn(model)
 
 lazy val eval = project
-  .settings(commonSettings: _*)
-  .settings(
-    
-  ).dependsOn(macro)
+  .settings(commonSettings: _*).dependsOn(macro)
+  // .settings(buildInfoMacro: _*)
 
 import spray.revolver.AppProcess
 import spray.revolver.RevolverPlugin.Revolver
@@ -84,19 +82,21 @@ lazy val webapp = crossProject.settings(
 )
 
 lazy val webappJS = webapp.js.dependsOn(codemirror, model)
-lazy val webappJVM = webapp.jvm.settings(
-  JsEngineKeys.engineType := JsEngineKeys.EngineType.Node,
-  Revolver.reStart <<= Revolver.reStart.dependsOn(WebKeys.assets in Assets),
-  (fullClasspath in Runtime) += (WebKeys.public in Assets).value,
-  (resources in Compile) ++= {
-    def andSourceMap(aFile: java.io.File) = Seq(
-      aFile,
-      file(aFile.getAbsolutePath + ".map")
-    )
-    andSourceMap((fastOptJS in (webappJS, Compile)).value.data)
-  },
-  includeFilter in (Assets, LessKeys.less) := "*.less"
-).dependsOn(eval).enablePlugins(SbtWeb)
+lazy val webappJVM = webapp.jvm
+  // .settings(buildInfo: _*)
+  .settings(
+    JsEngineKeys.engineType := JsEngineKeys.EngineType.Node,
+    Revolver.reStart <<= Revolver.reStart.dependsOn(WebKeys.assets in Assets),
+    (fullClasspath in Runtime) += (WebKeys.public in Assets).value,
+    (resources in Compile) ++= {
+      def andSourceMap(aFile: java.io.File) = Seq(
+        aFile,
+        file(aFile.getAbsolutePath + ".map")
+      )
+      andSourceMap((fastOptJS in (webappJS, Compile)).value.data)
+    },
+    includeFilter in (Assets, LessKeys.less) := "*.less"
+  ).dependsOn(eval).enablePlugins(SbtWeb)
 
 lazy val codemirror = project
   .settings(commonSettings: _*)

@@ -8,30 +8,34 @@ lazy val commonSettings = Seq(
     "-encoding", "UTF-8",
     "-feature",
     "-language:existentials",
+    "-language:experimental.macros",
     "-language:higherKinds",
     "-language:implicitConversions",
-    "-language:experimental.macros",
     "-unchecked",
+    "-Xexperimental",
     "-Xfatal-warnings",
+    "-Xfuture",
     "-Xlint",
+    "-Ybackend:GenBCode",
+    "-Ydelambdafy:method",
     "-Yinline-warnings",
     "-Yno-adapted-args",
     "-Yrangepos",
     "-Ywarn-dead-code",
     "-Ywarn-numeric-widen",
-    "-Ywarn-value-discard",
-    "-Xfuture"
+    "-Ywarn-value-discard"
+    
   )
 )
 
-// lazy val buildInfoMacro = Seq(
-//   buildInfoPackage := "com.scalakata.build"
-//   sourceGenerators in Test <+= buildInfo,
-//   buildInfoKeys := Seq[BuildInfoKey](
-//     BuildInfoKey.map((exportedProducts in Runtime in macro)){ case (k, v) ⇒ k -> v.map(_.data) },
-//     (scalacOptions in Compile)
-//   )
-// )
+lazy val buildInfoMacro = Seq(
+  buildInfoPackage := "com.scalakata.build"
+  sourceGenerators in Test <+= buildInfo,
+  buildInfoKeys := Seq[BuildInfoKey](
+    BuildInfoKey.map((exportedProducts in Runtime in macro)){ case (k, v) ⇒ k -> v.map(_.data) },
+    (scalacOptions in Compile)
+  )
+)
 
 lazy val model = project
   .settings(commonSettings: _*)
@@ -51,8 +55,8 @@ lazy val macro = project
   ).dependsOn(model)
 
 lazy val eval = project
+  .settings(buildInfoMacro: _*)
   .settings(commonSettings: _*).dependsOn(macro)
-  // .settings(buildInfoMacro: _*)
 
 import spray.revolver.AppProcess
 import spray.revolver.RevolverPlugin.Revolver
@@ -83,7 +87,7 @@ lazy val webapp = crossProject.settings(
 
 lazy val webappJS = webapp.js.dependsOn(codemirror, model)
 lazy val webappJVM = webapp.jvm
-  // .settings(buildInfo: _*)
+  // .settings(buildInfo???: _*)
   .settings(
     JsEngineKeys.engineType := JsEngineKeys.EngineType.Node,
     Revolver.reStart <<= Revolver.reStart.dependsOn(WebKeys.assets in Assets),

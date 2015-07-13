@@ -4,20 +4,29 @@ trait EvalSetup {
   import scala.concurrent.duration._
   import java.nio.file.Path
 
-  def wrap(code: String) = {
+  private val prelude =
     """|import com.scalakata._
        |@instrumented object Playground {
-       |  $code
-       |}""".stripMargin
+       |  """.stripMargin
+  private def wrap(code: String) = s"$prelude$code}"
+  private def shiftRequest(pos: Int) = {
+    val posO = pos + prelude.length
+    RangePosition(posO, posO, posO)
   }
 
-  def eval(code: String) = compiler.eval(EvalRequest(wrap(code)))
-  def autocomplete(code: String, pos: Int) = compiler.autocomplete(EvalRequest(wrap(code)))
-  def typeAt(code: String, pos: Int) = compiler.typeAt(EvalRequest(wrap(code)))
+  def eval(code: String) = {
+    compiler.eval(EvalRequest(wrap(code)))
+  }
+  def autocomplete(code: String, pos: Int) = {
+    compiler.autocomplete(EvalRequest(wrap(code), shiftRequest(pos)))
+  }
+  def typeAt(code: String, pos: Int) = {
+    compiler.typeAt(TypeAtRequest(wrap(code), shiftRequest(pos)))
+  }
 
   private val artifacts = build.BuildInfo.runtime_exportedProducts.map(Path.apply)
   private val scalacOptions = sbt.BuildInfo.scalacOptions.to[Seq]
-  private def compiler = new Compiler(
+  private val compiler = new Compiler(
     artifacts,
     scalacOptions,
     security = false,

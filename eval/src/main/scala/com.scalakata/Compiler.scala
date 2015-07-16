@@ -171,7 +171,7 @@ class Compiler(artifacts: Seq[Path], scalacOptions: Seq[String], security: Boole
       case e: TimeoutException ⇒ None
     } finally {
       if( thread.isAlive ){
-        thread.interrupt()
+        thread.stop()
       }
     }
   }

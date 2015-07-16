@@ -28,7 +28,7 @@ class EvalSpecs extends Specification with EvalSetup {
   """
 
   def reports = {
-    eval("1+").complilationInfos.keySet.contains(Error)
+    eval("err").complilationInfos ==== Map(Error -> List(CompilationInfo("not found: value err", None)))
   }
   def typeInferance = { 
     // typeAt("List(1).reverse", i)

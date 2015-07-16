@@ -27,7 +27,7 @@ lazy val commonSettings = Seq(
     "-Ywarn-value-discard"
   ),
   libraryDependencies += "org.specs2" %% "specs2-core" % "3.6.2" % "test",
-  resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases",
+  resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"
 )
 
 lazy val buildInfoMacro = Seq(

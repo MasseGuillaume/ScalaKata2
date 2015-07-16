@@ -40,6 +40,9 @@ case class EvalResponse(
   runtimeError: Option[RuntimeError],
   instrumentation: Instrumentation
 )
+object EvalResponse {
+  val empty = EvalResponse(Map.empty, false, None, Nil)
+}
 
 // TODO: scalacOptions & dependencies
 case class TypeAtRequest(
@@ -58,6 +61,6 @@ case class CompletionRequest(
 )
 
 case class CompletionResponse(
-  name: String,
+  val name: String,
   signature: String
 )

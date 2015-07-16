@@ -51,17 +51,17 @@ object KataMacro {
     }
 
     c.Expr[Instrumented]{
-      annottees.map(_.tree).toList match { case q"object $name { ..$body }" :: Nil ⇒
+      annottees.map(_.tree).toList match { case q"class $name { ..$body }" :: Nil ⇒
         val instrumentation = TermName(c.freshName)
 
         val offset = 
           c.enclosingPosition.end + (
           " " +
-          s"""|object $name {
+          s"""|class $name {
               |""".stripMargin).length
 
         q"""
-        object $name extends Instrumented {
+        class $name extends Instrumented {
           private val $instrumentation = scala.collection.mutable.Map[(Int, Int), String]()
           def instrumentation$$: com.scalakata.Instrumentation = ${instrumentation}.toList.sorted
           ..${body.map(t => instrumentOne(t, instrumentation, offset))}

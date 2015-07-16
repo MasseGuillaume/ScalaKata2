@@ -45,21 +45,22 @@ class Eval(settings: Settings, security: Boolean) {
             classLoader.loadClass(n).getInterfaces.exists(_ == classOf[Instrumented])
           }
 
-        import scala.reflect.runtime.{universe ⇒ ru}
-        val m = ru.runtimeMirror(classLoader)
+        // import scala.reflect.runtime.{universe ⇒ ru}
+        // val m = ru.runtimeMirror(classLoader)
 
         instrClass.map{ c ⇒
-          m.reflectModule(m.staticModule(c)).
-            instance.asInstanceOf[Instrumented].instrumentation$
+          val cl = Class.forName(c, false, classLoader)
+          val cons = cl.getConstructor()
+          cons.newInstance().asInstanceOf[Instrumented].instrumentation$
         }
       }
 
-      empty.copy(
+      EvalResponse.empty.copy(
         instrumentation = findEval.getOrElse(Nil),
         complilationInfos = infos
       )
     } else {
-      empty.copy(complilationInfos = infos)
+      EvalResponse.empty.copy(complilationInfos = infos)
     }
   }
 
@@ -135,5 +136,4 @@ class Eval(settings: Settings, security: Boolean) {
   settings.outputDirs.setSingleOutput(target)
   settings.Ymacroexpand.value = settings.MacroExpand.Normal
   private val compiler = new Global(settings, reporter)
-  private val empty = EvalResponse(Map.empty, false, None, Nil)
 }

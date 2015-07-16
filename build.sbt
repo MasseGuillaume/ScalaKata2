@@ -2,6 +2,7 @@ import sbt.Keys._
 
 lazy val commonSettings = Seq(
   scalaVersion := "2.11.7",
+  version := "0.1.0-SNAPSHOT",
   licenses := Seq("MIT" -> url("http://www.opensource.org/licenses/mit-license.html")),
   scalacOptions ++= Seq(
     "-deprecation",
@@ -13,7 +14,7 @@ lazy val commonSettings = Seq(
     "-language:implicitConversions",
     "-unchecked",
     "-Xexperimental",
-    "-Xfatal-warnings",
+    // "-Xfatal-warnings",
     "-Xfuture",
     "-Xlint",
     "-Ybackend:GenBCode",
@@ -24,47 +25,47 @@ lazy val commonSettings = Seq(
     "-Ywarn-dead-code",
     "-Ywarn-numeric-widen",
     "-Ywarn-value-discard"
-    
-  )
+  ),
+  libraryDependencies += "org.specs2" %% "specs2-core" % "3.6.2" % "test"
 )
 
 lazy val buildInfoMacro = Seq(
-  buildInfoPackage := "com.scalakata.build"
+  buildInfoPackage := "com.scalakata.build",
   sourceGenerators in Test <+= buildInfo,
   buildInfoKeys := Seq[BuildInfoKey](
-    BuildInfoKey.map((exportedProducts in Runtime in macro)){ case (k, v) ⇒ k -> v.map(_.data) },
-    (scalacOptions in Compile)
+    BuildInfoKey.map((fullClasspath in Runtime in macro)){ case (k, v) ⇒ k -> v.map(_.data) },
+    (scalacOptions in Compile in macro)
   )
 )
 
 lazy val model = project
   .settings(commonSettings: _*)
-  .enablePlugins(ScalaJSPlugin)
 
 lazy val macro = project
   .settings(commonSettings: _*)
   .settings(
     libraryDependencies ++= Seq(
-      "org.scala-lang" % "scala-compiler" % scalaVersion.value,
-      "org.scala-lang" % "scala-reflect" % scalaVersion.value,
-      "org.specs2" %% "specs2-core" % "3.6.2" % "test"
+      "org.scala-lang"  % "scala-compiler" % scalaVersion.value,
+      "org.scala-lang"  % "scala-reflect"  % scalaVersion.value,
+      "org.scalamacros" % s"paradise" % "2.1.0-M5" cross CrossVersion.full,
+      compilerPlugin("org.scalamacros" % "paradise" % "2.1.0-M5" cross CrossVersion.full)
     ),
-    addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0-M5" cross CrossVersion.full),
     resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases",
     scalacOptions ~= (_ filterNot (_ == "-Ywarn-value-discard"))
   ).dependsOn(model)
 
 lazy val eval = project
+  .settings(commonSettings: _*)
   .settings(buildInfoMacro: _*)
-  .settings(commonSettings: _*).dependsOn(macro)
+  .enablePlugins(BuildInfoPlugin)
+  .dependsOn(macro)
 
 import spray.revolver.AppProcess
 import spray.revolver.RevolverPlugin.Revolver
 lazy val webapp = crossProject.settings(
-  version := "0.1-SNAPSHOT",
   libraryDependencies ++= Seq(
-    "com.lihaoyi" %%% "upickle" % "0.2.6",
-    "com.lihaoyi" %%% "autowire" % "0.2.5",
+    "com.lihaoyi" %%% "upickle"   % "0.2.6",
+    "com.lihaoyi" %%% "autowire"  % "0.2.5",
     "com.lihaoyi" %%% "scalatags" % "0.5.2"
   )
 ).settings(commonSettings: _*)
@@ -105,9 +106,9 @@ lazy val webappJVM = webapp.jvm
 lazy val codemirror = project
   .settings(commonSettings: _*)
   .settings(
-  scalacOptions ~= (_ filterNot (_ == "-Ywarn-dead-code")),
-  libraryDependencies ++= Seq(
-    "org.scala-js" %%% "scalajs-dom"  % "0.8.1",
-  	"org.querki"   %%% "querki-jsext" % "0.5"
-  )
-).enablePlugins(ScalaJSPlugin)
+    scalacOptions ~= (_ filterNot (_ == "-Ywarn-dead-code")),
+    libraryDependencies ++= Seq(
+      "org.scala-js" %%% "scalajs-dom"  % "0.8.1",
+      "org.querki"   %%% "querki-jsext" % "0.5"
+    )
+  ).enablePlugins(ScalaJSPlugin)

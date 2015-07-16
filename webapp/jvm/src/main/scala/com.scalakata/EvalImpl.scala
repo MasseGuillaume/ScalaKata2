@@ -2,8 +2,10 @@ package com.scalakata
 
 import scala.concurrent.duration._
 
+import java.nio.file.Path
+
 trait EvalImpl extends Api {
-  val artifacts: String
+  val artifacts: Seq[Path]
   val scalacOptions: Seq[String]
   val security: Boolean
   val timeout: Duration

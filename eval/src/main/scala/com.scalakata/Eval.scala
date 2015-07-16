@@ -11,9 +11,9 @@ import java.io.File
 import java.net.{URL, URLClassLoader, URLEncoder}
 
 class Eval(settings: Settings, security: Boolean) {
-  if(security) { Security.start }
+  val secured = new Secured(security)
   def apply(code: String): EvalResponse = {
-    compile(code)
+    secured { compile(code) }
     val infos = check()
     if(!infos.contains(Error)) {
       // Look for static class implementing Instrumented
@@ -47,11 +47,13 @@ class Eval(settings: Settings, security: Boolean) {
 
         // import scala.reflect.runtime.{universe ⇒ ru}
         // val m = ru.runtimeMirror(classLoader)
-
+        
         instrClass.map{ c ⇒
           val cl = Class.forName(c, false, classLoader)
           val cons = cl.getConstructor()
-          cons.newInstance().asInstanceOf[Instrumented].instrumentation$
+          secured {
+            cons.newInstance().asInstanceOf[Instrumented].instrumentation$
+          }
         }
       }
 

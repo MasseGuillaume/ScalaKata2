@@ -44,10 +44,26 @@ class EvalSpecs extends Specification with EvalSetup {
   def loadClassEmptyPackage = pending
   def loasClassAnyPackage = pending
   def runtimeErrors = {
-    eval("1 / 0").runtimeError === Some(RuntimeError("java.lang.ArithmeticException: / by zero", Some(3)))
+    eval("1 / 0").runtimeError ==== Some(RuntimeError("java.lang.ArithmeticException: / by zero", Some(3)))
   }
-  def stopingJVM = pending
-  def resourcesExhaustion = pending
-  def limitedReflection = pending
-  def timeout = pending
+  def stopingJVM = {
+    // eval("System.exit(0)").runtimeError ==== Some(RuntimeError(
+    //   "java.security.AccessControlException: access denied (\"java.lang.RuntimePermission\" \"exitVM.0\")",
+    //   Some(3)
+    // ))
+    pending // classloader issues ?
+  }
+
+  def resourcesExhaustion = {
+    // disallow creating a lot of threads / using a lot of memory
+    pending
+  }
+  def limitedReflection = {
+    // allow reflection from akka libs
+    // but disallow in user space
+    pending
+  }
+  def timeout = {
+   eval("while(true){}").timeout ==== true 
+  }
 }

@@ -26,7 +26,8 @@ lazy val commonSettings = Seq(
     "-Ywarn-numeric-widen",
     "-Ywarn-value-discard"
   ),
-  libraryDependencies += "org.specs2" %% "specs2-core" % "3.6.2" % "test"
+  libraryDependencies += "org.specs2" %% "specs2-core" % "3.6.2" % "test",
+  resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases",
 )
 
 lazy val buildInfoMacro = Seq(
@@ -50,7 +51,6 @@ lazy val macro = project
       "org.scalamacros" % s"paradise" % "2.1.0-M5" cross CrossVersion.full,
       compilerPlugin("org.scalamacros" % "paradise" % "2.1.0-M5" cross CrossVersion.full)
     ),
-    resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases",
     scalacOptions ~= (_ filterNot (_ == "-Ywarn-value-discard"))
   ).dependsOn(model)
 
@@ -88,7 +88,6 @@ lazy val webapp = crossProject.settings(
 
 lazy val webappJS = webapp.js.dependsOn(codemirror, model)
 lazy val webappJVM = webapp.jvm
-  // .settings(buildInfo???: _*)
   .settings(
     JsEngineKeys.engineType := JsEngineKeys.EngineType.Node,
     Revolver.reStart <<= Revolver.reStart.dependsOn(WebKeys.assets in Assets),

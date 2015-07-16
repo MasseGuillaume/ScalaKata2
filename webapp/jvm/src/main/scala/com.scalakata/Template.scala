@@ -9,7 +9,10 @@ object Template {
     html(
       head(
         title("ScalaKata"),
-        meta(httpEquiv:="Content-Type", content:="text/html; charset=UTF-8"),
+        base(href:="/"),
+        meta(charset:="utf-8"),
+        meta(name:="description", content:= "Interactive Playground for the Scala Programming Language"),
+        link(rel:="icon", `type`:="image/png", href:="/assets/favicon.ico"),
         link(rel:="stylesheet", href:="/assets/lib/codemirror/lib/codemirror.css"),
         link(rel:="stylesheet", href:="/assets/main.css")
       ),

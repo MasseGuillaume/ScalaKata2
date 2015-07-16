@@ -10,10 +10,10 @@ import scala.concurrent.duration._
 import java.nio.file.Path
 
 class RouteActor(
-  // override val artifacts: Seq[Path],
-  // override val scalacOptions: Seq[String],
-  // override val security: Boolean,
-  // override val timeout: Duration
+  override val artifacts: Seq[Path],
+  override val scalacOptions: Seq[String],
+  override val security: Boolean,
+  override val timeout: Duration
   ) extends Actor with Route {
 
   def actorRefFactory = context
@@ -26,7 +26,7 @@ object AutowireServer extends autowire.Server[String, upickle.Reader, upickle.Wr
   def write[Result: upickle.Writer](r: Result) = upickle.write(r)
 }
 
-trait Route extends HttpService { // with EvalImpl
+trait Route extends HttpService with EvalImpl {
   implicit val executionContext = actorRefFactory.dispatcher
 
   val index = HttpEntity(MediaTypes.`text/html`, Template.txt)
@@ -41,18 +41,17 @@ trait Route extends HttpService { // with EvalImpl
       path("assets" / Rest) { path ⇒
         getFromResource(path)
       } 
+    } ~
+    post {
+      path("api" / Segments){ s ⇒
+        extract(_.request.entity.asString) { e ⇒
+          complete {
+            AutowireServer.route[Api](this)(
+              autowire.Core.Request(s, upickle.read[Map[String, String]](e))
+            )
+          }
+        }
+      }
     }
-    // ~
-    // post {
-    //   path("api" / Segments){ s ⇒
-    //     extract(_.request.entity.asString) { e ⇒
-    //       complete {
-    //         AutowireServer.route[Api](this)(
-    //           autowire.Core.Request(s, upickle.read[Map[String, String]](e))
-    //         )
-    //       }
-    //     }
-    //   }
-    // }
   }
 }

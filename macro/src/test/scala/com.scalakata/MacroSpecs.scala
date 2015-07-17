@@ -10,12 +10,12 @@ class MacroSpecs extends org.specs2.Specification { def is = s2"""
 
   def varVal = {
 
-@instrument object VarVal {
+@instrument class VarVal {
 val a = 1 + 1
 var b = 2 + 2
 }
 
-    VarVal.instrumentation$ ====  List(
+    (new VarVal).instrumentation$ ====  List(
       ( 8,13) -> "2",
       (22,27) -> "4"
     )
@@ -23,7 +23,7 @@ var b = 2 + 2
 
   def full = {
 
-@instrument object Full {
+@instrument class Full {
 val a = "L29"
 var b = "L30"
 a + b
@@ -59,7 +59,7 @@ if(true) "L56-t" else "L56-f"
 if(true) null
 }
 
-    Full.instrumentation$ ==== List(
+    (new Full).instrumentation$ ==== List(
        ( 8, 13) -> "L29",
        (22, 27) -> "L30",
        (28, 33) -> "L29L30",

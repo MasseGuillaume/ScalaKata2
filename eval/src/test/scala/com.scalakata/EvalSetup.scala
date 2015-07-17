@@ -31,6 +31,6 @@ trait EvalSetup {
     artifacts,
     scalacOptions,
     security = false,
-    timeout = 1.seconds
+    timeout = 10.seconds
   )
 }

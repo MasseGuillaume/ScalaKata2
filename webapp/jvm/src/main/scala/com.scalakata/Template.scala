@@ -25,7 +25,7 @@ object Template {
         script(src:="/assets/lib/codemirror/mode/clike/clike.js"),
         script(src:="/assets/lib/codemirror/addon/search/searchcursor.js"),
         script(src:="/assets/lib/codemirror/keymap/sublime.js"),
-        script("com.scalakata.ScalaJSExample().main()")
+        script("com.scalakata.Main().main()")
       )
     )
 }

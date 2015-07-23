@@ -41,6 +41,7 @@ lazy val buildInfoMacro = Seq(
 
 lazy val model = project
   .settings(commonSettings: _*)
+  .enablePlugins(ScalaJSPlugin)
 
 lazy val macro = project
   .settings(commonSettings: _*)
@@ -99,6 +100,7 @@ lazy val webappJVM = webapp.jvm
       )
       andSourceMap((fastOptJS in (webappJS, Compile)).value.data)
     },
+    watchSources ++= (watchSources in webappJS).value,
     includeFilter in (Assets, LessKeys.less) := "*.less"
   ).dependsOn(eval).enablePlugins(SbtWeb)
 

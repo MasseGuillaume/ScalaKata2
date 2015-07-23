@@ -24,7 +24,7 @@ trait Editor extends js.Object {
   def removeLineClass(line: js.Any, where: String, clazz: String): LineHandle = js.native
   def lineInfo(line: js.Any): js.Any = js.native
   def addWidget(pos: Position, node: HTMLElement, scrollIntoView: Boolean): Unit = js.native
-  def addLineWidget(line: js.Any, node: HTMLElement, options: js.Any = js.native): LineWidget = js.native
+  def addLineWidget(line: Int, node: HTMLElement, options: js.Any = js.native): LineWidget = js.native
   def setSize(width: js.Any, height: js.Any): Unit = js.native
   def scrollTo(x: Double, y: Double): Unit = js.native
   def getScrollInfo(): js.Any = js.native
@@ -128,8 +128,8 @@ trait EditorChangeCancellable extends EditorChange {
 }
 
 trait Position extends js.Object {
-  var ch: Double = js.native
-  var line: Double = js.native
+  var ch: Int = js.native
+  var line: Int = js.native
 }
 
 trait EditorConfiguration extends js.Object {
@@ -142,11 +142,11 @@ trait EditorConfiguration extends js.Object {
   // The theme to style the editor with. You must make sure the CSS file defining the corresponding .cm-s-[name] styles is loaded (see the theme directory in the distribution). The default is "default", for which colors are included in codemirror.css. It is possible to use multiple theming classes at once—for example "foo bar" will assign both the cm-s-foo and the cm-s-bar classes to the editor.
   var theme: String = js.native
   // How many spaces a block (whatever that means in the edited language) should be indented. The default is 2.
-  var indentUnit: Double = js.native
+  var indentUnit: Int = js.native
   // Whether to use the context-sensitive indentation that the mode provides (or just indent the same as the line before). Defaults to true.
   var smartIndent: Boolean = js.native
   // The width of a tab character. Defaults to 4.
-  var tabSize: Double = js.native
+  var tabSize: Int = js.native
   // Whether, when indenting, the first N*tabSize spaces should be replaced by N tabs. Default is false.
   var indentWithTabs: Boolean = js.native
   // Configures whether the editor should re-indent the current line when a character is typed that might change its proper indentation (only works if the mode supports indentation). Default is true.
@@ -167,9 +167,9 @@ trait EditorConfiguration extends js.Object {
   // Whether to show line numbers to the left of the editor.
   var lineNumbers: Boolean = js.native
   // At which number to start counting lines. Default is 1.
-  var firstLineNumber: Double = js.native
+  var firstLineNumber: Int = js.native
   // A function used to format line numbers. The function is passed the line number, and should return a string that will be shown in the gutter.
-  var lineNumberFormatter: js.Function1[Double, String] = js.native
+  var lineNumberFormatter: js.Function1[Int, String] = js.native
   // Can be used to add extra gutters (beyond or instead of the line number gutter). Should be an array of CSS class names, each of which defines a width (and optionally a background), and which will be used to draw the background of the gutters. May include the CodeMirror-linenumbers class, in order to explicitly set the position of the line number gutter (it will default to be to the right of all other gutters). These class names are the keys passed to [setGutterMarker](http://codemirror.net/doc/manual.html#setGutterMarker).
   var gutters: js.Array[String] = js.native
   // Determines whether the gutter scrolls along with the content horizontally (false) or whether it stays fixed during horizontal scrolling (true, the default).
@@ -291,6 +291,7 @@ object CodeMirror extends js.Object {
   //def fromTextArea(host: HTMLTextAreaElement, options: js.Any): Editor = js.native
 
   var version: String = js.native
+  var commands: js.Dynamic = js.native
   def defineExtension(name: String, value: js.Any): Unit = js.native
   def defineDocExtension(name: String, value: js.Any): Unit = js.native
   def defineOption(name: String, default: js.Any, updateFunc: js.Function): Unit = js.native

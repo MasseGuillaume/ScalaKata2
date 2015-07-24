@@ -26,14 +26,13 @@ object Main {
       lineNumbers(false).
       lineWrapping(true).
       tabSize(2).
-      theme("solarized light").
+      theme("mdn-like").
       smartIndent(true).
       keyMap("sublime").
       extraKeys(js.Dictionary(
         s"$ctrl-Space" -> "autocomplete",
          "."           -> "autocompleteDot",
-        s"$ctrl-Enter" -> "run",
-        s"$ctrl-,"     -> "config",
+        s"$ctrl-Enter" -> "run",        s"$ctrl-,"     -> "config",
         s"$ctrl-."     -> "typeAt"
       )).
       autoCloseBrackets(true).
@@ -43,12 +42,10 @@ object Main {
         "showToken" -> js.Dynamic.global.RegExp("\\w")
       ))
     
-    
-
     val default = 
       """|import com.scalakata._
          |@instrument class A {
-         |  List(1,2,3).map(i ⇒ s"===== $i =====")mkString(System.lineSeparator)
+         |  Markdown((1 to 5).map(i => "#" * i + s" Header $i").mkString(System.lineSeparator))
          |}""".stripMargin
 
     val nl = "\n"
@@ -58,19 +55,15 @@ object Main {
         val editor = CodeMirror.fromTextArea(el, params)
         editor.getDoc.setValue(default)
 
-        var insights = List.empty[LineWidget]
-        // CodeMirror.commands.run = { () ⇒
+        var insights = List.empty[LineWidget]        
+        val converter = Pagedown.getSanitizingConverter()
+
+        val run = { () ⇒
           val request = EvalRequest(editor.getDoc.getValue(nl))
           Client[Api].eval(request).call().map{ response ⇒
-            // for {
-            //   (severity, infos) <- response.complilationInfos
-            //   info <- infos
-            // } yield {
-            //   info.pos
-            // }
+            
             response.instrumentation.map{ case (RangePosition(start, _, end), repr) ⇒
               val endPos = editor.getDoc.posFromIndex(end)
-
               repr match {
                 case EString(v) ⇒ {
                   if(v.contains(nl)) editor.addLineWidget(endPos.line, pre(v).render)
@@ -84,13 +77,18 @@ object Main {
                   } else () // TODO: next to
                 }
                 case Markdown(v, folded) ⇒ {
+                  dom.console.log(s"md $v")
+                  val out = pre().render
+                  out.innerHTML = converter.makeHtml(v)
+                  dom.console.log(out)
                   if(!folded) {
-
+                    editor.addLineWidget(endPos.line, out)
                   } else {
-
+                    // editor.markText
                   }
                 }
                 case Html(v, folded) ⇒ {
+                  dom.console.log(s"html $v")
                   if(!folded) {
 
                   } else {
@@ -99,17 +97,12 @@ object Main {
                 }
               }
             }
-
-            // dom.console.log(response.toString)
-
-            // editor.addWidget(pos: {line, ch}, node: Element, scrollIntoView: boolean)
-            // editor.addLineWidget(line: Int, node: HTMLElement, options: js.Any = js.native): LineWidget = js.native
-            // editor.markText({ch: 0, line: start.line}, end, { replacedWith: e})
             ()
           }
           ()
-
-        // }
+        }
+        CodeMirror.commands.run = run
+        run()
       case _ ⇒ dom.console.error("cannot find text area for the code!")
     }
   }

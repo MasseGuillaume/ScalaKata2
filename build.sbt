@@ -84,7 +84,8 @@ lazy val webapp = crossProject.settings(
     "io.spray"          %% "spray-routing"  % "1.3.3",
     "com.typesafe.akka" %% "akka-actor"     % "2.3.11",
     "org.webjars.bower"  % "codemirror"     % "5.4.0",
-    "org.webjars.bower"  % "iframe-resizer" % "2.8.10"
+    "org.webjars.bower"  % "iframe-resizer" % "2.8.10",
+    "org.webjars.bower"  % "pagedown"       % "1.1.0"
   )
 )
 

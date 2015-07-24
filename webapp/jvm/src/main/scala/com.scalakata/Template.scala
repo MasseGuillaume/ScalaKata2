@@ -16,6 +16,7 @@ object Template {
         link(rel:="stylesheet", href:="/assets/lib/codemirror/lib/codemirror.css"),
         link(rel:="stylesheet", href:="/assets/lib/codemirror/addon/fold/foldgutter.css"),
         link(rel:="stylesheet", href:="/assets/lib/codemirror/addon/dialog/dialog.css"),
+        link(rel:="stylesheet", href:="/assets/lib/codemirror/theme/mdn-like.css"),
 
         link(rel:="stylesheet", href:="/assets/main.css")
       ),
@@ -38,6 +39,11 @@ object Template {
         script(src:="/assets/lib/codemirror/addon/search/searchcursor.js"),
         script(src:="/assets/lib/codemirror/keymap/sublime.js"),
         script(src:="/assets/lib/codemirror/mode/clike/clike.js"),
+
+        script(src:="/assets/lib/pagedown/Markdown.Converter.js"),
+        script(src:="/assets/lib/pagedown/Markdown.Sanitizer.js"),
+        script(src:="/assets/lib/pagedown/Markdown.Extra.js"),
+
         script(src:="/assets/lib/iframe-resizer/js/iframeResizer.min.js"),
         script(src:="/assets/client-fastopt.js"),
         script("com.scalakata.Main().main()")

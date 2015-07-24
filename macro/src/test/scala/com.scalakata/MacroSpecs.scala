@@ -1,6 +1,6 @@
 package com.scalakata
 
-import scala.collection.mutable.{Map => MMap}
+import scala.collection.mutable.{Map ⇒ MMap}
 
 class MacroSpecs extends org.specs2.Specification { def is = s2"""
   Kata Macro Specifications
@@ -10,7 +10,7 @@ class MacroSpecs extends org.specs2.Specification { def is = s2"""
 
   def withOffset(instr: Instrumented) = {
     val by = instr.offset$
-    instr.instrumentation$.map{ case (RangePosition(start, pos, end), repr) =>
+    instr.instrumentation$.map{ case (RangePosition(start, pos, end), repr) ⇒
       (RangePosition(start - by, pos - by, end - by), repr)
     }
   }
@@ -23,8 +23,8 @@ var b = 2 + 2
 }
 
     withOffset(new VarVal) ====  List(
-      RangePosition(8, 8, 13) -> "2",
-      RangePosition(22, 22, 27) -> "4"
+      RangePosition( 8,  8, 13) -> Other("2"),
+      RangePosition(22, 22, 27) -> Other("4")
     )
   }
 
@@ -44,7 +44,7 @@ type L38[V] = List[V]
 L34(39).v
 def f = "L40"
 f
-("L42-1", "L42-2") match { case (a, b) => a + b }
+("L42-1", "L42-2") match { case (a, b) ⇒ a + b }
 //
 implicitly[Ordering[Int]].lt(1, 2)
 var d = "L45"
@@ -67,22 +67,22 @@ if(true) null
 }
 
     withOffset(new Full) ==== List(
-      RangePosition(  8,   8,  13) -> "L29",
-      RangePosition( 22,  22,  27) -> "L30",
-      RangePosition( 28,  28,  33) -> "L29L30",
-      RangePosition( 34,  34,  48) -> "L29L30",
-      RangePosition( 49,  49,  56) -> "Set(33)",
-      RangePosition(151, 151, 160) -> "L34v",
-      RangePosition(175, 175, 176) -> "L40",
-      RangePosition(177, 177, 226) -> "L42-1L42-2",
-      RangePosition(230, 230, 264) -> "true",
-      RangePosition(273, 273, 278) -> "L45",
-      RangePosition(283, 283, 288) -> "L46",
-      RangePosition(297, 297, 328) -> "Map(1 -> 47)",
-      RangePosition(336, 336, 338) -> "48",
-      RangePosition(340, 340, 393) -> "535454",
-      RangePosition(438, 438, 445) -> "L56-t",
-      RangePosition(468, 468, 472) -> "null"
+      RangePosition(  8,   8,  13) -> EString("L29"),
+      RangePosition( 22,  22,  27) -> EString("L30"),
+      RangePosition( 28,  28,  33) -> EString("L29L30"),
+      RangePosition( 42,  42,  47) -> EString("L29L30"),
+      RangePosition( 49,  49,  56) ->   Other("Set(33)"),
+      RangePosition(151, 151, 160) -> EString("L34v"),
+      RangePosition(175, 175, 176) -> EString("L40"),
+      RangePosition(177, 177, 225) -> EString("L42-1L42-2"),
+      RangePosition(229, 229, 263) ->   Other("true"),
+      RangePosition(272, 272, 277) -> EString("L45"),
+      RangePosition(282, 282, 287) -> EString("L46"),
+      RangePosition(296, 296, 327) ->   Other("Map(1 -> 47)"),
+      RangePosition(335, 335, 337) ->   Other("48"),
+      RangePosition(339, 339, 392) -> EString("535454"),
+      RangePosition(437, 437, 444) -> EString("L56-t"),
+      RangePosition(467, 467, 471) ->   Other("null")
     )
   }
 }

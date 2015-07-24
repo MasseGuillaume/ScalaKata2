@@ -34,6 +34,18 @@ case class EvalRequest(
   code: String
 )
 
+sealed trait Render
+case class EString(v: String) extends Render
+case class Other(repr: String) extends Render
+case class Markdown(a: String, folded: Boolean = false) extends Render {
+  def stripMargin = Markdown(a.stripMargin)
+  def fold = copy(folded = true)
+}
+case class Html(a: String, folded: Boolean = false) extends Render {
+  def stripMargin = Html(a.stripMargin)
+  def fold = copy(folded = true)
+}
+
 case class EvalResponse(
   complilationInfos: Map[Severity, List[CompilationInfo]],
   timeout: Boolean,

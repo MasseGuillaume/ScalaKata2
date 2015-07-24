@@ -19,8 +19,10 @@ object Main {
       if(navigator.userAgent.contains("Mac")) "Cmd"
       else "Ctrl"
 
+    val modeScala = "text/x-scala"
+
     val params = EditorConfig.
-      mode("text/x-scala").
+      mode(modeScala).
       lineNumbers(false).
       lineWrapping(true).
       tabSize(2).
@@ -33,12 +35,20 @@ object Main {
         s"$ctrl-Enter" -> "run",
         s"$ctrl-,"     -> "config",
         s"$ctrl-."     -> "typeAt"
+      )).
+      autoCloseBrackets(true).
+      matchBrackets(true).
+      showCursorWhenSelecting(true).
+      highlightSelectionMatches(js.Dictionary(
+        "showToken" -> js.Dynamic.global.RegExp("\\w")
       ))
+    
+    
 
     val default = 
       """|import com.scalakata._
          |@instrument class A {
-         |  List(1,2,3).map(i => s"===== $i =====")mkString(System.lineSeparator)
+         |  List(1,2,3).map(i ⇒ s"===== $i =====")mkString(System.lineSeparator)
          |}""".stripMargin
 
     val nl = "\n"
@@ -51,19 +61,42 @@ object Main {
         var insights = List.empty[LineWidget]
         // CodeMirror.commands.run = { () ⇒
           val request = EvalRequest(editor.getDoc.getValue(nl))
-          Client[Api].eval(request).call().map{ response =>
+          Client[Api].eval(request).call().map{ response ⇒
             // for {
             //   (severity, infos) <- response.complilationInfos
             //   info <- infos
             // } yield {
             //   info.pos
             // }
-            response.instrumentation.map{ case (RangePosition(start, _, end), repr) =>
-              if(repr.contains(nl)) {
-                val startPos = editor.getDoc.posFromIndex(end)
-                editor.addLineWidget(startPos.line, pre(repr).render)
-              } else {
-                ()
+            response.instrumentation.map{ case (RangePosition(start, _, end), repr) ⇒
+              val endPos = editor.getDoc.posFromIndex(end)
+
+              repr match {
+                case EString(v) ⇒ {
+                  if(v.contains(nl)) editor.addLineWidget(endPos.line, pre(v).render)
+                  else () // TODO: next to
+                }
+                case Other(v) ⇒ {
+                  if(v.contains(nl)) {
+                    val out = pre().render
+                    CodeMirror.runMode(v, modeScala, out)
+                    editor.addLineWidget(endPos.line, out)
+                  } else () // TODO: next to
+                }
+                case Markdown(v, folded) ⇒ {
+                  if(!folded) {
+
+                  } else {
+
+                  }
+                }
+                case Html(v, folded) ⇒ {
+                  if(!folded) {
+
+                  } else {
+                    
+                  }
+                }
               }
             }
 

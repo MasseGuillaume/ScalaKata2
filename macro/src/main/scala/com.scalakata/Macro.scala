@@ -15,38 +15,39 @@ object KataMacro {
         val t = TermName(c.freshName)
         q"""{
           val $t = $aTree
-          ${instrumentation}(${aTree.pos}) = show($t)
+          ${instrumentation}(${aTree.pos}) = render($t)
           $t
         }"""
       }
 
       // see http://docs.scala-lang.org/overviews/quasiquotes/syntax-summary.html
       tree match {
-        case q"$expr(..$exprs) = $rhs"         => q"$expr(..$exprs) = ${w(rhs)}"
-        case q"if ($cond) $texpr else $fexpr"  => q"if ($cond) ${w(texpr)} else ${w(fexpr)}"
-        case q"for (..$enums) yield $expr"     => q"for (..$enums) yield ${w(expr)}"
-        case q"while ($_) $_"                  => tree
-        case q"$expr1 = $expr2"                => q"$expr1 = ${w(expr2)}"
-        case q"$_ match { case ..$_ }"         => w(tree)
-        case q"$expr[..$tpts]"                 => w(tree)                            // implicitly[Ordering[Int]]
-        case q"$expr: $tpt"                    => w(tree)                            // a: Int
-        case q"$expr match { case ..$cases }"  => w(tree)
-        case q"while ($cond) $expr"            => tree
-        case q"do $cond while ($expr)"         => tree
-        case q"for (..$enums) $expr"           => tree
-        case ValDef(mods, tname, tpt, expr)    => ValDef(mods, tname, tpt, w(expr))  // var / val
-        case _: Apply                          => w(tree)                            // f(1)
-        case _: Select                         => w(tree)                            // p.x
-        case _: Ident                          => w(tree)                            // p
-        case _: Block                          => w(tree)                            // {a; b}
-        case _: Try                            => w(tree)                            // try ...
-        case lit: Literal                      => lit                                // 1.0
-        case ld: LabelDef                      => ld                                 // do / while
-        case cd: ClassDef                      => cd                                 // class A / trait A
-        case md: ModuleDef                     => md                                 // object A
-        case td: TypeDef                       => td                                 // type A = List
-        case dd: DefDef                        => dd                                 // def f = 1
-        case v                                 => { println(showRaw(v)); v }
+        case q"println {..$body}"              ⇒ w(q"{..$body}")
+        case q"$expr(..$exprs) = $rhs"         ⇒ q"$expr(..$exprs) = ${w(rhs)}"
+        case q"if ($cond) $texpr else $fexpr"  ⇒ q"if ($cond) ${w(texpr)} else ${w(fexpr)}"
+        case q"for (..$enums) yield $expr"     ⇒ q"for (..$enums) yield ${w(expr)}"
+        case q"while ($_) $_"                  ⇒ tree
+        case q"$expr1 = $expr2"                ⇒ q"$expr1 = ${w(expr2)}"
+        case q"$_ match { case ..$_ }"         ⇒ w(tree)
+        case q"$expr[..$tpts]"                 ⇒ w(tree)                            // implicitly[Ordering[Int]]
+        case q"$expr: $tpt"                    ⇒ w(tree)                            // a: Int
+        case q"$expr match { case ..$cases }"  ⇒ w(tree)
+        case q"while ($cond) $expr"            ⇒ tree
+        case q"do $cond while ($expr)"         ⇒ tree
+        case q"for (..$enums) $expr"           ⇒ tree
+        case ValDef(mods, tname, tpt, expr)    ⇒ ValDef(mods, tname, tpt, w(expr))  // var / val
+        case _: Apply                          ⇒ w(tree)                            // f(1)
+        case _: Select                         ⇒ w(tree)                            // p.x
+        case _: Ident                          ⇒ w(tree)                            // p
+        case _: Block                          ⇒ w(tree)                            // {a; b}
+        case _: Try                            ⇒ w(tree)                            // try ...
+        case lit: Literal                      ⇒ lit                                // 1.0
+        case ld: LabelDef                      ⇒ ld                                 // do / while
+        case cd: ClassDef                      ⇒ cd                                 // class A / trait A
+        case md: ModuleDef                     ⇒ md                                 // object A
+        case td: TypeDef                       ⇒ td                                 // type A = List
+        case dd: DefDef                        ⇒ dd                                 // def f = 1
+        case v                                 ⇒ { println(showRaw(v)); v }
       }
     }
 
@@ -62,10 +63,10 @@ object KataMacro {
 
         q"""
         class $name extends Instrumented {
-          private val $instrumentation = scala.collection.mutable.Map[_root_.com.scalakata.RangePosition, String]()
+          private val $instrumentation = scala.collection.mutable.Map[_root_.com.scalakata.RangePosition, Render]()
           def offset$$ = $offset
           def instrumentation$$: _root_.com.scalakata.Instrumentation = ${instrumentation}.toList.sorted
-          ..${body.map(t => instrumentOne(t, instrumentation))}
+          ..${body.map(t ⇒ instrumentOne(t, instrumentation))}
         }
         """
       }

@@ -46,4 +46,7 @@ class EditorConfigurationBuilder(val dict:OptMap)
   def flattenSpans(value: Boolean) = jsOpt("flattenSpans",value)
   def maxHighlightLength(value: Double) = jsOpt("maxHighlightLength",value)
   def viewportMargin(value: Double) = jsOpt("viewportMargin",value)
+  def autoCloseBrackets(value: Boolean) = jsOpt("autoCloseBrackets",value)
+  def matchBrackets(value: Boolean) = jsOpt("matchBrackets",value) 
+  def highlightSelectionMatches(value: js.Any) = jsOpt("highlightSelectionMatches",value) 
 }

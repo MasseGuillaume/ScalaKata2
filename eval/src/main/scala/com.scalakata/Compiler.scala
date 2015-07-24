@@ -29,7 +29,7 @@ class Compiler(artifacts: Seq[Path], scalacOptions: Seq[String], security: Boole
         case NonFatal(e) ⇒ {
           
           def search(e: Throwable) = {
-            e.getStackTrace.find(_.getFileName == "(inline)").map(v => 
+            e.getStackTrace.find(_.getFileName == "(inline)").map(v ⇒ 
               (e, Some(v.getLineNumber))
             )
           }
@@ -41,7 +41,7 @@ class Compiler(artifacts: Seq[Path], scalacOptions: Seq[String], security: Boole
               else Some((e, None))
             else s
           }
-          EvalResponse.empty.copy(runtimeError = loop(e).map{ case (err, line) =>
+          EvalResponse.empty.copy(runtimeError = loop(e).map{ case (err, line) ⇒
             RuntimeError(err.toString, line)
           })
         }

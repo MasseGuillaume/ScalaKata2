@@ -226,6 +226,10 @@ trait EditorConfiguration extends js.Object {
   var maxHighlightLength: Double = js.native
   // Specifies the amount of lines that are rendered above and below the part of the document that's currently scrolled into view. This affects the amount of updates needed when scrolling, and the amount of work that such an update does. You should usually leave it at its default, 10. Can be set to Infinity to make sure the whole document is always rendered, and thus the browser's text search works on it. This will have bad effects on performance of big documents.
   var viewportMargin: Double = js.native
+
+  var autoCloseBrackets: Boolean = js.native
+  var matchBrackets: Boolean = js.native
+  var highlightSelectionMatches: Boolean = js.native
 }
 
 trait TextMarkerOptions extends js.Object {
@@ -288,8 +292,7 @@ trait LineStream extends js.Object {
 object CodeMirror extends js.Object {
   var Pass: js.Any = js.native
   def fromTextArea(host: HTMLTextAreaElement, options: EditorConfiguration = js.native): Editor = js.native
-  //def fromTextArea(host: HTMLTextAreaElement, options: js.Any): Editor = js.native
-
+  def runMode(value: String, mode: String, dst: HTMLElement): Editor = js.native
   var version: String = js.native
   var commands: js.Dynamic = js.native
   def defineExtension(name: String, value: js.Any): Unit = js.native

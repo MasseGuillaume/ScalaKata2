@@ -80,10 +80,11 @@ lazy val webapp = crossProject.settings(
  .jvmSettings(
   name := "Server",
   libraryDependencies ++= Seq(
-    "io.spray"          %% "spray-can"     % "1.3.3",
-    "io.spray"          %% "spray-routing" % "1.3.3",
-    "com.typesafe.akka" %% "akka-actor"    % "2.3.11",
-    "org.webjars.bower"  % "codemirror"    % "5.4.0"
+    "io.spray"          %% "spray-can"      % "1.3.3",
+    "io.spray"          %% "spray-routing"  % "1.3.3",
+    "com.typesafe.akka" %% "akka-actor"     % "2.3.11",
+    "org.webjars.bower"  % "codemirror"     % "5.4.0",
+    "org.webjars.bower"  % "iframe-resizer" % "2.8.10"
   )
 )
 

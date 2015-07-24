@@ -15,7 +15,7 @@ class Secured(security: Boolean) {
       Thread.currentThread().getStackTrace().find(_.getFileName == "(inline)").isEmpty
     }
   }
-  def apply[T](f: => T): T = {
+  def apply[T](f: ⇒ T): T = {
     if(security) {
       Policy.setPolicy(new ScalaKataSecurityPolicy)
       System.setSecurityManager(new SecurityManager)

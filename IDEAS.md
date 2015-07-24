@@ -38,6 +38,8 @@ insight with types
 
 compiler plugin vs annotation macro
 
+codemirror mixed mode for q"" and s""
+
 scalameta
   for macro (try tree.toGTree)
   instrument everything

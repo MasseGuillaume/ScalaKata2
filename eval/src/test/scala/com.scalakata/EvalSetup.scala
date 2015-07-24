@@ -24,7 +24,7 @@ trait EvalSetup {
     compiler.typeAt(TypeAtRequest(wrap(code), shiftRequest(pos)))
   }
 
-  private val artifacts = build.BuildInfo.runtime_fullClasspath.map(v => Paths.get(v.toURI))
+  private val artifacts = build.BuildInfo.runtime_fullClasspath.map(v ⇒ Paths.get(v.toURI))
 
   private val scalacOptions = build.BuildInfo.scalacOptions.to[Seq]
   private def compiler = new Compiler(

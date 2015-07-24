@@ -3,7 +3,7 @@ package com.scalakata
 import scala.tools.nsc.{Global, Settings}
 import scala.tools.nsc.reporters.StoreReporter
 import scala.tools.nsc.io.{VirtualDirectory, AbstractFile}
-import scala.reflect.internal.util.{RangePosition => RangePos, BatchSourceFile, AbstractFileClassLoader}
+import scala.reflect.internal.util.{RangePosition ⇒ RangePos, BatchSourceFile, AbstractFileClassLoader}
 
 import scala.language.reflectiveCalls
 
@@ -70,7 +70,7 @@ class Eval(settings: Settings, security: Boolean) {
     val infos =
       reporter.infos.map { info ⇒
         val pos = info.pos match {
-          case rp: RangePos => Some(RangePosition(rp.start, rp.point, rp.end))
+          case rp: RangePos ⇒ Some(RangePosition(rp.start, rp.point, rp.end))
           case _ ⇒ None
         }
         (

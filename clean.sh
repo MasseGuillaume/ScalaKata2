@@ -1,0 +1,5 @@
+rm -rf "codemirror/target/"
+rm -rf "eval/target/"
+rm -rf "macro/target/"
+rm -rf "webapp/js/target/"
+rm -rf "webapp/jvm/target/"

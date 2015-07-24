@@ -6,9 +6,9 @@ object KataMacro {
   def instrument(c: reflect.macros.whitebox.Context)(annottees: c.Expr[Any]*): c.Expr[Instrumented] = {
     import c.universe._
 
-    def instrumentOne(tree: Tree, instrumentation: TermName, offset: Int) = {
+    def instrumentOne(tree: Tree, instrumentation: TermName) = {
       implicit def liftq = Liftable[c.universe.Position] { p ⇒
-        q"(${p.start - offset}, ${p.end - offset})"
+        q"_root_.com.scalakata.RangePosition(${p.start}, ${p.start}, ${p.end})"
       }
 
       def w(aTree: Tree) = {
@@ -62,9 +62,10 @@ object KataMacro {
 
         q"""
         class $name extends Instrumented {
-          private val $instrumentation = scala.collection.mutable.Map[(Int, Int), String]()
-          def instrumentation$$: com.scalakata.Instrumentation = ${instrumentation}.toList.sorted
-          ..${body.map(t => instrumentOne(t, instrumentation, offset))}
+          private val $instrumentation = scala.collection.mutable.Map[_root_.com.scalakata.RangePosition, String]()
+          def offset$$ = $offset
+          def instrumentation$$: _root_.com.scalakata.Instrumentation = ${instrumentation}.toList.sorted
+          ..${body.map(t => instrumentOne(t, instrumentation))}
         }
         """
       }
@@ -74,6 +75,7 @@ object KataMacro {
 
 trait Instrumented {
   def instrumentation$: Instrumentation
+  def offset$: Int
 }
 
 class instrument extends annotation.StaticAnnotation {

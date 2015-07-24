@@ -8,6 +8,13 @@ class MacroSpecs extends org.specs2.Specification { def is = s2"""
     full $full
 """
 
+  def withOffset(instr: Instrumented) = {
+    val by = instr.offset$
+    instr.instrumentation$.map{ case (RangePosition(start, pos, end), repr) =>
+      (RangePosition(start - by, pos - by, end - by), repr)
+    }
+  }
+
   def varVal = {
 
 @instrument class VarVal {
@@ -15,9 +22,9 @@ val a = 1 + 1
 var b = 2 + 2
 }
 
-    (new VarVal).instrumentation$ ====  List(
-      ( 8,13) -> "2",
-      (22,27) -> "4"
+    withOffset(new VarVal) ====  List(
+      RangePosition(8, 8, 13) -> "2",
+      RangePosition(22, 22, 27) -> "4"
     )
   }
 
@@ -59,23 +66,23 @@ if(true) "L56-t" else "L56-f"
 if(true) null
 }
 
-    (new Full).instrumentation$ ==== List(
-       ( 8, 13) -> "L29",
-       (22, 27) -> "L30",
-       (28, 33) -> "L29L30",
-       (34, 48) -> "L29L30",
-       (49, 56) ->  "Set(33)",
-      (151,160) -> "L34v",
-      (175,176) -> "L40",
-      (177,226) -> "L42-1L42-2",
-      (230,264) -> "true",
-      (273,278) -> "L45",
-      (283,288) -> "L46",
-      (297,328) -> "Map(1 -> 47)",
-      (336,338) -> "48",
-      (340,393) -> "535454",
-      (438,445) -> "L56-t",
-      (468,472) -> "null"
+    withOffset(new Full) ==== List(
+      RangePosition(  8,   8,  13) -> "L29",
+      RangePosition( 22,  22,  27) -> "L30",
+      RangePosition( 28,  28,  33) -> "L29L30",
+      RangePosition( 34,  34,  48) -> "L29L30",
+      RangePosition( 49,  49,  56) -> "Set(33)",
+      RangePosition(151, 151, 160) -> "L34v",
+      RangePosition(175, 175, 176) -> "L40",
+      RangePosition(177, 177, 226) -> "L42-1L42-2",
+      RangePosition(230, 230, 264) -> "true",
+      RangePosition(273, 273, 278) -> "L45",
+      RangePosition(283, 283, 288) -> "L46",
+      RangePosition(297, 297, 328) -> "Map(1 -> 47)",
+      RangePosition(336, 336, 338) -> "48",
+      RangePosition(340, 340, 393) -> "535454",
+      RangePosition(438, 438, 445) -> "L56-t",
+      RangePosition(468, 468, 472) -> "null"
     )
   }
 }

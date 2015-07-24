@@ -92,8 +92,8 @@ class Doc protected () extends js.Object {
   def findMarksAt(pos: Position): js.Array[TextMarker] = js.native
   def getAllMarks(): js.Array[TextMarker] = js.native
   def getMode(): js.Dynamic = js.native
-  def posFromIndex(index: Double): Position = js.native
-  def indexFromPos(`object`: Position): Double = js.native
+  def posFromIndex(index: Int): Position = js.native
+  def indexFromPos(position: Position): Int = js.native
 }
 
 trait LineHandle extends js.Object {

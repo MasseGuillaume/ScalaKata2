@@ -23,7 +23,7 @@ trait Editor extends js.Object {
   def addLineClass(line: js.Any, where: String, _clazz: String): LineHandle = js.native
   def removeLineClass(line: js.Any, where: String, clazz: String): LineHandle = js.native
   def lineInfo(line: js.Any): js.Any = js.native
-  def addWidget(pos: Position, node: HTMLElement, scrollIntoView: Boolean): Unit = js.native
+  def addWidget(pos: Position, node: HTMLElement, scrollIntoView: Boolean = js.native): Unit = js.native
   def addLineWidget(line: Int, node: HTMLElement, options: js.Any = js.native): LineWidget = js.native
   def setSize(width: js.Any, height: js.Any): Unit = js.native
   def scrollTo(x: Double, y: Double): Unit = js.native
@@ -45,8 +45,8 @@ trait Editor extends js.Object {
   def getWrapperElement(): HTMLElement = js.native
   def getScrollerElement(): HTMLElement = js.native
   def getGutterElement(): HTMLElement = js.native
-  def on(eventName: String, handler: js.Function1[Editor, Unit]): Unit = js.native
-  def off(eventName: String, handler: js.Function1[Editor, Unit]): Unit = js.native
+  def on(eventName: String, handler: js.Function2[Editor, js.Any, Unit]): Unit = js.native
+  def off(eventName: String, handler: js.Function2[Editor, js.Any, Unit]): Unit = js.native
 }
 
 @JSName("Doc")
@@ -56,16 +56,16 @@ class Doc protected () extends js.Object {
   def setValue(content: String): Unit = js.native
   def getRange(from: Position, to: Position, seperator: String = js.native): String = js.native
   def replaceRange(replacement: String, from: Position, to: Position): Unit = js.native
-  def getLine(n: Double): String = js.native
-  def setLine(n: Double, text: String): Unit = js.native
-  def removeLine(n: Double): Unit = js.native
-  def lineCount(): Double = js.native
-  def firstLine(): Double = js.native
-  def lastLine(): Double = js.native
-  def getLineHandle(num: Double): LineHandle = js.native
-  def getLineNumber(handle: LineHandle): Double = js.native
+  def getLine(n: Int): String = js.native
+  def setLine(n: Int, text: String): Unit = js.native
+  def removeLine(n: Int): Unit = js.native
+  def lineCount(): Int = js.native
+  def firstLine(): Int = js.native
+  def lastLine(): Int = js.native
+  def getLineHandle(num: Int): LineHandle = js.native
+  def getLineNumber(handle: LineHandle): Int = js.native
   def eachLine(f: js.Function1[LineHandle, Unit]): Unit = js.native
-  def eachLine(start: Double, end: Double, f: js.Function1[LineHandle, Unit]): Unit = js.native
+  def eachLine(start: Int, end: Int, f: js.Function1[LineHandle, Unit]): Unit = js.native
   def markClean(): Unit = js.native
   def isClean(): Boolean = js.native
   def getSelection(): String = js.native

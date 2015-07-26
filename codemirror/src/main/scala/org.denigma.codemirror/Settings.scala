@@ -2,7 +2,7 @@ package org.denigma
 package codemirror
 
 import org.querki.jsext._
-import org.scalajs.dom.raw.Event
+import org.scalajs.dom.raw.{Event, HTMLElement}
 
 import scala.scalajs.js
 /**
@@ -49,4 +49,23 @@ class EditorConfigurationBuilder(val dict:OptMap)
   def autoCloseBrackets(value: Boolean) = jsOpt("autoCloseBrackets",value)
   def matchBrackets(value: Boolean) = jsOpt("matchBrackets",value) 
   def highlightSelectionMatches(value: js.Any) = jsOpt("highlightSelectionMatches",value) 
+}
+
+object TextMarkerConfig extends TextMarkerConfig(noOpts)
+class TextMarkerConfig(val dict:OptMap)
+  extends JSOptionBuilder[TextMarkerOptions, TextMarkerConfig](new TextMarkerConfig(_))
+{
+
+  def className(value: String) = jsOpt("className", value)
+  def inclusiveLeft(value: Boolean) = jsOpt("inclusiveLeft", value)
+  def inclusiveRight(value: Boolean) = jsOpt("inclusiveRight", value)
+  def atomic(value: Boolean) = jsOpt("atomic", value)
+  def collapsed(value: Boolean) = jsOpt("collapsed", value)
+  def clearOnEnter(value: Boolean) = jsOpt("clearOnEnter", value)
+  def replacedWith(value: HTMLElement) = jsOpt("replacedWith", value)
+  def readOnly(value: Boolean) = jsOpt("readOnly", value)
+  def addToHistory(value: Boolean) = jsOpt("addToHistory", value)
+  def startStyle(value: String) = jsOpt("startStyle", value)
+  def endStyle(value: String) = jsOpt("endStyle", value)
+  def shared(value: Boolean) = jsOpt("shared", value)
 }

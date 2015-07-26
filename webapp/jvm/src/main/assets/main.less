@@ -2,26 +2,41 @@
 
 // CODEMIRROR
 
+
 .CodeMirror {
   background: transparent;
   font-size: 18px;
 }
 
+
 .CodeMirror, .CodeMirror-scroll {
   height: 100%;
 }
 
-
-@margin: 50px;
+.CodeMirror-widget {
+  .inline {
+    margin-left: 50px;
+  }
+  .fold {
+    width: 100%;
+  }
+  pre {
+    display: inline-block;
+  }
+}
+@margin: 20px;
 .CodeMirror-lines {
     padding: @margin;
 }
+.CodeMirror-linenumber{
+  margin-left: -@margin;
+}
+.CodeMirror-widget .fold, 
 .CodeMirror-linewidget {
   left: -@margin;
   width: calc(~"100% +" 2*@margin);
 
   pre {
-    background-color: white;
     padding: 10px 0px 10px @margin/2;
     margin: 10px 0 10px 0;
   }

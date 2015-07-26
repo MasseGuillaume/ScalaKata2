@@ -31,18 +31,24 @@ less version: gui
 
   color-profile: sRGB;
   rendering-intent: auto;
-
-  .CodeMirror-widget { text-shadow: none; }
-
-  .cm-keyword { color: @orange }
-  .cm-atom { color: @magenta; }
+  
+  // emphasis on not parsed (){}
+  .CodeMirror-code pre > span {
+    font-weight: bold;
+    * {
+      font-weight: normal;
+    }
+  }
+  
+  .cm-keyword { color: @yellow }
+  .cm-atom { color: @yellow; }
   .cm-number { color: @magenta; }
-  .cm-def { color: @cyan; }
-  .cm-variable { color: @blue; }
-  .cm-variable-2 { color: @yellow; }
-  .cm-variable-3 { color: @violet; }
+  .cm-def { color: @blue; }
+  .cm-variable { color: @cyan; }
+  .cm-variable-2 { color: @cyan; }
+  .cm-variable-3 { color: @cyan; }
   .cm-property { color: @cyan; }
-  .cm-operator {color: @violet;}
+  .cm-operator {color: @yellow;}
   .cm-comment { color: @base01 }
   .cm-string { color: @green; }
   .cm-string-2 { color: @yellow; }
@@ -54,8 +60,14 @@ less version: gui
   .cm-qualifier { color: @yellow; }
   .cm-builtin { color: @magenta; }
   .cm-bracket { color: @orange; }
-  .CodeMirror-matchingbracket { color: @green; }
-  .CodeMirror-nonmatchingbracket { color: @red; }
+  .CodeMirror-matchingbracket { 
+    color: @green !important; 
+    .cm-matchhighlight;
+  }
+  .CodeMirror-nonmatchingbracket {
+    color: @red !important;
+    .cm-matchhighlight;
+  }
   .cm-tag { color: @base1; }
   .cm-attribute {  color: @cyan; }
   .cm-header { color: @base01; }

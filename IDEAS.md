@@ -38,8 +38,28 @@ insight with types
 
 compiler plugin vs annotation macro
 
-codemirror mixed mode for q"" and s""
+annotation macro
+  allow more than one annotation macro
 
+codemirror 
+  mixed mode for q"" and s""
+  nice ui for options (dropdown & etc)
+  line target
+    ```css
+    .CodeMirror-linenumber {
+      cursor: pointer;
+    }
+    ```
+
+    ```scala
+    editor.on("gutterClick", (cm: Editor, n: js.Any) => {
+      // n.asInstanceOf[Int]
+      // clear previous removeLineClass
+      // editor.addLineClass
+      // set target
+    });
+    ```
+ 
 scalameta
   for macro (try tree.toGTree)
   instrument everything

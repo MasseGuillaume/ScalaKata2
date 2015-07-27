@@ -27,6 +27,7 @@ object Main {
       lineNumbers(false).
       lineWrapping(false).
       tabSize(2).
+      indentWithTabs(false).
       theme("solarized dark").
       smartIndent(true).
       keyMap("sublime").
@@ -35,7 +36,8 @@ object Main {
          "."           -> "autocompleteDot",
         s"$ctrl-Enter" -> "run",
         s"$ctrl-,"     -> "config",
-        s"$ctrl-."     -> "typeAt"
+        s"$ctrl-."     -> "typeAt",
+         "Tab"         -> "insertSoftTab"
       )).
       autoCloseBrackets(true).
       matchBrackets(true).
@@ -57,7 +59,7 @@ object Main {
         val editor = CodeMirror.fromTextArea(el, params)
         val doc = editor.getDoc()
 
-        var insights = List.empty[Anoted]        
+        var annotations = List.empty[Anoted]        
         val converter = Pagedown.getSanitizingConverter()
 
         def resetDefault(): Unit = {
@@ -68,7 +70,7 @@ object Main {
         }
 
         def clear(): Unit = {
-          insights.foreach(_.clear())
+          annotations.foreach(_.clear())
         }
 
         editor.on("change", (_, _) ⇒ {
@@ -86,13 +88,82 @@ object Main {
           val request = EvalRequest(doc.getValue(nl))
           Client[Api].eval(request).call().onSuccess{ case response ⇒
             clear()
-            insights = 
+
+            // <span class="oi" data-glyph="timer"></span>
+
+            def noop[T](v: T): Unit = ()
+
+            def nextline2(endPos: Position, node: HTMLElement, process: (HTMLElement => Unit) = noop, options: js.Any = null): Anoted = {
+              process(node)
+              Line(editor.addLineWidget(endPos.line, node, options))
+            }
+
+            def nextline(endPos: Position, content: String, process: (HTMLElement => Unit) = noop, options: js.Any = null): Anoted = {
+              val node = pre(content).render
+              nextline2(endPos, node, process, options)
+            }
+
+            val complilationInfos = {
+              for {
+                (severity, infos) <- response.complilationInfos
+                info <- infos
+              } yield {
+                def severityToIcon(sev: Severity) = sev match {
+                  case Info => "info"
+                  case Warning => "warning"
+                  case Error => "circle-x"
+                }
+                val sev = severity.toString.toLowerCase
+
+                info.pos match {
+                  case None => {
+                    val node = div(`class` := s"compiler $sev")(
+                      i(`class`:="oi", "data-glyph".attr := severityToIcon(severity)),
+                      span(info.message)
+                    ).render
+                    Line(editor.addLineWidget(doc.firstLine(), node))
+                  }
+                  case Some(RangePosition(start, _, end)) => {
+                    val startPos = doc.posFromIndex(start)
+                    val node = div(`class` := s"compiler $sev")(
+                      pre(" " * startPos.ch + "^ "),
+                      i(`class`:="oi", "data-glyph".attr := severityToIcon(severity)),
+                      pre(info.message)
+                    ).render
+                    Line(editor.addLineWidget(startPos.line, node))
+                  }
+                }
+              }
+            }.toList
+
+            val timeout =
+              if(response.timeout) {
+                val node = div(`class` := "timeout")(
+                  i(`class`:="oi", "data-glyph".attr := "timer"),
+                  span("evaluation timed out")
+                ).render
+                List(Line(editor.addLineWidget(0, node)))
+              } else Nil
+
+            val runtimeError =
+              response.runtimeError.map{ case RuntimeError(message, pos) =>
+                val node = div(`class` := "runtime-error")(
+                  i(`class`:="oi", "data-glyph".attr := "circle-x"),
+                  span(message)
+                ).render
+                nextline2(Pos.ch(0).line(pos.map(_ - 1).getOrElse(0)), node)
+              }.toList
+
+            val instrumentations = 
               response.instrumentation.map{ case (RangePosition(start, _, end), repr) ⇒
                 val startPos = doc.posFromIndex(start)
                 val endPos = doc.posFromIndex(end)
 
-                def noop[T](v: T): Unit = ()
-
+                def fold(content: String, process: (HTMLElement => Unit) = noop): Anoted = {
+                  val node = pre(`class` := "fold")(content).render
+                  process(node)
+                  Marked(doc.markText(startPos, endPos, TextMarkerConfig.replacedWith(node)))
+                }
                 def inline(content: String, process: (HTMLElement => Unit) = noop): Anoted = {
                   val node = pre(`class` := "inline")(content).render
                   process(node)
@@ -101,20 +172,10 @@ object Main {
                     "widget" -> node
                   )))
                 }
-                def fold(content: String, process: (HTMLElement => Unit) = noop): Anoted = {
-                  val node = pre(`class` := "fold")(content).render
-                  process(node)
-                  Marked(doc.markText(startPos, endPos, TextMarkerConfig.replacedWith(node)))
-                }
-                def nextline(content: String, process: (HTMLElement => Unit) = noop): Anoted = {
-                  val node = pre(content).render
-                  process(node)
-                  Line(editor.addLineWidget(endPos.line, node))
-                }
-
+                
                 repr match {
                   case EString(v) ⇒ {
-                    if(v.contains(nl)) nextline(v)
+                    if(v.contains(nl)) nextline(endPos, v)
                     else inline(v)
                   }
                   case Other(v) ⇒ inline(v, {
@@ -123,19 +184,23 @@ object Main {
                   })
                   case Markdown(v, folded) ⇒ {
                     val process: (HTMLElement => Unit) = _.innerHTML = converter.makeHtml(v)
-                    if(!folded) nextline(v, process)
+                    if(!folded) nextline(endPos, v, process)
                     else fold(v, process)
                   }
                   case Html(v, folded) ⇒ {
                     val process: (HTMLElement => Unit) = _.innerHTML = v
-                    if(!folded) nextline(v, process)
+                    if(!folded) nextline(endPos, v, process)
                     else fold(v, process)
                   }
                 }
               }
+
+            annotations = timeout ::: runtimeError ::: instrumentations ::: complilationInfos
           }
         }
         CodeMirror.commands.run = run
+
+
 
         resetDefault()
         run()
@@ -143,14 +208,6 @@ object Main {
     }
   }
 }
-
-
-// for {
-//   (severity, infos) <- response.complilationInfos
-//   info <- infos
-// } yield {
-//   info.pos
-// }
 
 // dom.console.log(response.toString)
 

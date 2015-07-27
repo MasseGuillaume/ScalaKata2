@@ -26,8 +26,7 @@ lazy val commonSettings = Seq(
     "-Ywarn-numeric-widen",
     "-Ywarn-value-discard"
   ),
-  libraryDependencies += "org.specs2" %% "specs2-core" % "3.6.2" % "test",
-  resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"
+  libraryDependencies += "org.specs2" %% "specs2-core" % "3.6.2" % "test"
 )
 
 lazy val buildInfoMacro = Seq(
@@ -85,6 +84,7 @@ lazy val webapp = crossProject.settings(
     "com.typesafe.akka" %% "akka-actor"     % "2.3.11",
     "org.webjars.bower"  % "codemirror"     % "5.4.0",
     "org.webjars.bower"  % "iframe-resizer" % "2.8.10",
+    "org.webjars.bower"  % "open-iconic"    % "1.1.1",
     "org.webjars.bower"  % "pagedown"       % "1.1.0"
   )
 )

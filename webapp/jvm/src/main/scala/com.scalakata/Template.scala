@@ -17,6 +17,8 @@ object Template {
         link(rel:="stylesheet", href:="/assets/lib/codemirror/addon/fold/foldgutter.css"),
         link(rel:="stylesheet", href:="/assets/lib/codemirror/addon/dialog/dialog.css"),
         link(rel:="stylesheet", href:="/assets/lib/codemirror/theme/mdn-like.css"),
+        link(rel:="stylesheet", href:="/assets/lib/open-iconic/font/css/open-iconic.css"),
+        
 
         link(rel:="stylesheet", href:="/assets/main.css")
       ),

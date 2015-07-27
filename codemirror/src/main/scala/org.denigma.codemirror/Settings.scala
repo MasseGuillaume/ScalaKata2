@@ -69,3 +69,13 @@ class TextMarkerConfig(val dict:OptMap)
   def endStyle(value: String) = jsOpt("endStyle", value)
   def shared(value: Boolean) = jsOpt("shared", value)
 }
+
+
+object Pos extends PositionConfig(noOpts)
+class PositionConfig(val dict:OptMap)
+  extends JSOptionBuilder[Position, PositionConfig](new PositionConfig(_))
+{
+
+  def ch(value: Int) = jsOpt("ch", value)
+  def line(value: Int) = jsOpt("line", value)
+}

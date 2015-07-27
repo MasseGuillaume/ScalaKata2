@@ -31,8 +31,7 @@
 .CodeMirror-linenumber{
   margin-left: -@margin;
 }
-.CodeMirror-widget .fold, 
-.CodeMirror-linewidget {
+.CodeMirror-widget .fold {
   left: -@margin;
   width: calc(~"100% +" 2*@margin);
 
@@ -42,12 +41,30 @@
   }
 }
 
+
 .CodeMirror {
-  // squigly lines
-  .error {
-    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAACCAYAAAB/qH1jAAAABmJLR…FJREFUCNdjPMDBUc/AwNDAAAFMTAwMDA0OP34wQgX/AQBYgwYEx4f9lQAAAABJRU5ErkJggg==);
-    background-position: bottom left;
-    background-repeat: repeat-x;
+  .CodeMirror-linewidget {
+    i {
+      margin-right: 16px;
+      font-size: 12px;
+    }
+  }
+
+  .timeout,
+  .runtime-error, 
+  .compiler.error {
+    i { color: red;}
+  }
+
+  .compiler.warning {
+    i { color: yellow; }
+  } 
+
+  .runtime-error,
+  .compiler {
+    pre {
+      display: inline-block;
+    }
   }
 }
 

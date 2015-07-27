@@ -20,8 +20,7 @@ object Main {
       else "Ctrl"
 
     val modeScala = "text/x-scala"
-
-
+    
     val params = EditorConfig.
       mode(modeScala).
       lineNumbers(false).
@@ -34,9 +33,10 @@ object Main {
       extraKeys(js.Dictionary(
         s"$ctrl-Space" -> "autocomplete",
          "."           -> "autocompleteDot",
+        // s"$ctrl-,"     -> "config",
+        // s"$ctrl-."     -> "typeAt",
+
         s"$ctrl-Enter" -> "run",
-        s"$ctrl-,"     -> "config",
-        s"$ctrl-."     -> "typeAt",
          "Tab"         -> "insertSoftTab"
       )).
       autoCloseBrackets(true).
@@ -50,7 +50,7 @@ object Main {
     val nl = "\n"
     val prelude = 
       """|import com.scalakata._
-         |@instrument class A {
+         |@instrument class Playground {
          |  """.stripMargin
     val default = prelude + nl + "}"
 
@@ -88,8 +88,6 @@ object Main {
           val request = EvalRequest(doc.getValue(nl))
           Client[Api].eval(request).call().onSuccess{ case response ⇒
             clear()
-
-            // <span class="oi" data-glyph="timer"></span>
 
             def noop[T](v: T): Unit = ()
 
@@ -200,17 +198,9 @@ object Main {
         }
         CodeMirror.commands.run = run
 
-
-
         resetDefault()
         run()
       case _ ⇒ dom.console.error("cannot find text area for the code!")
     }
   }
 }
-
-// dom.console.log(response.toString)
-
-// editor.addWidget(pos: {line, ch}, node: Element, scrollIntoView: boolean)
-// editor.addLineWidget(line: Int, node: HTMLElement, options: js.Any = js.native): LineWidget = js.native
-// editor.markText({ch: 0, line: start.line}, end, { replacedWith: e})

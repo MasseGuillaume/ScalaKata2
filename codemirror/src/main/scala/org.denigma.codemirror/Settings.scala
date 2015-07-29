@@ -13,42 +13,42 @@ class EditorConfigurationBuilder(val dict:OptMap)
   extends JSOptionBuilder[EditorConfiguration, EditorConfigurationBuilder](new EditorConfigurationBuilder(_))
 {
   def value(code:String) = jsOpt("value",code)
-  def mode(modeValue:String) = jsOpt("mode",modeValue)
-  def theme(themeValue:String) = jsOpt("theme",themeValue)
-  def indentUnit(value:Double) = jsOpt("indentUnit",value)
-  def smartIndent(value:Boolean) = jsOpt("smartIndent",value)
-  def tabSize(value:Double) = jsOpt("tabSize",value)
-  def indentWithTabs(value: Boolean) = jsOpt("indentWithTabs",value)
-  def electricChars(value: Boolean) = jsOpt("electricChars",value)
-  def rtlMoveVisually(value:Boolean) = jsOpt("rtlMoveVisually",value)
-  def keyMap(value: String) = jsOpt("keyMap",value)
-  def extraKeys(value: js.Any) = jsOpt("extraKeys",value)
-  def lineNumbers(value:Boolean) = jsOpt("lineNumbers", value)
-  def lineWrapping(value:Boolean) = jsOpt("lineWrapping", value)
-  def firstLineNumber(value: Double) = jsOpt("firstLineNumber",value)
-  def lineNumberFormatter(value: js.Function1[Double, String]) = jsOpt("lineNumberFormatter",value)
-  def gutters(value: js.Array[String]) = jsOpt("gutters",value)
-  def readOnly(value:Boolean) = jsOpt("readOnly",value)
-  def fixedGutter(value: Boolean) = jsOpt("fixedGutter",value)
-  def showCursorWhenSelecting(value: Boolean) = jsOpt("showCursorWhenSelecting",value)
+  def mode(modev:String) = jsOpt("mode",modev)
+  def theme(v:String) = jsOpt("theme",v)
+  def indentUnit(v:Double) = jsOpt("indentUnit",v)
+  def smartIndent(v:Boolean) = jsOpt("smartIndent",v)
+  def tabSize(v:Double) = jsOpt("tabSize",v)
+  def indentWithTabs(v: Boolean) = jsOpt("indentWithTabs",v)
+  def electricChars(v: Boolean) = jsOpt("electricChars",v)
+  def rtlMoveVisually(v:Boolean) = jsOpt("rtlMoveVisually",v)
+  def keyMap(v: String) = jsOpt("keyMap",v)
+  def extraKeys(v: js.Any) = jsOpt("extraKeys",v)
+  def lineNumbers(v:Boolean) = jsOpt("lineNumbers", v)
+  def lineWrapping(v:Boolean) = jsOpt("lineWrapping", v)
+  def firstLineNumber(v: Double) = jsOpt("firstLineNumber",v)
+  def lineNumberFormatter(v: js.Function1[Double, String]) = jsOpt("lineNumberFormatter",v)
+  def gutters(v: js.Array[String]) = jsOpt("gutters",v)
+  def readOnly(v:Boolean) = jsOpt("readOnly",v)
+  def fixedGutter(v: Boolean) = jsOpt("fixedGutter",v)
+  def showCursorWhenSelecting(v: Boolean) = jsOpt("showCursorWhenSelecting",v)
   def undoDepth(depth:Double) = jsOpt("undoDepth",depth)
-  def historyEventDelay(value: Double) = jsOpt("historyEventDelay",value)
-  def tabindex(value: Double) = jsOpt("tabindex",value)
-  def autofocus(value: Boolean) = jsOpt("autofocus",value)
-  def dragDrop(value:Boolean) = jsOpt("dragDrop",value)
-  def onDragEvent(dragEventHandler:js.Function2[Editor, Event, Boolean]) = jsOpt("onDragEvent",dragEventHandler)
-  def onKeyEvent(keyEventHandler:js.Function2[Editor, Event, Boolean]) = jsOpt("onKeyEvent",keyEventHandler)
-  def cursorBlinkRate(value: Double) = jsOpt("cursorBlinkRate",value)
-  def cursorHeight(value: Double) = jsOpt("cursorHeight",value)
-  def workTime(value: Double) = jsOpt("workTime",value)
-  def workDelay(value: Double) = jsOpt("workDelay",value)
-  def pollInterval(value: Double) = jsOpt("pollInterval",value)
-  def flattenSpans(value: Boolean) = jsOpt("flattenSpans",value)
-  def maxHighlightLength(value: Double) = jsOpt("maxHighlightLength",value)
-  def viewportMargin(value: Double) = jsOpt("viewportMargin",value)
-  def autoCloseBrackets(value: Boolean) = jsOpt("autoCloseBrackets",value)
-  def matchBrackets(value: Boolean) = jsOpt("matchBrackets",value) 
-  def highlightSelectionMatches(value: js.Any) = jsOpt("highlightSelectionMatches",value) 
+  def historyEventDelay(v: Double) = jsOpt("historyEventDelay",v)
+  def tabindex(v: Double) = jsOpt("tabindex",v)
+  def autofocus(v: Boolean) = jsOpt("autofocus",v)
+  def dragDrop(v:Boolean) = jsOpt("dragDrop",v)
+  def onDragEvent(f: js.Function2[Editor, Event, Boolean]) = jsOpt("onDragEvent",f)
+  def onKeyEvent(f: js.Function2[Editor, Event, Boolean]) = jsOpt("onKeyEvent",f)
+  def cursorBlinkRate(v: Double) = jsOpt("cursorBlinkRate",v)
+  def cursorHeight(v: Double) = jsOpt("cursorHeight",v)
+  def workTime(v: Double) = jsOpt("workTime",v)
+  def workDelay(v: Double) = jsOpt("workDelay",v)
+  def pollInterval(v: Double) = jsOpt("pollInterval",v)
+  def flattenSpans(v: Boolean) = jsOpt("flattenSpans",v)
+  def maxHighlightLength(v: Double) = jsOpt("maxHighlightLength",v)
+  def viewportMargin(v: Double) = jsOpt("viewportMargin",v)
+  def autoCloseBrackets(v: Boolean) = jsOpt("autoCloseBrackets",v)
+  def matchBrackets(v: Boolean) = jsOpt("matchBrackets",v) 
+  def highlightSelectionMatches(v: js.Any) = jsOpt("highlightSelectionMatches",v) 
 }
 
 object TextMarkerConfig extends TextMarkerConfig(noOpts)
@@ -56,18 +56,18 @@ class TextMarkerConfig(val dict:OptMap)
   extends JSOptionBuilder[TextMarkerOptions, TextMarkerConfig](new TextMarkerConfig(_))
 {
 
-  def className(value: String) = jsOpt("className", value)
-  def inclusiveLeft(value: Boolean) = jsOpt("inclusiveLeft", value)
-  def inclusiveRight(value: Boolean) = jsOpt("inclusiveRight", value)
-  def atomic(value: Boolean) = jsOpt("atomic", value)
-  def collapsed(value: Boolean) = jsOpt("collapsed", value)
-  def clearOnEnter(value: Boolean) = jsOpt("clearOnEnter", value)
-  def replacedWith(value: HTMLElement) = jsOpt("replacedWith", value)
-  def readOnly(value: Boolean) = jsOpt("readOnly", value)
-  def addToHistory(value: Boolean) = jsOpt("addToHistory", value)
-  def startStyle(value: String) = jsOpt("startStyle", value)
-  def endStyle(value: String) = jsOpt("endStyle", value)
-  def shared(value: Boolean) = jsOpt("shared", value)
+  def className(v: String) = jsOpt("className", v)
+  def inclusiveLeft(v: Boolean) = jsOpt("inclusiveLeft", v)
+  def inclusiveRight(v: Boolean) = jsOpt("inclusiveRight", v)
+  def atomic(v: Boolean) = jsOpt("atomic", v)
+  def collapsed(v: Boolean) = jsOpt("collapsed", v)
+  def clearOnEnter(v: Boolean) = jsOpt("clearOnEnter", v)
+  def replacedWith(v: HTMLElement) = jsOpt("replacedWith", v)
+  def readOnly(v: Boolean) = jsOpt("readOnly", v)
+  def addToHistory(v: Boolean) = jsOpt("addToHistory", v)
+  def startStyle(v: String) = jsOpt("startStyle", v)
+  def endStyle(v: String) = jsOpt("endStyle", v)
+  def shared(v: Boolean) = jsOpt("shared", v)
 }
 
 
@@ -75,7 +75,41 @@ object Pos extends PositionConfig(noOpts)
 class PositionConfig(val dict:OptMap)
   extends JSOptionBuilder[Position, PositionConfig](new PositionConfig(_))
 {
+  def ch(v: Int) = jsOpt("ch", v)
+  def line(v: Int) = jsOpt("line", v)
+}
 
-  def ch(value: Int) = jsOpt("ch", value)
-  def line(value: Int) = jsOpt("line", value)
+
+
+trait Hint extends js.Object {
+  // The completion text. This is the only required property.
+  var text: String = js.native
+
+  // The text that should be displayed in the menu.
+  var displayText: String = js.native
+
+  // A CSS class name to apply to the completion's line in the menu.
+  var className: String = js.native
+
+  // A method used to create the DOM structure for showing the completion by appending it to its first argument.
+  var render: js.Function3[HTMLElement, Hint, js.Array[js.Any], Unit] = js.native
+
+  // A method used to actually apply the completion, instead of the default behavior.
+  var hint: js.Function3[HTMLElement, Hint, js.Array[js.Any], Unit] = js.native
+
+  // Optional from position that will be used by pick() instead of the global one passed with the full list of completions.
+  var from: Position = js.native
+  var to: Position = js.native
+}
+
+object HintConfig extends HintConfig(noOpts)
+class HintConfig(val dict:OptMap) extends JSOptionBuilder[Hint, HintConfig](new HintConfig(_))
+{
+  def text(v: String) = jsOpt("text", v)
+  def displayText(v: String) = jsOpt("displayText", v)
+  def className(v: String) = jsOpt("className", v)
+  def render(v: js.Function3[HTMLElement, Hint, js.Array[js.Any], Unit]) = jsOpt("render", v)
+  def hint(v: js.Function3[HTMLElement, Hint, js.Array[js.Any], Unit]) = jsOpt("hint", v)
+  def from(v: Position) = jsOpt("from", v)
+  def to(v: Position) = jsOpt("to", v)
 }

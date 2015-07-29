@@ -28,18 +28,16 @@ class EvalSpecs extends Specification with EvalSetup {
   """
 
   def reports = {
-    eval("err").complilationInfos ==== Map(Error -> List(CompilationInfo("not found: value err", None)))
+    eval("err").complilationInfos ==== Map(Error -> List(CompilationInfo("not found: value err", Some(RangePosition(56,56,56)) )))
   }
   def typeInferance = { 
-    // typeAt("List(1).reverse", i)
-    // wont work with macro paradise
-    pending 
+    typeAt("List(1).reverse", 15).map(_.tpe) ==== Some("List[Int]")
   }
   def autocompleteScope = {
     autocomplete("", 0).map(_.name).contains("assert")
   }
   def autocompleteMembers = {
-    autocomplete("List(1).", 8).map(_.name).contains("assert")
+    autocomplete("List(1).", 8).map(_.name).contains("map")
   }
   def loadClassEmptyPackage = pending
   def loasClassAnyPackage = pending
@@ -64,6 +62,6 @@ class EvalSpecs extends Specification with EvalSetup {
     pending
   }
   def timeout = {
-   eval("while(true){}").timeout ==== true 
+   eval("while(true){}").timeout ==== true
   }
 }

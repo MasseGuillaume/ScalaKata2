@@ -1,5 +1,6 @@
 @import "solarized.less";
 
+
 // CODEMIRROR
 
 
@@ -67,6 +68,45 @@
     }
   }
 }
+
+.CodeMirror-hints {
+  resize: horizontal;
+  z-index: 10;
+  max-height: 400px;
+
+  .autocomplete {
+    display: table-row;
+    max-width: none;
+    resize: none;
+    .name{
+      display: table-cell;
+    }
+    .signature{
+      padding-left: 5px;
+      display: table-cell;
+      opacity:0.5;
+      max-width: 600px;
+    }
+  }
+}
+
+.CodeMirror-dialog.CodeMirror-dialog-top {
+  border: none;
+  margin-left: 56px; // gutter size
+  line-height: 21px;
+
+  padding-left: 2px;
+  padding-right: 0;
+  span {
+    display: none;
+  }
+  input {
+    font-size: 18px;
+    padding: 0;
+    width: calc(~"100% - "150px) !important;
+  }
+}
+
 
 
 // LAYOUT

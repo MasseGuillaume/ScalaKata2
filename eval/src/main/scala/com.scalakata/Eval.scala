@@ -44,9 +44,6 @@ class Eval(settings: Settings, security: Boolean) {
           find { n ⇒
             classLoader.loadClass(n).getInterfaces.exists(_ == classOf[Instrumented])
           }
-
-        // import scala.reflect.runtime.{universe ⇒ ru}
-        // val m = ru.runtimeMirror(classLoader)
         
         instrClass.map{ c ⇒
           val cl = Class.forName(c, false, classLoader)
@@ -136,6 +133,5 @@ class Eval(settings: Settings, security: Boolean) {
   private val target = new VirtualDirectory("(memory)", None)
   private var classLoader: AbstractFileClassLoader = _
   settings.outputDirs.setSingleOutput(target)
-  settings.Ymacroexpand.value = settings.MacroExpand.Normal
   private val compiler = new Global(settings, reporter)
 }

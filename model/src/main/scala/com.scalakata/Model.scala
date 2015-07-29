@@ -63,7 +63,7 @@ case class TypeAtRequest(
 )
 
 case class TypeAtResponse(
-  tpe: String
+  val tpe: String
 )
 
 // TODO: scalacOptions & dependencies

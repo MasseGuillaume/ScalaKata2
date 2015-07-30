@@ -4,6 +4,7 @@ lazy val commonSettings = Seq(
   scalaVersion := "2.11.7",
   version := "0.1.0-SNAPSHOT",
   licenses := Seq("MIT" -> url("http://www.opensource.org/licenses/mit-license.html")),
+  homepage := Some(url("http://scalakata.com")),
   scalacOptions ++= Seq(
     "-deprecation",
     "-encoding", "UTF-8",
@@ -26,6 +27,7 @@ lazy val commonSettings = Seq(
     "-Ywarn-numeric-widen",
     "-Ywarn-value-discard"
   ),
+  resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases",
   libraryDependencies += "org.specs2" %% "specs2-core" % "3.6.2" % "test"
 )
 

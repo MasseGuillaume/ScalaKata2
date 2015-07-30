@@ -2,6 +2,7 @@ import sbt.Keys._
 
 lazy val commonSettings = Seq(
   scalaVersion := "2.11.7",
+  organization := "com.scalakata",
   version := "0.1.0-SNAPSHOT",
   licenses := Seq("MIT" -> url("http://www.opensource.org/licenses/mit-license.html")),
   homepage := Some(url("http://scalakata.com")),
@@ -33,12 +34,14 @@ lazy val commonSettings = Seq(
 
 lazy val buildInfoMacro = Seq(
   buildInfoPackage := "com.scalakata.build",
-  sourceGenerators in Test <+= buildInfo,
+  sourceGenerators in Test <+= (buildInfo in Compile),
   buildInfoKeys := Seq[BuildInfoKey](
     BuildInfoKey.map((fullClasspath in Runtime in macro)){ case (k, v) ⇒ k -> v.map(_.data) },
     (scalacOptions in Compile in macro)
   )
 )
+
+val paradiseVersion = "2.1.0-M5"
 
 lazy val model = project
   .settings(commonSettings: _*)
@@ -50,8 +53,7 @@ lazy val macro = project
     libraryDependencies ++= Seq(
       "org.scala-lang"  % "scala-compiler" % scalaVersion.value,
       "org.scala-lang"  % "scala-reflect"  % scalaVersion.value,
-      "org.scalamacros" % s"paradise" % "2.1.0-M5" cross CrossVersion.full,
-      compilerPlugin("org.scalamacros" % "paradise" % "2.1.0-M5" cross CrossVersion.full)
+      compilerPlugin("org.scalamacros" % "paradise" % paradiseVersion cross CrossVersion.full)
     ),
     scalacOptions ~= (_ filterNot (_ == "-Ywarn-value-discard"))
   ).dependsOn(model)
@@ -104,8 +106,7 @@ lazy val webappJVM = webapp.jvm
       )
       andSourceMap((fastOptJS in (webappJS, Compile)).value.data)
     },
-    watchSources ++= (watchSources in webappJS).value,
-    includeFilter in (Assets, LessKeys.less) := "*.less"
+    watchSources ++= (watchSources in webappJS).value
   ).dependsOn(eval).enablePlugins(SbtWeb)
 
 lazy val codemirror = project
@@ -117,3 +118,36 @@ lazy val codemirror = project
       "org.querki"   %%% "querki-jsext" % "0.5"
     )
   ).enablePlugins(ScalaJSPlugin)
+
+lazy val sbtScalaKata = project
+  .settings(commonSettings: _*)
+  .settings(
+    sbtPlugin := true,
+    name := "sbt-scalakata",
+    addSbtPlugin("io.spray" % "sbt-revolver" % "0.7.2"),
+    addSbtPlugin("com.typesafe.sbt" % "sbt-native-packager" % "1.0.3"),
+    // seq(bintraySettings:_*),
+    // repository in bintray := "sbt-plugins",
+    // bintrayOrganization in bintray := None,
+    scalaVersion := "2.10.4",
+
+    // remove scala 2.11 features
+    scalacOptions := Seq(
+      "-deprecation",
+      "-encoding", "UTF-8",
+      "-feature",
+      "-unchecked"
+    ),
+    buildInfoPackage := "com.scalakata.build",
+    sourceGenerators in Compile <+= (buildInfo in Compile),
+    buildInfoKeys := Seq[BuildInfoKey](
+      "scalaKataVersion" -> version,
+      "scalaKataOrganization" -> organization,
+      "evalScalaVersion" -> (scalaVersion in eval),
+      "paradiseVersion" -> paradiseVersion,
+      "evalScalacOptions" -> (scalacOptions in eval),
+      "backendScalaVersion" -> (scalaVersion in webappJVM),
+      "backendProject" -> (name in webappJVM),
+      "macroProject" -> (name in macro)
+    )
+  ).enablePlugins(BuildInfoPlugin)

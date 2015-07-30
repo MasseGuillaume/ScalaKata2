@@ -11,10 +11,10 @@ import scala.concurrent.duration._
 import java.nio.file.Path
 
 object Server {
-  def start(timeout: Duration, security: Boolean, production: Boolean, artifacts: Seq[Path], 
+  def start(timeout: Duration, security: Boolean, artifacts: Seq[Path], 
             scalacOptions: Seq[String], host: String, port: Int, readyPort: Int): Unit = {
 
-    Predef.println((timeout, security, production, artifacts, scalacOptions, host, port, readyPort))    
+    println((timeout, security, artifacts, scalacOptions, host, port, readyPort))    
 
     val config: Config = ConfigFactory.parseString(s"""
       spray {
@@ -36,8 +36,8 @@ object Server {
     implicit val bindingTimeout = Timeout(5.seconds)
     (IO(Http) ? Http.Bind(service, host, port)) onSuccess {
       case _: Http.Bound ⇒ {
-        if(!production && readyPort != 0) {
-          val ready = new java.net.Socket(host, readyPort)
+        readyPort.map{ p ⇒
+          val ready = new java.net.Socket(host, p)
           ready.sendUrgentData(0)
           ready.close()
         }

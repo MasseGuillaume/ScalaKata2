@@ -12,7 +12,7 @@ import java.nio.file.Path
 
 object Server {
   def start(timeout: Duration, security: Boolean, artifacts: Seq[Path], 
-            scalacOptions: Seq[String], host: String, port: Int, readyPort: Int): Unit = {
+            scalacOptions: Seq[String], host: String, port: Int, readyPort: Option[Int]): Unit = {
 
     println((timeout, security, artifacts, scalacOptions, host, port, readyPort))    
 

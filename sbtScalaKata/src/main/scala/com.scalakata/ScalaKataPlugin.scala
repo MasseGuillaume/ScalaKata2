@@ -28,7 +28,7 @@ object ScalaKataPlugin extends AutoPlugin {
       scalacOptions: Seq[String]
     ) {
       def toArgs = Seq(
-        readyPort.toString,
+        readyPort.getOrElse(0).toString,
         serverUri.getHost,
         serverUri.getPort.toString,
         security.toString,

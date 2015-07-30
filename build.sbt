@@ -130,8 +130,6 @@ lazy val sbtScalaKata = project
     // repository in bintray := "sbt-plugins",
     // bintrayOrganization in bintray := None,
     scalaVersion := "2.10.4",
-
-    // remove scala 2.11 features
     scalacOptions := Seq(
       "-deprecation",
       "-encoding", "UTF-8",

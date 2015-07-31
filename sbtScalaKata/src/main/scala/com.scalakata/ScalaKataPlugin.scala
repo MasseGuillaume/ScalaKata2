@@ -116,6 +116,7 @@ object ScalaKataPlugin extends AutoPlugin {
         )
       ) ++
       Seq(
+        resolvers += "masseguillaume" at "http://dl.bintray.com/content/masseguillaume/maven",
         dependencyClasspath in Kata ++= (fullClasspath in Compile).value ++ (fullClasspath in Test).value,
         startArgs in (Backend, Revolver.reStart) := StartArgs(
           (readyPort in Backend).value,
@@ -126,12 +127,8 @@ object ScalaKataPlugin extends AutoPlugin {
             map(_.data).
             map(v => Paths.get(v.getAbsoluteFile.toString)),
           (scalacOptions in Kata).value
-        )
-        // scalacOptions in Kata ++= evalScalacOptions,
-        // (
-        //   if(scalacOptions.value.isEmpty) evalScalacOptions
-        //   else Seq()
-        // )
+        ),
+        scalacOptions in Kata ++= evalScalacOptions
       )
   }
   import autoImport._

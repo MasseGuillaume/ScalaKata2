@@ -5,7 +5,7 @@ import spray.revolver.RevolverPlugin.Revolver
 lazy val commonSettings = Seq(
   scalaVersion := "2.11.7",
   organization := "com.scalakata",
-  version := "1.0.0-SNAPSHOT",
+  version := "1.0.0",
   licenses := Seq("MIT" -> url("http://www.opensource.org/licenses/mit-license.html")),
   homepage := Some(url("http://scalakata.com")),
   scalacOptions ++= Seq(
@@ -33,6 +33,8 @@ lazy val commonSettings = Seq(
   resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases",
   libraryDependencies += "org.specs2" %% "specs2-core" % "3.6.2" % "test"
 )
+
+seq(commonSettings: _*)
 
 lazy val buildInfoMacro = Seq(
   buildInfoPackage := "com.scalakata.build",
@@ -127,9 +129,8 @@ lazy val sbtScalaKata = project
     name := "sbt-scalakata",
     addSbtPlugin("io.spray" % "sbt-revolver" % "0.7.2"),
     addSbtPlugin("com.typesafe.sbt" % "sbt-native-packager" % "1.0.3"),
-    // seq(bintraySettings:_*),
-    // repository in bintray := "sbt-plugins",
-    // bintrayOrganization in bintray := None,
+    bintrayRepository := "sbt-plugins",
+    bintrayOrganization := None,
     scalaVersion := "2.10.5",
     scalacOptions := Seq(
       "-deprecation",
@@ -137,7 +138,7 @@ lazy val sbtScalaKata = project
       "-feature",
       "-unchecked"
     )
-  ).enablePlugins(BuildInfoPlugin)
+  ).enablePlugins(BuildInfoPlugin, BintrayPlugin)
    .settings(
     buildInfoKeys := Seq(
       "paradiseVersion" -> paradiseVersion,

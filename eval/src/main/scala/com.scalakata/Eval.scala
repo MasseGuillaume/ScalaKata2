@@ -120,7 +120,7 @@ class Eval(settings: Settings, security: Boolean) {
 
         val node = new java.io.File(a)
         val endSlashed =
-          if(node.isDirectory) node.toString + "/"
+          if(node.isDirectory) node.toString + File.separator
           else node.toString
 
         val t =

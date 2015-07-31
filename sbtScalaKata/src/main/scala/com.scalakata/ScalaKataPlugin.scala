@@ -49,6 +49,9 @@ object ScalaKataPlugin extends AutoPlugin {
 
 
     lazy val scalaKataSettings: Seq[Def.Setting[_]] =
+      addCommandAlias("kstart", ";backend:reStart ;backend:openBrowser") ++
+      addCommandAlias("kstop", "backend:reStop") ++
+      addCommandAlias("krestart", ";backend:reStop ;backend:reStart") ++
       inConfig(Backend)(
         Classpaths.ivyBaseSettings ++
         Classpaths.jvmBaseSettings ++
@@ -60,7 +63,7 @@ object ScalaKataPlugin extends AutoPlugin {
           scalaVersion := backendScalaVersion,
           securityManager := false,
           timeout := 20.seconds,
-          mainClass in Revolver.reStart := Some("com.scalakata.backend.Boot"),
+          mainClass in Revolver.reStart := Some("com.scalakata.Boot"),
           startArgs2 in Revolver.reStart := (startArgs in Revolver.reStart).value.toArgs,
           fullClasspath in Revolver.reStart <<= fullClasspath,
           Revolver.reStart <<= InputTask(Actions.startArgsParser) { args ⇒
@@ -87,7 +90,9 @@ object ScalaKataPlugin extends AutoPlugin {
                 case x if x contains "mac" ⇒ s"open ${kataUri.value.toString}".!
                 case _ ⇒
                   if(Desktop.isDesktopSupported) Desktop.getDesktop.browse(kataUri.value)
-                  else Stream("chromium", "google-chrome", "firefox").map(b => s"b ${kataUri.value.toString}".! ).find(_ == 0)
+                  else Stream("chromium", "google-chrome", "firefox").map(b => 
+                    s"$b ${kataUri.value.toString}".! 
+                  ).find(_ == 0)
               }
             }
             ()
@@ -105,8 +110,8 @@ object ScalaKataPlugin extends AutoPlugin {
           scalaVersion := evalScalaVersion,
           unmanagedResourceDirectories += sourceDirectory.value,
           libraryDependencies ++= Seq(
-            compilerPlugin("org.scalamacros" % "paradise" % paradiseVersion cross CrossVersion.full),
-            scalaKataOrganization % macroProject % scalaKataVersion
+            compilerPlugin("org.scalamacros" % "paradise" % "2.1.0-M5" cross CrossVersion.full),
+            scalaKataOrganization %% macroProject % scalaKataVersion
           )
         )
       ) ++

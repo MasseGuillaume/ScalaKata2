@@ -3,7 +3,7 @@ import sbt.Keys._
 lazy val commonSettings = Seq(
   scalaVersion := "2.11.7",
   organization := "com.scalakata",
-  version := "0.1.0-SNAPSHOT",
+  version := "1.0.0-SNAPSHOT",
   licenses := Seq("MIT" -> url("http://www.opensource.org/licenses/mit-license.html")),
   homepage := Some(url("http://scalakata.com")),
   scalacOptions ++= Seq(
@@ -129,23 +129,24 @@ lazy val sbtScalaKata = project
     // seq(bintraySettings:_*),
     // repository in bintray := "sbt-plugins",
     // bintrayOrganization in bintray := None,
-    scalaVersion := "2.10.4",
+    scalaVersion := "2.10.5",
     scalacOptions := Seq(
       "-deprecation",
       "-encoding", "UTF-8",
       "-feature",
       "-unchecked"
-    ),
-    buildInfoPackage := "com.scalakata.build",
-    sourceGenerators in Compile <+= (buildInfo in Compile),
-    buildInfoKeys := Seq[BuildInfoKey](
-      "scalaKataVersion" -> version,
-      "scalaKataOrganization" -> organization,
-      "evalScalaVersion" -> (scalaVersion in eval),
-      "paradiseVersion" -> paradiseVersion,
-      "evalScalacOptions" -> (scalacOptions in eval),
-      "backendScalaVersion" -> (scalaVersion in webappJVM),
-      "backendProject" -> (name in webappJVM),
-      "macroProject" -> (name in macro)
     )
   ).enablePlugins(BuildInfoPlugin)
+   .settings(
+    // "paradiseVersion" -> paradiseVersion,
+    buildInfoKeys := Seq(
+      BuildInfoKey.map(version){                          case (_, v) => "scalaKataVersion" -> v },
+      BuildInfoKey.map(organization){                     case (_, v) => "scalaKataOrganization" -> v },
+      // BuildInfoKey.map(scalacOptions in (eval, Compile)){ case (_, v) => "scalacOptions" -> v },
+      BuildInfoKey.map(scalaVersion in eval){             case (_, v) => "evalScalaVersion" -> v },
+      BuildInfoKey.map(scalaVersion in webappJVM){        case (_, v) => "backendScalaVersion" -> v },
+      BuildInfoKey.map(moduleName in webappJVM){          case (_, v) => "backendProject" -> v },
+      BuildInfoKey.map(moduleName in macro){              case (_, v) => "macroProject" -> v }
+    ),
+    buildInfoPackage := "com.scalakata.build"
+  )

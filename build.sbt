@@ -1,4 +1,6 @@
 import sbt.Keys._
+import spray.revolver.AppProcess
+import spray.revolver.RevolverPlugin.Revolver
 
 lazy val commonSettings = Seq(
   scalaVersion := "2.11.7",
@@ -36,8 +38,8 @@ lazy val buildInfoMacro = Seq(
   buildInfoPackage := "com.scalakata.build",
   sourceGenerators in Test <+= (buildInfo in Compile),
   buildInfoKeys := Seq[BuildInfoKey](
-    BuildInfoKey.map((fullClasspath in Runtime in macro)){ case (k, v) ⇒ k -> v.map(_.data) },
-    (scalacOptions in Compile in macro)
+    BuildInfoKey.map((fullClasspath in Runtime in annotation)){ case (k, v) ⇒ k -> v.map(_.data) },
+    (scalacOptions in Compile in annotation)
   )
 )
 
@@ -47,7 +49,7 @@ lazy val model = project
   .settings(commonSettings: _*)
   .enablePlugins(ScalaJSPlugin)
 
-lazy val macro = project
+lazy val annotation = project
   .settings(commonSettings: _*)
   .settings(
     libraryDependencies ++= Seq(
@@ -62,10 +64,8 @@ lazy val eval = project
   .settings(commonSettings: _*)
   .settings(buildInfoMacro: _*)
   .enablePlugins(BuildInfoPlugin)
-  .dependsOn(macro)
+  .dependsOn(annotation)
 
-import spray.revolver.AppProcess
-import spray.revolver.RevolverPlugin.Revolver
 lazy val webapp = crossProject.settings(
   libraryDependencies ++= Seq(
     "com.lihaoyi" %%% "upickle"   % "0.2.6",
@@ -97,8 +97,9 @@ lazy val webappJS = webapp.js.dependsOn(codemirror, model)
 lazy val webappJVM = webapp.jvm
   .settings(
     JsEngineKeys.engineType := JsEngineKeys.EngineType.Node,
+    mainClass in Revolver.reStart := Some("com.scalakata.BootTest"),
     Revolver.reStart <<= Revolver.reStart.dependsOn(WebKeys.assets in Assets),
-    (fullClasspath in Runtime) += (WebKeys.public in Assets).value,
+    unmanagedResourceDirectories in Compile += (WebKeys.public in Assets).value,
     (resources in Compile) ++= {
       def andSourceMap(aFile: java.io.File) = Seq(
         aFile,
@@ -138,15 +139,15 @@ lazy val sbtScalaKata = project
     )
   ).enablePlugins(BuildInfoPlugin)
    .settings(
-    // "paradiseVersion" -> paradiseVersion,
     buildInfoKeys := Seq(
+      "paradiseVersion" -> paradiseVersion,
       BuildInfoKey.map(version){                          case (_, v) => "scalaKataVersion" -> v },
       BuildInfoKey.map(organization){                     case (_, v) => "scalaKataOrganization" -> v },
-      // BuildInfoKey.map(scalacOptions in (eval, Compile)){ case (_, v) => "scalacOptions" -> v },
+      BuildInfoKey.map(scalacOptions in (eval, Compile)){ case (_, v) => "evalScalacOptions" -> v },
       BuildInfoKey.map(scalaVersion in eval){             case (_, v) => "evalScalaVersion" -> v },
       BuildInfoKey.map(scalaVersion in webappJVM){        case (_, v) => "backendScalaVersion" -> v },
       BuildInfoKey.map(moduleName in webappJVM){          case (_, v) => "backendProject" -> v },
-      BuildInfoKey.map(moduleName in macro){              case (_, v) => "macroProject" -> v }
+      BuildInfoKey.map(moduleName in annotation){         case (_, v) => "macroProject" -> v }
     ),
     buildInfoPackage := "com.scalakata.build"
   )

@@ -110,7 +110,7 @@ object ScalaKataPlugin extends AutoPlugin {
           scalaVersion := evalScalaVersion,
           unmanagedResourceDirectories += sourceDirectory.value,
           libraryDependencies ++= Seq(
-            compilerPlugin("org.scalamacros" % "paradise" % "2.1.0-M5" cross CrossVersion.full),
+            compilerPlugin("org.scalamacros" % "paradise" % paradiseVersion cross CrossVersion.full),
             scalaKataOrganization %% macroProject % scalaKataVersion
           )
         )

@@ -8,7 +8,7 @@ import scala.reflect.internal.util.{NoPosition, BatchSourceFile, AbstractFileCla
 import scala.language.reflectiveCalls
 
 import java.io.File
-import java.net.{URL, URLClassLoader, URLEncoder}
+import java.net.{URL, URLClassLoader}
 
 class Eval(settings: Settings, security: Boolean) {
   val secured = new Secured(security)
@@ -123,10 +123,7 @@ class Eval(settings: Settings, security: Boolean) {
           if(node.isDirectory) node.toString + File.separator
           else node.toString
 
-        val t =
-          if(sys.props("os.name") == "Window") URLEncoder.encode(endSlashed.replace("\\", "/"), "UTF-8")
-          else endSlashed
-        new java.net.URI(s"file://$t").toURL
+        new File(endSlashed).toURI().toURL
       })
     new URLClassLoader(loaderFiles, this.getClass.getClassLoader)
   }

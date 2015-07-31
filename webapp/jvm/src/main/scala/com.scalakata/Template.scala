@@ -8,7 +8,7 @@ object Template {
     "<!DOCTYPE html>" +
     html(
       head(
-        title("ScalaKata"),
+        title("Scala Kata"),
         base(href:="/"),
         meta(charset:="utf-8"),
         meta(name:="description", content:= "Interactive Playground for the Scala Programming Language"),

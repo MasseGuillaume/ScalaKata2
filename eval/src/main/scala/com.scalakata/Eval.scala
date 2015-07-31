@@ -124,7 +124,7 @@ class Eval(settings: Settings, security: Boolean) {
           else node.toString
 
         val t =
-          if(sys.props("os.name") == "Window") URLEncoder.encode(endSlashed, "UTF-8")
+          if(sys.props("os.name") == "Window") URLEncoder.encode(endSlashed.replace("\\", "/"), "UTF-8")
           else endSlashed
         new java.net.URI(s"file://$t").toURL
       })

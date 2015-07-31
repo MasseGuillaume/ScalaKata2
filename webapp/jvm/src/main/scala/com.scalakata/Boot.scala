@@ -16,7 +16,7 @@ object Boot {
     Server.start(
       Duration(timeoutS),
       security.toBoolean,
-      artifacts.split(File.pathSeparatorChar).map(p ⇒ Paths.get(new URI(s"file://$p"))),
+      artifacts.split(File.pathSeparatorChar).map(p ⇒ Paths.get(p)),
       scalacOptions,
       host,
       port.toInt,

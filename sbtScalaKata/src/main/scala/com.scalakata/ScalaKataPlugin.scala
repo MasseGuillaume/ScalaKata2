@@ -13,6 +13,9 @@ import build.BuildInfo._
 import spray.revolver.Actions
 import spray.revolver.RevolverPlugin.Revolver
 
+import sbtdocker._
+import sbtdocker.DockerKeys._
+
 object ScalaKataPlugin extends AutoPlugin {
   object autoImport {
     
@@ -20,7 +23,7 @@ object ScalaKataPlugin extends AutoPlugin {
     lazy val Backend = config("backend")
 
     case class StartArgs(
-      readyPort: Some[Int],
+      readyPort: Option[Int],
       serverUri: URI,
       security: Boolean,
       timeout: Duration,
@@ -40,7 +43,7 @@ object ScalaKataPlugin extends AutoPlugin {
     }
     
     lazy val openBrowser = TaskKey[Unit]("open-browser", "Automatically open scalakata in the browser")
-    lazy val readyPort = SettingKey[Some[Int]]("ready-port", "Port to use to wait for the server before opening the browser ")
+    lazy val readyPort = SettingKey[Option[Int]]("ready-port", "Port to use to wait for the server before opening the browser ")
     lazy val kataUri = SettingKey[URI]("kata-uri", "The server uri")
     lazy val startArgs = TaskKey[StartArgs]("start-args", "Arguments to pass to the main method")
     lazy val startArgs2 = TaskKey[Seq[String]]("start-args2", "Arguments to pass to the main method")
@@ -50,6 +53,7 @@ object ScalaKataPlugin extends AutoPlugin {
 
     lazy val scalaKataSettings: Seq[Def.Setting[_]] =
       addCommandAlias("kstart", ";backend:reStart ;backend:openBrowser") ++
+      addCommandAlias("kdocker", "kata:docker") ++
       addCommandAlias("kstop", "backend:reStop") ++
       addCommandAlias("krestart", ";backend:reStop ;backend:reStart") ++
       inConfig(Backend)(
@@ -130,10 +134,84 @@ object ScalaKataPlugin extends AutoPlugin {
         ),
         scalacOptions in Kata ++= evalScalacOptions
       )
+
+      lazy val scalaKataDockerSettings: Seq[Def.Setting[_]] = 
+        inConfig(Kata)(DockerSettings.baseDockerSettings) ++
+        Seq(
+          imageNames in (Kata, docker) := Seq(
+            ImageName(
+              namespace = None,
+              repository = name.value,
+              tag = Some("v" + version.value)
+            )
+          ),
+          dockerfile in (Kata, docker) := {
+            val Some(main) = (mainClass in (Backend, Revolver.reStart)).value
+
+            val app = "/app"
+            val libs = s"$app/libs"
+            val katas = s"$app/katas"
+            val plugins = s"$app/plugins"
+
+            val classpath = s"$libs/*:$katas/*"
+
+            new Dockerfile {
+              from("frolvlad/alpine-oraclejdk8")
+
+              val args = {
+                val t = (startArgs in (Backend, Revolver.reStart)).value
+                val kataClasspath =
+                  (packageBin in Compile).value +:
+                  (packageBin in Kata).value +:
+                  (managedClasspath in Kata).value.
+                     map(_.data).
+                     map(_.getAbsoluteFile)
+
+                t.copy(
+                  serverUri = new URI(t.serverUri.getScheme + "://" + "0.0.0.0" + ":" + t.serverUri.getPort),
+                  readyPort = None,
+                  // update compiler plugin path
+                  scalacOptions = t.scalacOptions.map{ v ⇒
+                    val pluginArg = "-Xplugin:"
+                    if(v.startsWith(pluginArg)) {
+                      val plugin = file(v.slice(pluginArg.length, v.length))
+                      val target = file(plugins) / plugin.name
+                      stageFile(plugin,  target)
+                      pluginArg + target.getAbsolutePath
+                    } else v
+                  },
+                  // update frontend classpath
+                  classPath = kataClasspath.map { v ⇒
+                    val target = file(katas) / v.name
+                    stageFile(v, target)
+                    Paths.get(target.toURI)
+                  }
+                )
+              }
+
+              // backend classpath
+              (managedClasspath in Backend).value.files.foreach{ dep ⇒
+                val target = file(libs) / dep.name
+                stageFile(dep, target)
+              }
+              addRaw(libs, libs)
+
+              // frontend classpath
+              addRaw(katas, katas)
+              addRaw(plugins, plugins)
+
+              // exposes
+              expose(args.serverUri.getPort)
+              entryPoint((
+                Seq("java", "-Xmx2G", "-Xms512M", "-cp", classpath, main) ++ args.toArgs
+              ):_*)
+            }
+          }
+        )
   }
   import autoImport._
-  override def requires = sbt.plugins.JvmPlugin
+  override def requires = sbt.plugins.JvmPlugin && DockerPlugin
   override def trigger = allRequirements
 
-  override lazy val projectSettings = scalaKataSettings
+  override lazy val projectSettings = scalaKataSettings ++ scalaKataDockerSettings
 }

@@ -6,4 +6,6 @@
 
 [ ![Sbt Plugin Latest Version](https://api.bintray.com/packages/masseguillaume/sbt-plugins/sbt-scalakata/images/download.svg) ](https://bintray.com/masseguillaume/sbt-plugins/sbt-scalakata/_latestVersion)
 
-[![Chat on Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/MasseGuillaume/ScalaKata2?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Chat on Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/MasseGuillaume/ScalaKata2)
+
+[![Docker Container Size](https://badge.imagelayers.io/masseguillaume/scalakata:latest.svg)](https://imagelayers.io/?images=masseguillaume/scalakata:latest)

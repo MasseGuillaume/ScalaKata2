@@ -128,7 +128,7 @@ lazy val sbtScalaKata = project
     sbtPlugin := true,
     name := "sbt-scalakata",
     addSbtPlugin("io.spray" % "sbt-revolver" % "0.7.2"),
-    addSbtPlugin("com.typesafe.sbt" % "sbt-native-packager" % "1.0.3"),
+    addSbtPlugin("se.marcuslonnberg" % "sbt-docker" % "1.2.0"),
     bintrayRepository := "sbt-plugins",
     bintrayOrganization := None,
     scalaVersion := "2.10.5",

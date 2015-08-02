@@ -140,7 +140,7 @@ object ScalaKataPlugin extends AutoPlugin {
         Seq(
           imageNames in (Kata, docker) := Seq(
             ImageName(
-              namespace = None,
+              namespace = Some(organization.value),
               repository = name.value,
               tag = Some("v" + version.value)
             )

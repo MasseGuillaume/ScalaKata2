@@ -33,7 +33,8 @@ object Main {
         s"$ctrl-."     -> "typeAt",
         s"$ctrl-Enter" -> "run",
         // s"$ctrl-,"     -> "config", // TODO: edit configs
-         "Tab"         -> "insertSoftTab"
+         "Tab"         -> "insertSoftTab",
+        "F2"           -> "solarizedToogle"
       )).
       autoCloseBrackets(true).
       matchBrackets(true).
@@ -43,14 +44,28 @@ object Main {
         "showToken" -> js.Dynamic.global.RegExp("\\w")
       ))
     
-
     CodeMirror.commands.run = Rendering.run _
     CodeMirror.commands.typeAt = Hint.typeAt _
     CodeMirror.commands.autocomplete = Hint.autocomplete _
     CodeMirror.commands.autocompleteDot = Hint.autocompleteDot _
+    CodeMirror.commands.solarizedToogle = (editor: Editor) => {
+      val theme =
+        if(editor.getOption("theme").asInstanceOf[String] == "solarized dark") "solarized light"
+        else "solarized dark"
+      editor.setOption("theme", theme)
+    }
 
     dom.document.getElementById("scalakata") match {
-      case el:HTMLTextAreaElement ⇒ Rendering.run(CodeMirror.fromTextArea(el, params))
+      case el:HTMLTextAreaElement ⇒ {
+        val editor = CodeMirror.fromTextArea(el, params)
+        val doc = editor.getDoc()
+        
+        val storage = dom.localStorage.getItem(Rendering.localStorageKey)
+        if(storage != null) doc.setValue(storage)
+        else doc.setValue(Rendering.wrap("help"))
+
+        Rendering.run(editor)
+      }
       case _ ⇒ dom.console.error("cannot find text area for the code!")
     }
   }

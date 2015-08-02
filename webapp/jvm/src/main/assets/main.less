@@ -1,3 +1,137 @@
 @import "solarized.less";
 @import "codemirror.less";
+
+.CodeMirror {
+  background: transparent;
+  font-size: 18px;
+}
+
+
+.CodeMirror, .CodeMirror-scroll {
+  height: 100%;
+}
+
+.CodeMirror-widget {
+  .inline {
+    margin-left: 50px;
+  }
+  .fold {
+    width: 100%;
+  }
+  pre {
+    display: inline-block;
+  }
+}
+@margin: 20px;
+.CodeMirror-lines {
+    padding: @margin;
+}
+.CodeMirror-linenumber{
+  margin-left: -@margin;
+}
+.CodeMirror-widget .fold {
+  left: -@margin;
+  width: calc(~"100% +" 2*@margin);
+
+  pre {
+    padding: 10px 0px 10px @margin/2;
+    margin: 10px 0 10px 0;
+  }
+}
+
+
+.CodeMirror {
+  .CodeMirror-linewidget {
+    i {
+      margin-right: 16px;
+      font-size: 12px;
+    }
+  }
+
+  .timeout,
+  .runtime-error, 
+  .compiler.error {
+    i { color: red;}
+  }
+
+  .compiler.warning {
+    i { color: yellow; }
+  } 
+
+  .runtime-error,
+  .compiler {
+    pre {
+      display: inline-block;
+    }
+  }
+}
+
+.CodeMirror-hints {
+  resize: horizontal;
+  z-index: 10;
+  max-height: 400px;
+
+  .autocomplete {
+    display: table-row;
+    max-width: none;
+    resize: none;
+    .name{
+      display: table-cell;
+    }
+    .signature{
+      padding-left: 5px;
+      display: table-cell;
+      opacity:0.5;
+      max-width: 600px;
+    }
+  }
+}
+
+.CodeMirror-dialog.CodeMirror-dialog-top {
+  border: none;
+  margin-left: 56px; // gutter size
+  line-height: 21px;
+
+  padding-left: 2px;
+  padding-right: 0;
+  span {
+    display: none;
+  }
+  input {
+    font-size: 18px;
+    padding: 0;
+    width: calc(~"100% - "150px) !important;
+  }
+}
+
+
 @import "layout.less";
+
+body {
+  margin: 0;
+  overflow: hidden;
+}
+
+html, body, .code {
+  height: 100%;
+}
+
+// site design / logo © 2015 Stack Exchange Inc; user contributions licensed under cc by-sa 3.0 with attribution required
+// stackexchange.com
+kbd {
+  padding: .1em .6em;
+  border: 1px solid #ccc;
+  font-size: 11px;
+  font-family: Arial,Helvetica,sans-serif;
+  background-color: #f7f7f7;
+  color: #333;
+  -moz-box-shadow: 0 1px 0 rgba(0,0,0,0.2),0 0 0 2px #fff inset;
+  -webkit-box-shadow: 0 1px 0 rgba(0,0,0,0.2),0 0 0 2px #fff inset;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.2),0 0 0 2px #fff inset;
+  border-radius: 3px;
+  display: inline-block;
+  margin: 0 .1em;
+  text-shadow: 0 1px 0 #fff;
+  line-height: 1.4;
+  white-space: nowrap
+}

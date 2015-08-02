@@ -47,6 +47,7 @@ object KataMacro {
         case md: ModuleDef                     ⇒ md                                 // object A
         case td: TypeDef                       ⇒ td                                 // type A = List
         case dd: DefDef                        ⇒ dd                                 // def f = 1
+        case im: Import                        ⇒ im
         case v                                 ⇒ { println(showRaw(v)); v }
       }
     }

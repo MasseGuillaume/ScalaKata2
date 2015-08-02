@@ -56,7 +56,7 @@ class Compiler(artifacts: Seq[Path], scalacOptions: Seq[String], security: Boole
 
       withResponse[List[compiler.Member]](r ⇒ f(pos, r)).get match {
         case Left(members) ⇒ compiler.ask(() ⇒ {
-          members.map(member ⇒
+          members.sortBy(m ⇒ (!m.sym.isPublic, m.sym.decodedName)).map(member ⇒
             CompletionResponse(
               name = member.sym.decodedName,
               signature = compiler.showDecl(member.sym)
@@ -100,9 +100,6 @@ class Compiler(artifacts: Seq[Path], scalacOptions: Seq[String], security: Boole
     askTypeAt(request.code, request.position){(tree, _) ⇒ {
       // inspired by ensime
       // https://github.com/ensime/ensime-server/blob/dc0c682854d6210010069c062d9fb8cf3d7707b2/core/src/main/scala/org/ensime/core/RichPresentationCompiler.scala#L333
-      // import compiler._
-      // Predef.println(showRaw(tree))
-
       val res =
         tree match {
           case compiler.Select(qual, name) ⇒ qual

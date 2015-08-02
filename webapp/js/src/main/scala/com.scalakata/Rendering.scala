@@ -2,31 +2,38 @@ package com.scalakata
 
 import autowire._
 import org.denigma.codemirror._
+import org.scalajs.dom
 import org.scalajs.dom.raw.HTMLElement
 import scalajs.concurrent.JSExecutionContext.Implicits.runNow
 import scalajs.js
 import scalatags.JsDom.all._
 import scala.concurrent.Future
-
+import org.scalajs.dom.KeyboardEvent
 
 object Rendering {
   val modeScala = "text/x-scala"
 
   def run(editor: Editor) = {
     val doc = editor.getDoc()
+
     def resetDefault(): Unit = {
       if(doc.getValue().isEmpty) {
-        doc.setValue(default)
+        doc.setValue(wrap(""))
         doc.setCursor(doc.posFromIndex(prelude.length))
       }
     }
     def clear(): Unit = annotations.foreach(_.clear())
 
-    editor.on("change", (_, _) ⇒ {
-      resetDefault()
-      clear()
+    editor.on("keyup", (_, event) ⇒ {
+      val ev = event.asInstanceOf[KeyboardEvent]
+      val esc = 27
+      if(ev.keyCode == esc) clear()
     })
-   
+
+    editor.on("change", (_, _) ⇒ {
+      dom.localStorage.setItem(localStorageKey, doc.getValue())
+      resetDefault()
+    })  
     resetDefault()
 
     val request = EvalRequest(doc.getValue(nl))
@@ -150,9 +157,9 @@ object Rendering {
   private val converter = Pagedown.getSanitizingConverter()
 
   private val nl = "\n"
-  private val prelude = 
-    """|import com.scalakata._
-       |@instrument class Playground {
-       |  """.stripMargin
-  private val default = prelude + nl + "}"
+  private val prelude = "import com.scalakata._; @instrument class Playground {" + nl + "  "
+    
+  def wrap(code: String): String = prelude + code + nl + "}"
+
+  val localStorageKey = "code"
 }

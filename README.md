@@ -1,11 +1,25 @@
 # ScalaKata
 
-[![Travis Build Status](https://api.travis-ci.org/MasseGuillaume/ScalaKata2.png?branch=master)](https://travis-ci.org/MasseGuillaume/ScalaKata2)
+[![Travis Build Status](https://img.shields.io/travis/MasseGuillaume/ScalaKata2.svg?style=flat-square)](https://travis-ci.org/MasseGuillaume/ScalaKata2) [![Windows Build status](https://img.shields.io/appveyor/ci/MasseGuillaume/ScalaKata2.svg?style=flat-square)](https://ci.appveyor.com/project/MasseGuillaume/scalakata2/branch/master) [![Chat on Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/MasseGuillaume/ScalaKata2)
 
-[![Windows Build status](https://ci.appveyor.com/api/projects/status/ubqn9y1o9h5x017j/branch/master?svg=true)](https://ci.appveyor.com/project/MasseGuillaume/scalakata2/branch/master)
+## Distributions
 
-[ ![Sbt Plugin Latest Version](https://api.bintray.com/packages/masseguillaume/sbt-plugins/sbt-scalakata/images/download.svg) ](https://bintray.com/masseguillaume/sbt-plugins/sbt-scalakata/_latestVersion)
+### Sbt Plugin
 
-[![Chat on Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/MasseGuillaume/ScalaKata2)
+Add the following lines to `project/plugins.sbt`
 
-[![Docker Container Size](https://badge.imagelayers.io/masseguillaume/scalakata:latest.svg)](https://imagelayers.io/?images=masseguillaume/scalakata:latest)
+```
+resolvers += Resolver.url("masseguillaume/sbt-plugins", url("http://dl.bintray.com/masseguillaume/sbt-plugins/"))(Resolver.ivyStylePatterns)
+addSbtPlugin("com.scalakata" % "sbt-scalakata" % "1.0.3")
+```
+
+### Docker containers
+
+`sudo docker run -p 7331:7331 --name scalakata masseguillaume/scala:1.0.3`
+
+or
+
+`sudo docker run -p 7331:7331 --name scalakata masseguillaume/scala-bundle:1.0.3`
+
+open your browser at `http://localhost:7331`
+

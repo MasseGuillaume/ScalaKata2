@@ -18,7 +18,7 @@ class Secured(security: Boolean) {
     }
   }
   def apply[T](f: ⇒ T): T = {
-    if(!started) {
+    if(!started && security) {
       started = true
       Policy.setPolicy(new ScalaKataSecurityPolicy)
       System.setSecurityManager(new SecurityManager)

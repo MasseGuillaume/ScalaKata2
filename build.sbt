@@ -32,7 +32,7 @@ lazy val commonSettings = Seq(
     "-Ywarn-value-discard"
   ),
   resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases",
-  libraryDependencies += "org.specs2" %% "specs2-core" % "3.6.2" % "test"
+  libraryDependencies += "org.specs2" %% "specs2-core" % "3.6.4" % "test"
 )
 
 seq(commonSettings: _*)
@@ -78,21 +78,18 @@ lazy val webapp = crossProject.settings(
 ).settings(commonSettings: _*)
  .jsSettings(
   name := "Client",
-  libraryDependencies ++= Seq(
-    "org.scala-js" %%% "scalajs-dom" % "0.8.1",
-    "com.lihaoyi"  %%% "scalaparse"  % "0.2.1"
-  )
+  libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.8.1"
 ).jvmSettings(Revolver.settings:_*)
  .jvmSettings(
   name := "Server",
   libraryDependencies ++= Seq(
-    "io.spray"          %% "spray-can"      % "1.3.3",
-    "io.spray"          %% "spray-routing"  % "1.3.3",
-    "com.typesafe.akka" %% "akka-actor"     % "2.3.11",
-    "org.webjars.bower"  % "codemirror"     % "5.4.0",
-    "org.webjars.bower"  % "iframe-resizer" % "2.8.10",
-    "org.webjars.bower"  % "open-iconic"    % "1.1.1",
-    "org.webjars.bower"  % "pagedown"       % "1.1.0"
+    "io.spray"          %% "spray-can"                % "1.3.3",
+    "io.spray"          %% "spray-routing-shapeless2" % "1.3.3",
+    "com.typesafe.akka" %% "akka-actor"               % "2.3.12",
+    "org.webjars.bower"  % "codemirror"               % "5.4.0",
+    "org.webjars.bower"  % "iframe-resizer"           % "2.8.10",
+    "org.webjars.bower"  % "open-iconic"              % "1.1.1",
+    "org.webjars.bower"  % "pagedown"                 % "1.1.0"
   )
 )
 

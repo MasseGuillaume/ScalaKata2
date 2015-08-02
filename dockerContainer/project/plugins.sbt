@@ -1,4 +1,4 @@
-addSbtPlugin("com.scalakata" % "sbt-scalakata" % "1.0.2")
+addSbtPlugin("com.scalakata" % "sbt-scalakata" % "1.0.3")
 resolvers += Resolver.bintrayRepo("masseguillaume", "sbt-plugins") 
 
 resolvers += Resolver.url(

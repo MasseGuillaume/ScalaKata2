@@ -35,20 +35,20 @@ package object scalakata {
   private val Esc = "<kbd>&nbsp;Esc&nbsp;</kbd>"
   private val sublime = "http://sublime-text-unofficial-documentation.readthedocs.org/en/latest/reference/keyboard_shortcuts_osx.html"
 
-  val help = md"""|# Welcome to Scala Kata !
-                  |Scala Kata is an interractive playground.
-                  |Evaluate expressions with $Ctrl + $Enter.
-                  |Clear the output with $Esc.
-                  |## Keyboard Shorcuts
-                  |<pre>
-                  |autocomplete    $Ctrl + $Space
-                  |clear           $Esc
-                  |find type       $Ctrl + $Dot
-                  |run             $Ctrl + $Enter
-                  |toogle theme    $F2
-                  |Sublime Text    See <a href="$sublime">Keyboard Shortcuts</a>
-                  |</pre>
-                  |The source code is available at [MasseGuillaume/ScalaKata2](https://github.com/MasseGuillaume/ScalaKata2)
-                  |published under the MIT license
-                  |""".stripMargin.fold
+  val help = html"""|<h1>Welcome to Scala Kata !</h1>
+                    |Scala Kata is an interractive playground.
+                    |Evaluate expressions with $Ctrl + $Enter.
+                    |Clear the output with $Esc.
+                    |<pre>
+                    |autocomplete    $Ctrl + $Space
+                    |clear           $Esc
+                    |find type       $Ctrl + $Dot
+                    |run             $Ctrl + $Enter
+                    |toogle theme    $F2
+                    |Sublime Text    See <a target="_blank" href="$sublime">Keyboard Shortcuts</a>
+                    |</pre>
+                    |<a target="_blank" href="https://github.com/MasseGuillaume/ScalaKata2/blob/master/dockerContainerBundle/built.sbt#L1">A lot of dependencies are included</a> with scalakata.
+                    |The source code is available at <a target="_blank" href="https://github.com/MasseGuillaume/ScalaKata2">MasseGuillaume/ScalaKata2</a>
+                    |published under the MIT license
+                    |""".stripMargin.fold
 }

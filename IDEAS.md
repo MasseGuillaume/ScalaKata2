@@ -1,5 +1,3 @@
-getting started
-
 stackoverflow
   to scalakata
   from scalakata

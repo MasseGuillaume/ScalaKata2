@@ -32,7 +32,7 @@ lazy val commonSettings = Seq(
     "-Ywarn-value-discard"
   ),
   resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases",
-  libraryDependencies += "org.specs2" %% "specs2-core" % "3.6.2" % "test"
+  libraryDependencies += "org.specs2" %% "specs2-core" % "3.6.4" % "test"
 )
 
 seq(commonSettings: _*)
@@ -63,7 +63,7 @@ lazy val annotation = project
     scalacOptions ~= (_ filterNot (_ == "-Ywarn-value-discard"))
   ).dependsOn(model)
 
-lazy val eval = project
+lazy val evaluation = project
   .settings(commonSettings: _*)
   .settings(buildInfoMacro: _*)
   .enablePlugins(BuildInfoPlugin)
@@ -78,21 +78,18 @@ lazy val webapp = crossProject.settings(
 ).settings(commonSettings: _*)
  .jsSettings(
   name := "Client",
-  libraryDependencies ++= Seq(
-    "org.scala-js" %%% "scalajs-dom" % "0.8.1",
-    "com.lihaoyi"  %%% "scalaparse"  % "0.2.1"
-  )
+  libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.8.1"
 ).jvmSettings(Revolver.settings:_*)
  .jvmSettings(
   name := "Server",
   libraryDependencies ++= Seq(
-    "io.spray"          %% "spray-can"      % "1.3.3",
-    "io.spray"          %% "spray-routing"  % "1.3.3",
-    "com.typesafe.akka" %% "akka-actor"     % "2.3.11",
-    "org.webjars.bower"  % "codemirror"     % "5.4.0",
-    "org.webjars.bower"  % "iframe-resizer" % "2.8.10",
-    "org.webjars.bower"  % "open-iconic"    % "1.1.1",
-    "org.webjars.bower"  % "pagedown"       % "1.1.0"
+    "io.spray"          %% "spray-can"                % "1.3.3",
+    "io.spray"          %% "spray-routing-shapeless2" % "1.3.3",
+    "com.typesafe.akka" %% "akka-actor"               % "2.3.12",
+    "org.webjars.bower"  % "codemirror"               % "5.4.0",
+    "org.webjars.bower"  % "iframe-resizer"           % "2.8.10",
+    "org.webjars.bower"  % "open-iconic"              % "1.1.1",
+    "org.webjars.bower"  % "pagedown"                 % "1.1.0"
   )
 )
 
@@ -111,7 +108,7 @@ lazy val webappJVM = webapp.jvm
       andSourceMap((fastOptJS in (webappJS, Compile)).value.data)
     },
     watchSources ++= (watchSources in webappJS).value
-  ).dependsOn(eval).enablePlugins(SbtWeb)
+  ).dependsOn(evaluation).enablePlugins(SbtWeb)
 
 lazy val codemirror = project
   .settings(commonSettings: _*)
@@ -143,13 +140,13 @@ lazy val sbtScalaKata = project
    .settings(
     buildInfoKeys := Seq(
       "paradiseVersion" -> paradiseVersion,
-      BuildInfoKey.map(version){                          case (_, v) => "scalaKataVersion" -> v },
-      BuildInfoKey.map(organization){                     case (_, v) => "scalaKataOrganization" -> v },
-      BuildInfoKey.map(scalacOptions in (eval, Compile)){ case (_, v) => "evalScalacOptions" -> v },
-      BuildInfoKey.map(scalaVersion in eval){             case (_, v) => "evalScalaVersion" -> v },
-      BuildInfoKey.map(scalaVersion in webappJVM){        case (_, v) => "backendScalaVersion" -> v },
-      BuildInfoKey.map(moduleName in webappJVM){          case (_, v) => "backendProject" -> v },
-      BuildInfoKey.map(moduleName in annotation){         case (_, v) => "macroProject" -> v }
+      BuildInfoKey.map(version){                                case (_, v) => "scalaKataVersion" -> v },
+      BuildInfoKey.map(organization){                           case (_, v) => "scalaKataOrganization" -> v },
+      BuildInfoKey.map(scalacOptions in (evaluation, Compile)){ case (_, v) => "evalScalacOptions" -> v },
+      BuildInfoKey.map(scalaVersion in evaluation){             case (_, v) => "evalScalaVersion" -> v },
+      BuildInfoKey.map(scalaVersion in webappJVM){              case (_, v) => "backendScalaVersion" -> v },
+      BuildInfoKey.map(moduleName in webappJVM){                case (_, v) => "backendProject" -> v },
+      BuildInfoKey.map(moduleName in annotation){               case (_, v) => "macroProject" -> v }
     ),
     buildInfoPackage := "com.scalakata.build"
   )

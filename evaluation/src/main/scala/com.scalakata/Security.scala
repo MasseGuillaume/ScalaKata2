@@ -5,6 +5,8 @@ import java.io._
 
 
 class Secured(security: Boolean) {
+  private var started = false
+
   class ScalaKataSecurityPolicy extends Policy {
     val read1 = new java.io.FilePermission("../-", "read")
     val read2 = new java.io.FilePermission("../.", "read")
@@ -16,15 +18,11 @@ class Secured(security: Boolean) {
     }
   }
   def apply[T](f: ⇒ T): T = {
-    if(security) {
+    if(!started) {
+      started = true
       Policy.setPolicy(new ScalaKataSecurityPolicy)
       System.setSecurityManager(new SecurityManager)
     }
-    val t = f
-    if(security) {
-      Policy.setPolicy(null)
-      System.setSecurityManager(null)
-    }
-    t
+    f
   }
 }

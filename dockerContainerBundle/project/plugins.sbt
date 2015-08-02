@@ -1,7 +1,5 @@
+scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
+resolvers += Resolver.url("masseguillaume/sbt-plugins", url("http://dl.bintray.com/masseguillaume/sbt-plugins/"))(Resolver.ivyStylePatterns)
+addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.1.8")
+addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.7.5")
 addSbtPlugin("com.scalakata" % "sbt-scalakata" % "1.0.0")
-resolvers += Resolver.bintrayRepo("masseguillaume", "sbt-plugins") 
-
-resolvers += Resolver.url(
-  "masseguillaume/sbt-plugins",
-  url("http://dl.bintray.com/masseguillaume/sbt-plugins/")
-)(Resolver.ivyStylePatterns)

@@ -5,5 +5,6 @@ lazy val scalakata = (project in file(".")).
     name := "scalakata",
     version := "1.0.0",
     description := "Docker Container",
-    scalaVersion := "2.11.7"
+    scalaVersion := "2.11.7",
+    securityManager in Backend := true
   )

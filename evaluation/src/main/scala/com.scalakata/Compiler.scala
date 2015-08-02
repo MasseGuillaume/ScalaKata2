@@ -155,8 +155,8 @@ class Compiler(artifacts: Seq[Path], scalacOptions: Seq[String], security: Boole
   val evalSettings = settings.copy
   private lazy val compiler = new Global(settings, reporter)
   private lazy val eval = new Eval(evalSettings, security)
-  settings.plugin.value = settings.plugin.value.filterNot(_.contains("org.scalamacros/paradise"))
-
+  settings.plugin.value = settings.plugin.value.filterNot(_.contains("paradise"))
+  
   private def withTimeout[T](f: ⇒ T)(timeout: Duration): Option[T]= {
     val task = new FutureTask(new Callable[T]() {
       def call = f

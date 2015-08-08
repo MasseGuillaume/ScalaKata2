@@ -30,7 +30,7 @@ lazy val dependencies = Seq(
   "io.spray"                     %% "spray-util"               % "1.3.3",
   "org.parboiled"                %% "parboiled"                % "2.1.0",
   "org.scala-lang.modules"       %% "scala-async"              % "0.9.5",
-  "org.scala-lang.modules"       %% "scala-parser-combinators" % "1.0.4",
+  "org.scala-lang.modules"       %% "scala-parser-combinators" % "1.0.3",
   "org.scala-lang.modules"       %% "scala-pickling"           % "0.10.1",
   "org.scala-lang.modules"       %% "scala-xml"                % "1.0.5",
   "org.scala-saddle"             %% "saddle-core"              % "1.3.4",
@@ -61,7 +61,7 @@ lazy val scalakata = (project in file(".")).
   settings(
     organization := "masseguillaume",
     name := "scalakata-bundle",
-    version := "1.0.3",
+    version := "1.0.4",
     description := "Docker Container with various librairies",
     scalaVersion := "2.11.7",
     libraryDependencies ++= dependencies,

@@ -153,3 +153,105 @@ kbd {
   line-height: 1.4;
   white-space: nowrap
 }
+
+.menu {
+  position: fixed;
+  top: 0;
+  right: 0;
+  margin: 16px;
+  border-radius: 5px;
+  z-index: 20;
+  padding-left: 0;
+
+  li {
+    display: block;
+    font-size: 32px;
+    margin: 10px;
+    cursor: pointer;
+  }
+
+  &.unsaved {
+    .save{ display: block; }
+    .update, .fork{ display: none; }
+  }
+  &.saved {
+    .save{ display: none; }
+    .update, .fork{ display: block }
+  }
+
+  .run, .clear, .loading { display: none; }
+  &.idle .run { display: block; }
+  &.running .loading { display: block; }
+  &.viewing .clear { display: block; }
+}
+
+
+.cm-s-solarized {
+  .solarized-pallette;
+
+  &.cm-s-dark {
+    & + .menu {
+      background-color: @base02;
+      color: @base01;
+      *:hover, &.active {
+        color: @base1;
+      }
+    }
+
+    .CodeMirror-dialog {
+      background-color: @base02;
+      color: @base01;
+    }
+
+    ::-webkit-scrollbar-corner {
+      background: @base03;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: @base02;
+      box-shadow: 0 0 1px black inset;
+    }
+
+    .insight {
+      background-color: @base02;
+
+      &.block .insight {
+        background: @base03;
+      }
+
+      hr {
+        border-color: @base03;
+      }
+    }
+  }
+
+  &.cm-s-light {
+    & + .menu {
+      background-color: @base2;
+      color: @base1;
+      *:hover, &.active {
+        color: @base01;
+      }
+    }
+
+    ::-webkit-scrollbar-corner {
+      background: @base3;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      box-shadow: 0 0 1px grey inset;
+    }
+
+    .insight {
+      background-color: @base2;
+
+      &.block .insight {
+        background: @base3;
+      }
+
+      hr {
+        border-color: @base3;
+      }
+    }
+  }
+}

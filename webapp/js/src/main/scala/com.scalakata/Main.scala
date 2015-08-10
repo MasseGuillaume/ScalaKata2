@@ -14,9 +14,9 @@ import scalatags.JsDom.all._
 object Main {
   @JSExport
   def main(): Unit = {
-    val ctrl =
-      if(navigator.userAgent.contains("Mac")) "Cmd"
-      else "Ctrl"
+    val isMac = navigator.userAgent.contains("Mac")
+    val ctrl = if(isMac) "Cmd" else "Ctrl"
+    val ctrlS = if(isMac) "⌘" else "Ctrl"
      
     val params = EditorConfig.
       mode(Rendering.modeScala).
@@ -33,6 +33,7 @@ object Main {
         s"$ctrl-."     -> "typeAt",
         s"$ctrl-Enter" -> "run",
         // s"$ctrl-,"     -> "config", // TODO: edit configs
+        "F1"           -> "help",
         "F2"           -> "solarizedToogle"
       )).
       autoCloseBrackets(true).
@@ -43,15 +44,27 @@ object Main {
         "showToken" -> js.Dynamic.global.RegExp("\\w")
       ))
     
+    val themeButton = dom.document.getElementById("theme")
+    val stateButton = dom.document.getElementById("state")
+
     CodeMirror.commands.run = Rendering.run _
     CodeMirror.commands.typeAt = Hint.typeAt _
     CodeMirror.commands.autocomplete = Hint.autocomplete _
     CodeMirror.commands.autocompleteDot = Hint.autocompleteDot _
-
+    CodeMirror.commands.help = (editor: Editor) => {
+      editor.getDoc().setValue(Rendering.wrap("help"))
+      Rendering.run(editor)
+    }
     CodeMirror.commands.solarizedToogle = (editor: Editor) => {
+      val isDark = editor.getOption("theme").asInstanceOf[String] == "solarized dark"
       val theme =
-        if(editor.getOption("theme").asInstanceOf[String] == "solarized dark") "solarized light"
+        if(isDark) "solarized light"
         else "solarized dark"
+
+      val icon =
+        if(isDark) "moon"
+        else "sun"
+      themeButton.setAttribute("data-glyph", icon)
       editor.setOption("theme", theme)
     }
 
@@ -59,12 +72,28 @@ object Main {
       case el:HTMLTextAreaElement ⇒ {
         val editor = CodeMirror.fromTextArea(el, params)
         val doc = editor.getDoc()
-        
-        val storage = dom.localStorage.getItem(Rendering.localStorageKey)
-        if(storage != null) doc.setValue(storage)
-        else doc.setValue(Rendering.wrap("help"))
 
-        Rendering.run(editor)
+        themeButton.addEventListener("click", (e: dom.Event) => CodeMirror.commands.solarizedToogle(editor))
+        dom.document.getElementById("help").addEventListener("click", (e: dom.Event) => CodeMirror.commands.help(editor))
+        stateButton.setAttribute("title", s"run ($ctrlS + Enter)")
+        stateButton.addEventListener("click", (e: dom.Event) => {
+          if(Rendering.toclear) {
+            Rendering.clear()
+            Rendering.toclear = false
+          } else {
+            Rendering.run(editor)
+          }
+        })
+
+        val storage = dom.localStorage.getItem(Rendering.localStorageKey)
+        if(storage != null) {
+          doc.setValue(storage)
+          Rendering.run(editor)
+        }
+        else {
+          CodeMirror.commands.help(editor)
+          ()
+        }
       }
       case _ ⇒ dom.console.error("cannot find text area for the code!")
     }

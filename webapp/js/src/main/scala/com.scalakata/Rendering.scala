@@ -3,6 +3,7 @@ package com.scalakata
 import autowire._
 import org.denigma.codemirror._
 import org.scalajs.dom
+import org.scalajs.dom.navigator
 import org.scalajs.dom.raw.HTMLElement
 import scalajs.concurrent.JSExecutionContext.Implicits.runNow
 import scalajs.js
@@ -10,11 +11,26 @@ import scalatags.JsDom.all._
 import scala.concurrent.Future
 import org.scalajs.dom.KeyboardEvent
 
+
+
 object Rendering {
+  var toclear = false
+
   val modeScala = "text/x-scala"
+  val stateButton = dom.document.getElementById("state")
+  val isMac = navigator.userAgent.contains("Mac")
+  val ctrlS = if(isMac) "⌘" else "Ctrl"
+
+  def clear(): Unit = {
+    stateButton.setAttribute("data-glyph", "media-play")
+    stateButton.setAttribute("title", s"run ($ctrlS + Enter)")
+    annotations.foreach(_.clear())
+  }
 
   def run(editor: Editor) = {
     val doc = editor.getDoc()
+    stateButton.setAttribute("data-glyph", "clock")
+    stateButton.setAttribute("title", "evaluating ...")
 
     def resetDefault(): Unit = {
       if(doc.getValue().isEmpty) {
@@ -22,12 +38,14 @@ object Rendering {
         doc.setCursor(doc.posFromIndex(prelude.length))
       }
     }
-    def clear(): Unit = annotations.foreach(_.clear())
-
+    
     editor.on("keyup", (_, event) ⇒ {
       val ev = event.asInstanceOf[KeyboardEvent]
       val esc = 27
-      if(ev.keyCode == esc) clear()
+      if(ev.keyCode == esc) {
+        toclear = false
+        clear()
+      }
     })
 
     editor.on("change", (_, _) ⇒ {
@@ -39,6 +57,9 @@ object Rendering {
     val request = EvalRequest(doc.getValue(nl))
     Client[Api].eval(request).call().onSuccess{ case response ⇒
       clear()
+      toclear = true
+      stateButton.setAttribute("data-glyph", "circle-x")
+      stateButton.setAttribute("title", s"Clear (Esc)")
 
       def noop[T](v: T): Unit = ()
 

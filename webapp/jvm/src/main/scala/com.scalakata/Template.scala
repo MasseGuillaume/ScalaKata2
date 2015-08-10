@@ -24,8 +24,13 @@ object Template {
         link(rel:="stylesheet", href:="/assets/main.css")
       ),
       body(
-        div(`class`:="code")(
-          textarea(id:="scalakata")
+        div(`class` := "code")(
+          textarea(id := "scalakata"),
+          ul(`class` := "menu")(
+            li(id := "state", `class` := "oi", "data-glyph".attr := "media-play"),
+            li(id := "theme", `class` := "oi", "data-glyph".attr := "sun"),
+            li(id := "help", `class` := "oi", "data-glyph".attr := "question-mark")
+          )
         ),
         
         script(src:="/assets/lib/codemirror/lib/codemirror.js"),

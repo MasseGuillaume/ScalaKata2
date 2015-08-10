@@ -100,6 +100,7 @@ lazy val webappJVM = webapp.jvm
     mainClass in Revolver.reStart := Some("com.scalakata.BootTest"),
     Revolver.reStart <<= Revolver.reStart.dependsOn(WebKeys.assets in Assets),
     unmanagedResourceDirectories in Compile += (WebKeys.public in Assets).value,
+    // TODO deploy fullopt
     (resources in Compile) ++= {
       def andSourceMap(aFile: java.io.File) = Seq(
         aFile,

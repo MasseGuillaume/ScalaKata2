@@ -33,7 +33,6 @@ object Main {
         s"$ctrl-."     -> "typeAt",
         s"$ctrl-Enter" -> "run",
         // s"$ctrl-,"     -> "config", // TODO: edit configs
-         "Tab"         -> "insertSoftTab",
         "F2"           -> "solarizedToogle"
       )).
       autoCloseBrackets(true).
@@ -48,6 +47,7 @@ object Main {
     CodeMirror.commands.typeAt = Hint.typeAt _
     CodeMirror.commands.autocomplete = Hint.autocomplete _
     CodeMirror.commands.autocompleteDot = Hint.autocompleteDot _
+
     CodeMirror.commands.solarizedToogle = (editor: Editor) => {
       val theme =
         if(editor.getOption("theme").asInstanceOf[String] == "solarized dark") "solarized light"

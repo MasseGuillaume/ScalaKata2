@@ -19,18 +19,31 @@ object Hint {
     //              ^
     //CodeMirror.showHin
     //           ^     ^
-    def findTerm = {
+    def findTerm: (Int, Int, String) = {
       val line = doc.getLine(cursor.line)
       val index = doc.getCursor().ch
-      val start = line.substring(0, index)
-      val end = line.substring(index, line.length)
-      def notAlphaNumIndex(v: String) = {
-        val alphaNum = ('a' to 'z').toSet ++ ('A' to 'Z').toSet ++ ('0' to '9').toSet ++ Set('_')
-        v.zipWithIndex.find(v => !alphaNum.contains(v._1)).map(_._2)
+      val alphaNum = ('a' to 'z').toSet ++ ('A' to 'Z').toSet ++ ('0' to '9').toSet ++ Set('_')
+      var to = index
+      var from = index
+
+      {
+        var i = index - 1
+        while(i >= 0 && alphaNum.contains(line(i))) {
+          from = i
+          i -= 1
+        }
       }
-      val startIndex = notAlphaNumIndex(start.reverse).map(start.length - _).getOrElse(0)
-      val endIndex = notAlphaNumIndex(end).getOrElse(line.length)
-      (startIndex, endIndex, line.substring(startIndex, endIndex))
+
+      {
+        var i = index
+        while(i < line.length && alphaNum.contains(line(i))) {
+          to = i + 1
+          i += 1
+        }
+      }
+      
+      val term = line.substring(from, to)
+      (from, to, term)
     }
 
     val line = doc.getLine(cursor.line)
@@ -79,7 +92,6 @@ object Hint {
               HintConfig.className("autocomplete")
                         .text(name)
                         .render((el, _, _) => {
-                          el.className = "autocomplete" 
                           el.appendChild(List(
                             span(`class` := "name")(name),
                             span(`class` := "signature")(signature)

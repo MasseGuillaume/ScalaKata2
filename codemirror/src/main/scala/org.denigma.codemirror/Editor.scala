@@ -29,7 +29,7 @@ trait Editor extends js.Object {
   def scrollTo(x: Double, y: Double): Unit = js.native
   def getScrollInfo(): js.Any = js.native
   def scrollIntoView(pos: Position, margin: Double = js.native): Unit = js.native
-  def cursorCoords(where: Boolean, mode: String): js.Any = js.native
+  def cursorCoords(pos: Position, mode: String): Coords = js.native
   def charCoords(pos: Position, mode: String): js.Any = js.native
   def coordsChar(`object`: js.Any, mode: String = js.native): Position = js.native
   def defaultTextHeight(): Double = js.native
@@ -39,7 +39,7 @@ trait Editor extends js.Object {
   def getTokenAt(pos: Position): js.Any = js.native
   def getStateAfter(line: Double = js.native): js.Dynamic = js.native
   def operation[T](fn: js.Function0[T]): T = js.native
-  def indentLine(line: Double, dir: String = js.native): Unit = js.native
+  def indentLine(line: Int, dir: js.Any = js.native): Unit = js.native
   def focus(): Unit = js.native
   def getInputField(): HTMLTextAreaElement = js.native
   def getWrapperElement(): HTMLElement = js.native
@@ -57,8 +57,6 @@ class Doc protected () extends js.Object {
   def getRange(from: Position, to: Position, seperator: String = js.native): String = js.native
   def replaceRange(replacement: String, from: Position, to: Position): Unit = js.native
   def getLine(n: Int): String = js.native
-  def setLine(n: Int, text: String): Unit = js.native
-  def removeLine(n: Int): Unit = js.native
   def lineCount(): Int = js.native
   def firstLine(): Int = js.native
   def lastLine(): Int = js.native
@@ -73,6 +71,7 @@ class Doc protected () extends js.Object {
   def getCursor(start: String = js.native): Position = js.native
   def somethingSelected(): Boolean = js.native
   def setCursor(pos: Position): Unit = js.native
+  def listSelections(): js.Array[Range] = js.native
   def setSelection(anchor: Position, head: Position): Unit = js.native
   def extendSelection(from: Position, to: Position = js.native): Unit = js.native
   def setExtending(value: Boolean): Unit = js.native
@@ -96,8 +95,19 @@ class Doc protected () extends js.Object {
   def indexFromPos(position: Position): Int = js.native
 }
 
+trait Coords extends js.Object {
+  val left: Int = js.native
+  val top: Int = js.native
+  val bottom: Int = js.native
+}
+
+trait Range extends js.Object {
+  val anchor: Position = js.native
+  val head: Position = js.native
+}
+
 trait LineHandle extends js.Object {
-  var text: String = js.native
+  val text: String = js.native
 }
 
 trait TextMarker extends js.Object {

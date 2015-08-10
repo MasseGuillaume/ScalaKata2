@@ -58,12 +58,18 @@ object Rendering {
         Marked(doc.markText(startPos, endPos, TextMarkerConfig.replacedWith(node)))
       }
       def inline(startPos: Position, content: String, process: (HTMLElement => Unit) = noop): Anoted = {
-        val node = pre(`class` := "inline")(content).render
+        // inspired by blink/devtools WebInspector.JavaScriptSourceFrame::_renderDecorations
+        val basePos = Pos.line(startPos.line).ch(0)
+        val offsetPos = Pos.line(startPos.line).ch(doc.getLine(startPos.line).length)
+
+        val mode = "local"
+        val base = editor.cursorCoords(basePos, mode)
+        val offset = editor.cursorCoords(offsetPos, mode)
+
+        val node = pre(`class` := "inline", left := offset.left - base.left)(content).render
         process(node)
-        startPos.ch = doc.getLine(startPos.line).length
-        Marked(doc.setBookmark(startPos, js.Dictionary(
-          "widget" -> node
-        )))
+
+        Line(editor.addLineWidget(startPos.line, node))
       }
 
       val complilationInfos = {
@@ -88,11 +94,20 @@ object Rendering {
             }
             case Some(RangePosition(start, _, end)) => {
               val startPos = doc.posFromIndex(start)
-              val node = div(`class` := s"compiler $sev")(
-                pre(" " * startPos.ch + "^ "),
-                i(`class`:="oi", "data-glyph".attr := severityToIcon(severity)),
-                pre(info.message)
-              ).render
+              val tabSize = editor.getOption("tabSize").asInstanceOf[Int]
+              
+              val tabs =
+                (0 to (startPos.ch - 2)).map(_ =>
+                  span(`class`:="cm-tab", role := "presentation", "cm-text".attr :="  ")(" " * tabSize)
+                ).toList
+              val childs = 
+                tabs ::: List(
+                  span("^"),
+                  i(`class`:="oi", "data-glyph".attr := severityToIcon(severity)),
+                  pre(info.message)
+                )
+
+              val node = pre(`class` := s"compiler $sev")(span(childs: _*)).render
               Line(editor.addLineWidget(startPos.line, node))
             }
           }
@@ -123,8 +138,11 @@ object Rendering {
           val endPos = doc.posFromIndex(end)
           repr match {
             case EString(v) ⇒ {
-              if(v.contains(nl)) nextline(endPos, v)
-              else inline(startPos, v)
+              val quoted = '"' + v + '"'
+              inline(startPos, quoted, {
+                node => CodeMirror.runMode(quoted, modeScala, node)
+                ()
+              })
             }
             case Other(v) ⇒ inline(startPos, v, {
               node => CodeMirror.runMode(v, modeScala, node)

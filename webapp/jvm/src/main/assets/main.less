@@ -6,15 +6,11 @@
   font-size: 18px;
 }
 
-
 .CodeMirror, .CodeMirror-scroll {
   height: 100%;
 }
 
 .CodeMirror-widget {
-  .inline {
-    margin-left: 50px;
-  }
   .fold {
     width: 100%;
   }
@@ -41,9 +37,31 @@
 
 
 .CodeMirror {
+  // emphasis on not parsed (){}
+  .CodeMirror-code > pre > span,
+  .CodeMirror-code > div > pre > span,
+  .CodeMirror-linewidget pre {
+    font-weight: bold;
+    & > * {
+      font-weight: normal;
+    }
+  }
+
   .CodeMirror-linewidget {
+    overflow: visible !important;
+
+    .inline {
+      position: absolute;
+      bottom: 0;
+      overflow: hidden;
+      margin-left: 50px;
+      padding-left: 5px;
+      background-color: rgba(75,75,75,0.3);
+    }
+
     i {
-      margin-right: 16px;
+      margin-left: 16px;
+      margin-right: 6px;
       font-size: 12px;
     }
   }

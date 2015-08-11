@@ -2,4 +2,4 @@
 
 `kata:dockerBuildAndPush`
 
-`sudo docker run -d -p 7331:7331 scalakata:v1.0.4`
+`sudo docker run -d -p 7331:7331 scalakata:v1.0.5`

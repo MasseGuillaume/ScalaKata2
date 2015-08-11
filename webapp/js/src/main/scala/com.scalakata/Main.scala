@@ -17,7 +17,7 @@ object Main {
     val isMac = navigator.userAgent.contains("Mac")
     val ctrl = if(isMac) "Cmd" else "Ctrl"
     val ctrlS = if(isMac) "⌘" else "Ctrl"
-     
+
     val params = EditorConfig.
       mode(Rendering.modeScala).
       autofocus(true).

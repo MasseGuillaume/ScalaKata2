@@ -13,16 +13,16 @@
 Add the following lines to `project/plugins.sbt`
 
 ```
-addSbtPlugin("com.scalakata" % "sbt-scalakata" % "1.0.4")
+addSbtPlugin("com.scalakata" % "sbt-scalakata" % "1.0.5")
 ```
 
 ### Docker containers
 
-`sudo docker run -p 7331:7331 --name scalakata masseguillaume/scala:1.0.4`
+`sudo docker run -p 7331:7331 --name scalakata masseguillaume/scala:1.0.5`
 
 or
 
-`sudo docker run -p 7331:7331 --name scalakata masseguillaume/scala-bundle:1.0.4`
+`sudo docker run -p 7331:7331 --name scalakata masseguillaume/scala-bundle:1.0.5`
 
 open your browser at `http://localhost:7331`
 

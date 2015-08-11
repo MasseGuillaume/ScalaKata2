@@ -3,6 +3,7 @@ package com.scalakata
 object Template {
   import scalatags.Text.all._
   import scalatags.Text.tags2.title
+  import buildinfo.BuildInfo
 
   val txt =
     "<!DOCTYPE html>" +
@@ -55,7 +56,7 @@ object Template {
         script(src:="/assets/lib/pagedown/Markdown.Extra.js"),
 
         script(src:="/assets/lib/iframe-resizer/js/iframeResizer.min.js"),
-        script(src:="/assets/client-fastopt.js"),
+        script(src:=s"/assets/${BuildInfo.js}"),
         script("com.scalakata.Main().main()"),
         script("""
           if(window.location.hostname !== 'localhost') {

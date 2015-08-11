@@ -57,14 +57,17 @@ object Hint {
           } else {
             (line.length, line.length, renderFun(result, ""))
           }
-        options.alignWithWord = true
-        options.completeSingle = single
+        
         js.Dictionary(
           "from" -> (Pos.ch(fromCh).line(cursor.line): Position),
           "to" -> (Pos.ch(toCh).line(cursor.line): Position),
           "list" -> list
         )
-      }) 
+      }, js.Dictionary(
+        "container" -> dom.document.getElementById("code").querySelector(".CodeMirror"),
+        "alignWithWord" -> true,
+        "completeSingle" -> single
+      )) 
     }
   }
   def typeAt(editor: Editor) = {
@@ -92,10 +95,10 @@ object Hint {
               HintConfig.className("autocomplete")
                         .text(name)
                         .render((el, _, _) => {
-                          el.appendChild(List(
-                            span(`class` := "name")(name),
-                            span(`class` := "signature")(signature)
-                          ).render)
+                          val node = pre(`class` := "signature").render
+                          CodeMirror.runMode(signature, Rendering.modeScala, node)
+                          el.appendChild(span(`class` := "name cm-def")(name).render)
+                          el.appendChild(node)
                           ()
                         }): Hint
             }.to[js.Array]

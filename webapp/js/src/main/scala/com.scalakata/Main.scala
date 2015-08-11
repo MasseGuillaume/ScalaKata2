@@ -20,6 +20,7 @@ object Main {
      
     val params = EditorConfig.
       mode(Rendering.modeScala).
+      autofocus(true).
       lineNumbers(false).
       lineWrapping(false).
       tabSize(2).
@@ -72,7 +73,8 @@ object Main {
       case el:HTMLTextAreaElement ⇒ {
         val editor = CodeMirror.fromTextArea(el, params)
         val doc = editor.getDoc()
-
+        editor.focus()
+        Rendering.resetCursor(doc)
         themeButton.addEventListener("click", (e: dom.Event) => CodeMirror.commands.solarizedToogle(editor))
         dom.document.getElementById("help").addEventListener("click", (e: dom.Event) => CodeMirror.commands.help(editor))
         stateButton.setAttribute("title", s"run ($ctrlS + Enter)")

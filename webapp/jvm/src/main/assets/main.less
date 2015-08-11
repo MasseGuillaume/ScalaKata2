@@ -1,24 +1,21 @@
 @import "solarized.less";
 @import "codemirror.less";
 
+::-webkit-scrollbar-thumb {
+  min-height: 50px;
+}
+
 .CodeMirror {
   background: transparent;
   font-size: 18px;
 }
 
+
 .CodeMirror, .CodeMirror-scroll {
   height: 100%;
 }
 
-.CodeMirror-widget {
-  .fold {
-    width: 100%;
-  }
-  pre {
-    display: inline-block;
-  }
-}
-@margin: 20px;
+@margin: 24px;
 .CodeMirror-lines {
     padding: @margin;
 }
@@ -26,12 +23,14 @@
   margin-left: -@margin;
 }
 .CodeMirror-widget .fold {
-  left: -@margin;
+  margin-left: -(@margin + 4px);
   width: calc(~"100% +" 2*@margin);
+  padding: @margin;
 
   pre {
     padding: 10px 0px 10px @margin/2;
     margin: 10px 0 10px 0;
+    display: inline-block;
   }
 }
 
@@ -51,12 +50,12 @@
     overflow: visible !important;
 
     .inline {
+      border-radius: 2px;
       position: absolute;
       bottom: 0;
       overflow: hidden;
       margin-left: 50px;
       padding-left: 5px;
-      background-color: rgba(75,75,75,0.3);
     }
 
     i {
@@ -85,9 +84,10 @@
 }
 
 .CodeMirror-hints {
-  resize: horizontal;
+  // resize: horizontal;
   z-index: 10;
   max-height: 400px;
+  border: none;
 
   .autocomplete {
     display: table-row;
@@ -99,8 +99,7 @@
     .signature{
       padding-left: 5px;
       display: table-cell;
-      opacity:0.5;
-      max-width: 600px;
+      //max-width: 600px;
     }
   }
 }
@@ -130,7 +129,7 @@ body {
   overflow: hidden;
 }
 
-html, body, .code {
+html, body, #code {
   height: 100%;
 }
 
@@ -169,33 +168,39 @@ kbd {
     margin: 10px;
     cursor: pointer;
   }
-
-  &.unsaved {
-    .save{ display: block; }
-    .update, .fork{ display: none; }
-  }
-  &.saved {
-    .save{ display: none; }
-    .update, .fork{ display: block }
-  }
-
-  .run, .clear, .loading { display: none; }
-  &.idle .run { display: block; }
-  &.running .loading { display: block; }
-  &.viewing .clear { display: block; }
 }
 
 
 .cm-s-solarized {
   .solarized-pallette;
 
+  .autocomplete .signature {
+    color: @cyan;
+  }
+
   &.cm-s-dark {
+    & + .menu,
+    .CodeMirror-hints {
+      box-shadow: 1px 1px 5px 1px rgba(0, 0, 0, 0.75);
+    }
+
     & + .menu {
       background-color: @base02;
       color: @base01;
-      *:hover, &.active {
+      *:hover {
         color: @base1;
       }
+    }
+
+    .CodeMirror-widget .fold,
+    .CodeMirror-linewidget .inline,
+    .CodeMirror-hints {
+      background-color: @base02;
+    }
+
+    .CodeMirror-hint-active {
+      color: inherit;
+      background-color: fade(@base03, 50%);
     }
 
     .CodeMirror-dialog {
@@ -203,54 +208,56 @@ kbd {
       color: @base01;
     }
 
-    ::-webkit-scrollbar-corner {
-      background: @base03;
-    }
-
-    ::-webkit-scrollbar-thumb {
-      background: @base02;
-      box-shadow: 0 0 1px black inset;
-    }
-
-    .insight {
-      background-color: @base02;
-
-      &.block .insight {
+    &, .CodeMirror-hints {
+      ::-webkit-scrollbar-corner {
         background: @base03;
       }
 
-      hr {
-        border-color: @base03;
+      ::-webkit-scrollbar-thumb {
+        background: @base02;
+        box-shadow: 0 0 1px black inset;
       }
     }
   }
 
   &.cm-s-light {
+    & + .menu,
+    .CodeMirror-hints {
+      box-shadow: 1px 1px 5px 1px rgba(200, 200, 200, 0.75);
+    }
+
     & + .menu {
       background-color: @base2;
       color: @base1;
-      *:hover, &.active {
+      *:hover {
         color: @base01;
       }
     }
 
-    ::-webkit-scrollbar-corner {
-      background: @base3;
-    }
-
-    ::-webkit-scrollbar-thumb {
-      box-shadow: 0 0 1px grey inset;
-    }
-
-    .insight {
+    .CodeMirror-widget .fold,
+    .CodeMirror-linewidget .inline,
+    .CodeMirror-hints {
       background-color: @base2;
+    }
 
-      &.block .insight {
+    .CodeMirror-hint-active {
+      color: inherit;
+      background-color: fade(@base3, 50%);
+    }
+
+    .CodeMirror-dialog {
+      background-color: @base2;
+      color: @base1;
+    }
+
+    &, .CodeMirror-hints {
+      ::-webkit-scrollbar-corner {
         background: @base3;
       }
 
-      hr {
-        border-color: @base3;
+      ::-webkit-scrollbar-thumb {
+        background: @base02;
+        box-shadow: 0 0 1px grey inset;
       }
     }
   }

@@ -24,12 +24,13 @@ object Template {
         link(rel:="stylesheet", href:="/assets/main.css")
       ),
       body(
-        div(`class` := "code")(
+        div(`id` := "code")(
           textarea(id := "scalakata"),
           ul(`class` := "menu")(
             li(id := "state", `class` := "oi", "data-glyph".attr := "media-play"),
-            li(id := "theme", `class` := "oi", "data-glyph".attr := "sun"),
-            li(id := "help", `class` := "oi", "data-glyph".attr := "question-mark")
+            // li(id := "menu", `class` := "oi", "data-glyph".attr := "menu"),
+            li(id := "theme", "title".attr := "toogle theme (F2)", `class` := "oi", "data-glyph".attr := "sun"),
+            li(id := "help", "title".attr := "help (F1)", `class` := "oi", "data-glyph".attr := "question-mark")
           )
         ),
         

@@ -27,6 +27,10 @@ object Rendering {
     annotations.foreach(_.clear())
   }
 
+  def resetCursor(doc: Doc): Unit = {
+    doc.setCursor(doc.posFromIndex(prelude.length))
+  }
+
   def run(editor: Editor) = {
     val doc = editor.getDoc()
     stateButton.setAttribute("data-glyph", "clock")
@@ -35,7 +39,7 @@ object Rendering {
     def resetDefault(): Unit = {
       if(doc.getValue().isEmpty) {
         doc.setValue(wrap(""))
-        doc.setCursor(doc.posFromIndex(prelude.length))
+        resetCursor(doc)
       }
     }
     
@@ -116,13 +120,21 @@ object Rendering {
             case Some(RangePosition(start, _, end)) => {
               val startPos = doc.posFromIndex(start)
               val tabSize = editor.getOption("tabSize").asInstanceOf[Int]
+
+              val line = doc.getLine(startPos.line)
               
+              val tabCount = line.count(_ == '\t')
+              val spaceCount = line.count(_ == ' ')
+
               val tabs =
-                (0 to (startPos.ch - 2)).map(_ =>
+                (0 until tabCount).map(_ =>
                   span(`class`:="cm-tab", role := "presentation", "cm-text".attr :="  ")(" " * tabSize)
                 ).toList
+
+              val spaces = if(spaceCount != 0) List(span(" " * spaceCount)) else Nil
+
               val childs = 
-                tabs ::: List(
+                tabs ::: spaces ::: List(
                   span("^"),
                   i(`class`:="oi", "data-glyph".attr := severityToIcon(severity)),
                   pre(info.message)
@@ -196,7 +208,11 @@ object Rendering {
   private val converter = Pagedown.getSanitizingConverter()
 
   private val nl = "\n"
-  private val prelude = "import com.scalakata._; @instrument class Playground {" + nl + "  "
+  private val prelude = 
+    """|import com.scalakata._
+       |
+       |@instrument class Playground {
+       |  """.stripMargin
     
   def wrap(code: String): String = prelude + code + nl + "}"
 

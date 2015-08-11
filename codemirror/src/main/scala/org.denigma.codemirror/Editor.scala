@@ -1,7 +1,7 @@
 package org.denigma.codemirror
 
 import org.scalajs._
-import org.scalajs.dom.raw.{HTMLTextAreaElement, Event, HTMLElement}
+import org.scalajs.dom.raw.{HTMLTextAreaElement, Event, HTMLElement, Element}
 import scala.scalajs.js
 import scala.scalajs.js._
 import scala.scalajs.js.annotation.JSName
@@ -305,7 +305,7 @@ trait ShowHintOptions extends js.Object {
   var closeOnUnfocus: Boolean = js.native
   var completeOnSingleClick: Boolean = js.native
   var completeSingle: Boolean = js.native
-  var container: HTMLElement = js.native
+  var container: Element = js.native
   // var customKeys: js.Dictionary = js.native
   // var extraKeys: js.Dictionary = js.native
   // var hint: js.Any = js.native
@@ -326,7 +326,7 @@ object CodeMirror extends js.Object {
   def defineInitHook(func: js.Function): Unit = js.native
   def defineMode(name: String, func: js.Function2[js.Object, js.Object, js.Object]): Unit = js.native
 
-  def showHint(editor: Editor, func: js.Function2[Editor, ShowHintOptions, js.Any]): Unit = js.native
+  def showHint(editor: Editor, func: js.Function2[Editor, ShowHintOptions, js.Any], options: js.Any): Unit = js.native
 
   // http://codemirror.net/doc/manual.html#events
   def on(element: js.Any, eventName: String, handler: js.Function): Unit = js.native

@@ -1,5 +1,4 @@
 language: scala
-script: sbt test
 os:
   - osx
   - linux
@@ -9,6 +8,16 @@ jdk:
   - oraclejdk7
   - oraclejdk8
   - openjdk7
+  - openjdk8
+cache:
+  directories:
+    - $HOME/.ivy2/cache
+    - $HOME/.sbt/boot/
 notifications:
   email:
     - masgui@gmail.com
+script:
+  - sbt -J-XX:ReservedCodeCacheSize=256M test
+  # Tricks to avoid unnecessary cache updates
+  - find $HOME/.sbt -name "*.lock" | xargs rm
+  - find $HOME/.ivy2 -name "ivydata-*.properties" | xargs rm

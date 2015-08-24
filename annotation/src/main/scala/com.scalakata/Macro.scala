@@ -13,11 +13,14 @@ object KataMacro {
 
       def w(aTree: Tree) = {
         val t = TermName(c.freshName)
-        q"""{
-          val $t = $aTree
-          ${instrumentation}(${aTree.pos}) = render($t)
-          $t
-        }"""
+        if(aTree.pos == NoPosition) aTree
+        else {
+          q"""{
+            val $t = $aTree
+            ${instrumentation}(${aTree.pos}) = render($t)
+            $t
+          }"""
+        }
       }
 
       // see http://docs.scala-lang.org/overviews/quasiquotes/syntax-summary.html
@@ -25,7 +28,7 @@ object KataMacro {
         case q"println {..$body}"              ⇒ w(q"{..$body}")
         case q"$expr(..$exprs) = $rhs"         ⇒ q"$expr(..$exprs) = ${w(rhs)}"
         case q"if ($cond) $texpr else $fexpr"  ⇒ q"if ($cond) ${w(texpr)} else ${w(fexpr)}"
-        case q"for (..$enums) yield $expr"     ⇒ q"for (..$enums) yield ${w(expr)}"
+        case q"for (..$enums) yield $expr"     ⇒ w(tree)
         case q"while ($_) $_"                  ⇒ tree
         case q"$expr1 = $expr2"                ⇒ q"$expr1 = ${w(expr2)}"
         case q"$_ match { case ..$_ }"         ⇒ w(tree)

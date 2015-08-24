@@ -5,7 +5,7 @@ import spray.revolver.RevolverPlugin.Revolver
 lazy val commonSettings = Seq(
   scalaVersion := "2.11.7",
   organization := "com.scalakata",
-  version := "1.0.5",
+  version := "1.0.6-SNAPSHOT",
   description := "Scala Interactive Playground",
   licenses := Seq("MIT" -> url("http://www.opensource.org/licenses/mit-license.html")),
   homepage := Some(url("http://scalakata.com")),
@@ -60,7 +60,7 @@ lazy val annotation = project
       "org.scala-lang"  % "scala-reflect"  % scalaVersion.value,
       compilerPlugin("org.scalamacros" % "paradise" % paradiseVersion cross CrossVersion.full)
     ),
-    scalacOptions ~= (_ filterNot (_ == "-Ywarn-value-discard"))
+    scalacOptions -=  "-Ywarn-value-discard"
   ).dependsOn(model)
 
 lazy val evaluation = project
@@ -99,10 +99,10 @@ def andSourceMap(aFile: java.io.File) = (
 )
 
 val clientJs = "client.js"
-val clientJsMap = s"$clientJs.map"
 
 val fullOpt = (fullOptJS in (webappJS, Compile))
 val fastOpt = (fastOptJS in (webappJS, Compile))
+
 
 lazy val webappJS = webapp.js.dependsOn(codemirror, model)
 lazy val webappJVM = webapp.jvm
@@ -115,17 +115,17 @@ lazy val webappJVM = webapp.jvm
       val (js, map) = andSourceMap(fastOpt.value.data)
       IO.copy(Seq(
         js -> target.value / clientJs,
-        map -> target.value / clientJsMap
+        map -> target.value / map.getName
       )).toSeq
     }.taskValue,
     mappings in (Compile,packageBin) := (mappings in (Compile,packageBin)).value.filterNot{ case (f, r) =>
       f.getName.endsWith(clientJs) ||
-      f.getName.endsWith(clientJsMap)
+      f.getName.endsWith("js.map")
     } ++ {
       val (js, map) = andSourceMap(fullOpt.value.data)
       Seq(
         js -> clientJs,
-        map -> clientJsMap
+        map -> map.getName
       )
     },
     watchSources ++= (watchSources in webappJS).value,
@@ -137,7 +137,7 @@ lazy val webappJVM = webapp.jvm
 lazy val codemirror = project
   .settings(commonSettings: _*)
   .settings(
-    scalacOptions ~= (_ filterNot (_ == "-Ywarn-dead-code")),
+    scalacOptions -= "-Ywarn-dead-code",
     libraryDependencies ++= Seq(
       "org.scala-js" %%% "scalajs-dom"  % "0.8.1",
       "org.querki"   %%% "querki-jsext" % "0.5"

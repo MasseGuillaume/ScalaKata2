@@ -21,10 +21,11 @@ object Rendering {
   val isMac = navigator.userAgent.contains("Mac")
   val ctrlS = if(isMac) "⌘" else "Ctrl"
 
-  def clear(): Unit = {
+  def clear(doc: Doc): Unit = {
     stateButton.setAttribute("data-glyph", "media-play")
     stateButton.setAttribute("title", s"run ($ctrlS + Enter)")
     annotations.foreach(_.clear())
+    doc.setCursor(doc.getCursor())
   }
 
   def resetCursor(doc: Doc): Unit = {
@@ -48,7 +49,7 @@ object Rendering {
       val esc = 27
       if(ev.keyCode == esc) {
         toclear = false
-        clear()
+        clear(doc)
       }
     })
 
@@ -58,9 +59,9 @@ object Rendering {
     })  
     resetDefault()
 
-    val request = EvalRequest(doc.getValue(nl))
+    val request = EvalRequest(doc.getValue())
     Client[Api].eval(request).call().onSuccess{ case response ⇒
-      clear()
+      clear(doc)
       toclear = true
       stateButton.setAttribute("data-glyph", "circle-x")
       stateButton.setAttribute("title", s"Clear (Esc)")
@@ -73,12 +74,12 @@ object Rendering {
       }
 
       def nextline(endPos: Position, content: String, process: (HTMLElement => Unit) = noop, options: js.Any = null): Anoted = {
-        val node = pre(content).render
+        val node = div(`class` := "line")(content).render
         nextline2(endPos, node, process, options)
       }
 
       def fold(startPos: Position, endPos: Position, content: String, process: (HTMLElement => Unit) = noop): Anoted = {
-        val node = pre(`class` := "fold")(content).render
+        val node = div(`class` := "fold")(content).render
         process(node)
         Marked(doc.markText(startPos, endPos, TextMarkerConfig.replacedWith(node)))
       }
@@ -91,7 +92,7 @@ object Rendering {
         val base = editor.cursorCoords(basePos, mode)
         val offset = editor.cursorCoords(offsetPos, mode)
 
-        val node = pre(`class` := "inline", left := offset.left - base.left)(content).render
+        val node = div(`class` := "inline", left := offset.left - base.left)(content).render
         process(node)
 
         Line(editor.addLineWidget(startPos.line, node))
@@ -171,18 +172,58 @@ object Rendering {
           val endPos = doc.posFromIndex(end)
           repr match {
             case EString(v) ⇒ {
-              val quoted = '"' + v + '"'
-              inline(startPos, quoted, {
-                node => CodeMirror.runMode(quoted, modeScala, node)
-                ()
-              })
+              if(v.contains(nl)) {
+                nextline(endPos, v, n => n.className = n.className + " cm-string")
+              } else {
+                val quoted = '"' + v + '"'
+                inline(startPos, quoted, {
+                  node => CodeMirror.runMode(quoted, modeScala, node)
+                  ()
+                })
+              }
             }
-            case Other(v) ⇒ inline(startPos, v, {
-              node => CodeMirror.runMode(v, modeScala, node)
-              ()
-            })
+            case Other(v) ⇒ {
+              val process = (node: HTMLElement) => {CodeMirror.runMode(v, modeScala, node); () }
+              if(v.contains(nl)) nextline(endPos, v, process)
+              else inline(startPos, v, process)             
+            }
             case Markdown(v, folded) ⇒ {
-              val process: (HTMLElement => Unit) = _.innerHTML = converter.makeHtml(v)
+
+              def process(elem: HTMLElement): Unit = {
+                val escaper = span().render
+                val content = converter.makeHtml(v)
+
+                dom.console.log(content)
+
+                import scala.scalajs.js.JSStringOps._
+                // js regex only replace once
+                def fix(f: String => String)(v0: String) = {
+                  def itt(v: String): String = {
+                    val t = f(v)
+                    if(t == v) t
+                    else itt(t)
+                  }
+                  itt(v0)
+                }
+
+                
+
+                val res = 
+                  fix{ v =>
+                    v.jsReplace(RegexHelper.codeReg, (b: String, c: String) => {
+                      val node =
+                        if(c.contains(nl)) pre(`class` := "code block").render
+                        else span(`class` := "code short").render
+                      escaper.innerHTML = c
+                      CodeMirror.runMode(escaper.textContent, modeScala, node)
+                      node.outerHTML
+                    })
+                  }(content)
+
+                dom.console.log(res)
+
+                elem.innerHTML = res  
+              }
               if(!folded) nextline(endPos, v, process)
               else fold(startPos, endPos, v, process)
             }
@@ -195,6 +236,7 @@ object Rendering {
         }
 
       annotations = timeout ::: runtimeError ::: instrumentations ::: complilationInfos
+      editor.scrollIntoView(doc.getCursor(), dom.screen.height/2)
     }
   }
 
@@ -206,8 +248,8 @@ object Rendering {
 
   private var annotations = List.empty[Anoted]        
   private val converter = Pagedown.getSanitizingConverter()
-
-  private val nl = "\n"
+ 
+  private val nl = '\n'
   private val prelude = 
     """|import com.scalakata._
        |

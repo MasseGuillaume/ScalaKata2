@@ -12,3 +12,7 @@ object Pagedown extends js.Object {
 trait MarkdownConverter extends js.Object {
   def makeHtml(value: String): String = js.native
 }
+
+object RegexHelper extends js.GlobalScope {
+  val codeReg: scalajs.js.RegExp = js.native
+}

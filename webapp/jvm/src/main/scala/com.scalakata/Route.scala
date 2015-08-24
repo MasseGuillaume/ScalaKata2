@@ -32,15 +32,15 @@ trait Route extends HttpService with EvalImpl {
   val index = HttpEntity(MediaTypes.`text/html`, Template.txt)
   val route = {
     get {
-      path(Rest) { path ⇒
-        complete(index)
-      }
       pathSingleSlash {
        complete(index)
       } ~
       path("assets" / Rest) { path ⇒
         getFromResource(path)
-      } 
+      } ~
+      path(Rest) { _ ⇒
+        complete(index)
+      }
     } ~
     post {
       path("api" / Segments){ s ⇒

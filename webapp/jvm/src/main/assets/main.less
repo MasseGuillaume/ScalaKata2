@@ -5,6 +5,7 @@
   min-height: 50px;
 }
 
+
 .CodeMirror {
   background: transparent;
   font-size: 18px;
@@ -15,6 +16,15 @@
   height: 100%;
 }
 
+// remove spaces between inline elements
+.CodeMirror-code > pre {
+  font-size: 0;
+  & {
+    font-size: 16px;
+  }
+}
+
+
 @margin: 24px;
 .CodeMirror-lines {
     padding: @margin;
@@ -22,14 +32,36 @@
 .CodeMirror-linenumber{
   margin-left: -@margin;
 }
+.CodeMirror-linewidget .line,
 .CodeMirror-widget .fold {
   margin-left: -(@margin + 4px);
-  width: calc(~"100% +" 2*@margin);
+  width: 100%;
   padding: @margin;
+  white-space: pre-wrap;
+  
+  p {
+    display: inline-block;
+  }
+
+  p, pre, h1, h2, h3, h4, h5, h6 {
+    padding: 0;
+    margin: 0;
+  }
+
+  ul, ol {
+    margin: 0
+  }
+
+  .short {
+    padding: 1px 5px 1px 5px;
+  }
+  .block {
+    display: block;
+  }
 
   pre {
     padding: 10px 0px 10px @margin/2;
-    margin: 10px 0 10px 0;
+    // margin: 10px 0 10px 0;
     display: inline-block;
   }
 }
@@ -193,11 +225,13 @@ kbd {
     }
 
     .CodeMirror-widget .fold,
+    .CodeMirror-linewidget .line,
     .CodeMirror-linewidget .inline,
     .CodeMirror-hints {
       background-color: @base02;
     }
 
+    .CodeMirror-widget .code,
     .CodeMirror-hint-active {
       color: inherit;
       background-color: fade(@base03, 50%);
@@ -235,11 +269,13 @@ kbd {
     }
 
     .CodeMirror-widget .fold,
+    .CodeMirror-linewidget .line,
     .CodeMirror-linewidget .inline,
     .CodeMirror-hints {
       background-color: @base2;
     }
 
+    .CodeMirror-widget .code,
     .CodeMirror-hint-active {
       color: inherit;
       background-color: fade(@base3, 50%);

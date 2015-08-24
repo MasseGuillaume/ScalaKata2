@@ -18,6 +18,7 @@ class EvalSpecs extends Specification with EvalSetup {
             in empty package                 $loadClassEmptyPackage
             in any package                   $loasClassAnyPackage
         runtime errors                       $runtimeErrors
+        paradise crash                       $paradiseCrash
 
       The Security Module
         via security manager
@@ -43,6 +44,10 @@ class EvalSpecs extends Specification with EvalSetup {
   def loasClassAnyPackage = pending
   def runtimeErrors = {
     eval("1 / 0").runtimeError ==== Some(RuntimeError("java.lang.ArithmeticException: / by zero", Some(3)))
+  }
+  def paradiseCrash = {
+    ! eval("val a: String").complilationInfos(Error).
+      exists(_.message.contains("exception during macro expansion"))
   }
   def stopingJVM = {
     // eval("System.exit(0)").runtimeError ==== Some(RuntimeError(

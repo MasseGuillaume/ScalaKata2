@@ -1,1 +1,1 @@
-addSbtPlugin("com.scalakata" % "sbt-scalakata" % "1.0.5")
+addSbtPlugin("com.scalakata" % "sbt-scalakata" % "1.0.6-SNAPSHOT")

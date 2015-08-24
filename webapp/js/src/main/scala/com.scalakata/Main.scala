@@ -5,6 +5,7 @@ import org.denigma.codemirror._
 import org.scalajs.dom
 import org.scalajs.dom.navigator
 import org.scalajs.dom.raw.{HTMLTextAreaElement, HTMLElement, Node}
+import org.scalajs.dom.ext.Ajax
 import scalajs.concurrent.JSExecutionContext.Implicits.runNow
 import scalajs.js
 import scalajs.js.annotation.JSExport
@@ -22,12 +23,13 @@ object Main {
       mode(Rendering.modeScala).
       autofocus(true).
       lineNumbers(false).
-      lineWrapping(false).
+      lineWrapping(true).
       tabSize(2).
       indentWithTabs(false).
       theme("solarized dark").
       smartIndent(true).
       keyMap("sublime").
+      scrollPastEnd(true).
       extraKeys(js.Dictionary(
         s"$ctrl-Space" -> "autocomplete",
          "."           -> "autocompleteDot",
@@ -80,21 +82,28 @@ object Main {
         stateButton.setAttribute("title", s"run ($ctrlS + Enter)")
         stateButton.addEventListener("click", (e: dom.Event) => {
           if(Rendering.toclear) {
-            Rendering.clear()
+            Rendering.clear(doc)
             Rendering.toclear = false
           } else {
             Rendering.run(editor)
           }
         })
 
-        val storage = dom.localStorage.getItem(Rendering.localStorageKey)
-        if(storage != null) {
-          doc.setValue(storage)
-          Rendering.run(editor)
-        }
-        else {
-          CodeMirror.commands.help(editor)
-          ()
+        if(dom.location.pathname != "/") {
+          Ajax.get("/assets" + dom.location.pathname).onSuccess{ case xhr =>
+            doc.setValue(xhr.responseText)
+            Rendering.run(editor)
+          }
+        } else {
+          val storage = dom.localStorage.getItem(Rendering.localStorageKey)
+          if(storage != null) {
+            doc.setValue(storage)
+            Rendering.run(editor)
+          }
+          else {
+            CodeMirror.commands.help(editor)
+            ()
+          }
         }
       }
       case _ ⇒ dom.console.error("cannot find text area for the code!")

@@ -112,7 +112,6 @@ object ScalaKataPlugin extends AutoPlugin {
         Defaults.configSettings ++
         Seq(
           scalaVersion := evalScalaVersion,
-          unmanagedResourceDirectories += sourceDirectory.value,
           libraryDependencies ++= Seq(
             compilerPlugin("org.scalamacros" % "paradise" % paradiseVersion cross CrossVersion.full),
             scalaKataOrganization %% macroProject % scalaKataVersion
@@ -120,6 +119,7 @@ object ScalaKataPlugin extends AutoPlugin {
         )
       ) ++
       Seq(
+        unmanagedResourceDirectories in Backend += (sourceDirectory in Kata).value,
         resolvers += "masseguillaume" at "http://dl.bintray.com/content/masseguillaume/maven",
         dependencyClasspath in Kata ++= (fullClasspath in Compile).value ++ (fullClasspath in Test).value,
         startArgs in (Backend, Revolver.reStart) := StartArgs(

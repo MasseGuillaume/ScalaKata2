@@ -31,6 +31,7 @@ object Template {
             li(id := "state", `class` := "oi", "data-glyph".attr := "media-play"),
             // li(id := "menu", `class` := "oi", "data-glyph".attr := "menu"),
             li(id := "theme", "title".attr := "toogle theme (F2)", `class` := "oi", "data-glyph".attr := "sun"),
+            // li(id := "home", "title".attr := "home (F3)", `class` := "oi", "data-glyph".attr := "home"),
             li(id := "help", "title".attr := "help (F1)", `class` := "oi", "data-glyph".attr := "question-mark")
           )
         ),
@@ -45,6 +46,7 @@ object Template {
         script(src:="/assets/lib/codemirror/addon/fold/foldcode.js"),
         script(src:="/assets/lib/codemirror/addon/hint/show-hint.js"),
         script(src:="/assets/lib/codemirror/addon/runmode/runmode.js"),
+        script(src:="/assets/lib/codemirror/addon/scroll/scrollpastend.js"),
         script(src:="/assets/lib/codemirror/addon/search/match-highlighter.js"),
         script(src:="/assets/lib/codemirror/addon/search/search.js"),
         script(src:="/assets/lib/codemirror/addon/search/searchcursor.js"),
@@ -57,6 +59,7 @@ object Template {
 
         script(src:="/assets/lib/iframe-resizer/js/iframeResizer.min.js"),
         script(src:=s"/assets/${BuildInfo.js}"),
+        raw("""<script>var codeReg = /<code>([\s\S]*?)<\/code>/;</script>"""),
         script("com.scalakata.Main().main()"),
         script("""
           if(window.location.hostname !== 'localhost') {

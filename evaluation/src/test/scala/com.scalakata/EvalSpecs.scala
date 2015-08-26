@@ -15,8 +15,8 @@ class EvalSpecs extends Specification with EvalSetup {
       The Runtime Module
         classloader
           retreive Instrumented class
-            in empty package                 $loadClassEmptyPackage
             in any package                   $loasClassAnyPackage
+          allow working on multiple packages $multiPackage
         runtime errors                       $runtimeErrors
         paradise crash                       $paradiseCrash
 
@@ -42,6 +42,17 @@ class EvalSpecs extends Specification with EvalSetup {
   }
   def loadClassEmptyPackage = pending
   def loasClassAnyPackage = pending
+  def multiPackage = {
+    val before = 
+      """|package a {
+         |  package b {
+         |    class X { def z = 42 } 
+         |  }
+         |  object V extends b.X
+         |}""".stripMargin
+
+    eval2(before, "a.V.z").runtimeError ==== None
+  }
   def runtimeErrors = {
     eval("1 / 0").runtimeError ==== Some(RuntimeError("java.lang.ArithmeticException: / by zero", Some(3)))
   }

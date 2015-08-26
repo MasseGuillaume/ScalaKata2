@@ -17,6 +17,9 @@ trait EvalSetup {
   def eval(code: String) = {
     compiler.eval(EvalRequest(wrap(code)))
   }
+  def eval2(before: String, code: String) = {
+    compiler.eval(EvalRequest(before + System.lineSeparator + wrap(code)))
+  }
   def autocomplete(code: String, pos: Int) = {
     compiler.autocomplete(CompletionRequest(wrap(code), shiftRequest(pos)))
   }

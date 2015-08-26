@@ -5,6 +5,7 @@ import scala.tools.nsc.reporters.StoreReporter
 import scala.tools.nsc.io.{VirtualDirectory, AbstractFile}
 import scala.reflect.internal.util.{NoPosition, BatchSourceFile, AbstractFileClassLoader}
 
+import scala.util.Try
 import scala.language.reflectiveCalls
 
 import java.io.File
@@ -19,7 +20,9 @@ class Eval(settings: Settings, security: Boolean) {
       // Look for static class implementing Instrumented
       def findEval: Option[Instrumentation] = {
         def removeExt(of: String) = {
-          of.slice(0, of.lastIndexOf(".class"))
+          val classExt = ".class"
+          if(of.endsWith(classExt)) of.slice(0, of.lastIndexOf(classExt))
+          else of
         }
 
         def removeMem(of: String) = {
@@ -42,7 +45,9 @@ class Eval(settings: Settings, security: Boolean) {
           map(_.replace('/', '.')).
           filterNot(_.endsWith("$class")).
           find { n ⇒
-            classLoader.loadClass(n).getInterfaces.exists(_ == classOf[Instrumented])
+            Try(classLoader.loadClass(n)).map(
+              _.getInterfaces.exists(_ == classOf[Instrumented])
+            ).getOrElse(false)
           }
         
         instrClass.map{ c ⇒

@@ -4,6 +4,8 @@ import akka.actor._
 import spray.routing.HttpService
 import spray.http._
 import spray.util._
+import spray.httpx.encoding.Gzip
+import spray.routing.directives.CachingDirectives._
 
 import scala.concurrent.duration._
 
@@ -27,31 +29,39 @@ object AutowireServer extends autowire.Server[String, upickle.Reader, upickle.Wr
 }
 
 trait Route extends HttpService with EvalImpl {
-  implicit val executionContext = actorRefFactory.dispatcher
-
-  val index = HttpEntity(MediaTypes.`text/html`, Template.txt)
-  val route = {
-    get {
-      pathSingleSlash {
-       complete(index)
-      } ~
-      path("assets" / Rest) { path ⇒
-        getFromResource(path)
-      } ~
-      path(Rest) { _ ⇒
-        complete(index)
-      }
-    } ~
-    post {
-      path("api" / Segments){ s ⇒
-        extract(_.request.entity.asString) { e ⇒
-          complete {
-            AutowireServer.route[Api](this)(
-              autowire.Core.Request(s, upickle.read[Map[String, String]](e))
-            )
+  protected val route = 
+    cache(simpleCache) {
+      encodeResponse(Gzip) {
+        get {
+          pathSingleSlash {
+           complete(index)
+          } ~
+          path("assets" / Rest) { path ⇒
+            getFromResource(path)
+          } ~
+          path(Rest) { _ ⇒
+            complete(index)
+          }
+        } ~
+        post {
+          path("api" / Segments){ s ⇒
+            extract(_.request.entity.asString) { e ⇒
+              complete {
+                AutowireServer.route[Api](this)(
+                  autowire.Core.Request(s, upickle.read[Map[String, String]](e))
+                )
+              }
+            }
           }
         }
       }
     }
   }
+  
+  private implicit val executionContext = actorRefFactory.dispatcher
+  private implicit val Default: CacheKeyer = CacheKeyer {
+    case RequestContext(HttpRequest(_, uri, _, entity, _), _, _) => (uri, entity)
+  }
+  private val simpleCache = routeCache()
+  private val index = HttpEntity(MediaTypes.`text/html`, Template.txt)
 }

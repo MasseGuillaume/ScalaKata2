@@ -2,7 +2,13 @@ import sbt.Keys._
 import spray.revolver.AppProcess
 import spray.revolver.RevolverPlugin.Revolver
 
+def cls = Command.command("cls") { state =>
+  println("\033c") // xterm clear
+  state
+}
+
 lazy val commonSettings = Seq(
+  commands += cls,
   scalaVersion := "2.11.7",
   organization := "com.scalakata",
   version := "1.0.6",
@@ -84,7 +90,10 @@ lazy val webapp = crossProject.settings(
   name := "Server",
   libraryDependencies ++= Seq(
     "io.spray"          %% "spray-can"                % "1.3.3",
+    "io.spray"          %% "spray-caching"            % "1.3.3",
+    "io.spray"          %% "spray-json"               % "1.3.2",
     "io.spray"          %% "spray-routing-shapeless2" % "1.3.3",
+    "io.spray"          %% "spray-client"             % "1.3.2",
     "com.typesafe.akka" %% "akka-actor"               % "2.3.12",
     "org.webjars.bower"  % "codemirror"               % "5.4.0",
     "org.webjars.bower"  % "iframe-resizer"           % "2.8.10",

@@ -10,9 +10,13 @@ trait EvalImpl extends Api {
   val security: Boolean
   val timeout: Duration
 
+
+  implicit val system: akka.actor.ActorRefFactory
+
   lazy val compiler = new com.scalakata.Compiler(artifacts, scalacOptions, security, timeout)
 
   def autocomplete(request: CompletionRequest) = compiler.autocomplete(request)
   def eval(request: EvalRequest) = compiler.eval(request)
   def typeAt(request: TypeAtRequest) = compiler.typeAt(request)
+  def stackoverflow(questionId: String) = StackOverflowClient.get(questionId)
 }

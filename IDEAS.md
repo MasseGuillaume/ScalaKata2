@@ -1,3 +1,8 @@
+books
+  prog in scala
+  fp in scala
+  atomic scala
+  
 stackoverflow
   to scalakata
   from scalakata
@@ -8,10 +13,6 @@ build info available in frontend
   libraryDependencies
 
 load balance compiler with akka + typed actors
-
-books
-  fp in scala
-  atomic scala
 
 apache spark
 

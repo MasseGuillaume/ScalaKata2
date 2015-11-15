@@ -10,10 +10,16 @@
 
 ### Sbt Plugin
 
-Add the following lines to `project/plugins.sbt`
+Add the following line to `project/plugins.sbt`
 
-```
+```scala
 addSbtPlugin("com.scalakata" % "sbt-scalakata" % "1.0.6")
+```
+
+And add the following line to `build.sbt`
+
+```scala
+enablePlugins(ScalaKataPlugin)
 ```
 
 ### Docker containers

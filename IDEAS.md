@@ -3,10 +3,6 @@ books
   fp in scala
   atomic scala
   
-stackoverflow
-  to scalakata
-  from scalakata
-
 build info available in frontend
   version & git hash
   scalacOptions

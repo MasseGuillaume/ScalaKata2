@@ -90,12 +90,7 @@ object Main {
         })
 
         val path = dom.location.pathname
-        if(path.startsWith("/stackoverflow/")) {
-          val id =
-          Client[Api].stackoverflow(id).call().onSuccess{ case result =>
-
-          }
-        } else if(path != "/") {
+        if(path != "/") {
           Ajax.get(s"/assets/$path").onSuccess{ case xhr =>
             doc.setValue(xhr.responseText)
             Rendering.run(editor)

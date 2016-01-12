@@ -18,5 +18,4 @@ trait EvalImpl extends Api {
   def autocomplete(request: CompletionRequest) = compiler.autocomplete(request)
   def eval(request: EvalRequest) = compiler.eval(request)
   def typeAt(request: TypeAtRequest) = compiler.typeAt(request)
-  def stackoverflow(questionId: String) = StackOverflowClient.get(questionId)
 }

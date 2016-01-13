@@ -44,7 +44,7 @@ package object scalakata {
                     |clear           $Esc
                     |find type       $Ctrl + $Dot
                     |run             $Ctrl + $Enter
-                    |toogle theme    $F2
+                    |toggle theme    $F2
                     |Sublime Text    See <a target="_blank" href="$sublime">Keyboard Shortcuts</a>
                     |</pre>
                     |<a target="_blank" href="https://github.com/MasseGuillaume/ScalaKata2/blob/master/dockerContainerBundle/built.sbt#L1">A lot of dependencies are included</a> with scalakata.

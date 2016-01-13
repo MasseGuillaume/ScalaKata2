@@ -37,7 +37,7 @@ object Main {
         s"$ctrl-Enter" -> "run",
         // s"$ctrl-,"     -> "config", // TODO: edit configs
         "F1"           -> "help",
-        "F2"           -> "solarizedToogle"
+        "F2"           -> "solarizedToggle"
       )).
       autoCloseBrackets(true).
       matchBrackets(true).
@@ -58,7 +58,7 @@ object Main {
       editor.getDoc().setValue(Rendering.wrap("help"))
       Rendering.run(editor)
     }
-    CodeMirror.commands.solarizedToogle = (editor: Editor) => {
+    CodeMirror.commands.solarizedToggle = (editor: Editor) => {
       val isDark = editor.getOption("theme").asInstanceOf[String] == "solarized dark"
       val theme =
         if(isDark) "solarized light"
@@ -77,7 +77,7 @@ object Main {
         val doc = editor.getDoc()
         editor.focus()
         Rendering.resetCursor(doc)
-        themeButton.addEventListener("click", (e: dom.Event) => CodeMirror.commands.solarizedToogle(editor))
+        themeButton.addEventListener("click", (e: dom.Event) => CodeMirror.commands.solarizedToggle(editor))
         dom.document.getElementById("help").addEventListener("click", (e: dom.Event) => CodeMirror.commands.help(editor))
         stateButton.setAttribute("title", s"run ($ctrlS + Enter)")
         stateButton.addEventListener("click", (e: dom.Event) => {

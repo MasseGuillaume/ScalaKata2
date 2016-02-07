@@ -6,14 +6,13 @@ package object scalakata {
 
   type Instrumentation = List[(RangePosition, Render)]
   
-  def render[A](a: A): Render = {
+  def render[T](a: T)(implicit m: Manifest[T]): Render = {
     a match {
-      case null ⇒ Other("null")
-      case ar: Array[_] ⇒ Other(ar.deep.toString)
-      case v: String ⇒  EString(v)
+      case null ⇒ Value("null", m.toString)
+      case ar: Array[_] ⇒ Value(ar.deep.toString, m.toString)
       case md: Markdown ⇒ md
       case html: Html ⇒ html
-      case other ⇒ Other(other.toString)
+      case other ⇒ Value(other.toString, m.toString)
     }
   }
 

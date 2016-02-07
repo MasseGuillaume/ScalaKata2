@@ -3,9 +3,10 @@ package com.scalakata
 object Template {
   import scalatags.Text.all._
   import scalatags.Text.tags2.title
-  import buildinfo.BuildInfo
 
-  val txt =
+  def txt(prod: Boolean) = {
+    val client = if(prod) "client-fullopt.js" else "client-fastopt.js"
+
     "<!DOCTYPE html>" +
     html(
       head(
@@ -58,7 +59,8 @@ object Template {
         script(src:="/assets/lib/pagedown/Markdown.Extra.js"),
 
         script(src:="/assets/lib/iframe-resizer/js/iframeResizer.min.js"),
-        script(src:=s"/assets/${BuildInfo.js}"),
+
+        script(src:=s"/assets/$client"),
         raw("""<script>var codeReg = /<code>([\s\S]*?)<\/code>/;</script>"""),
         script("com.scalakata.Main().main()"),
         script("""
@@ -74,4 +76,5 @@ object Template {
         """)
       )
     )
+  }
 }

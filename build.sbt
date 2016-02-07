@@ -107,11 +107,8 @@ def andSourceMap(aFile: java.io.File) = (
   file(aFile.getAbsolutePath + ".map")
 )
 
-val clientJs = "client.js"
-
 val fullOpt = (fullOptJS in (webappJS, Compile))
 val fastOpt = (fastOptJS in (webappJS, Compile))
-
 
 lazy val webappJS = webapp.js.dependsOn(codemirror, model)
 lazy val webappJVM = webapp.jvm
@@ -123,24 +120,21 @@ lazy val webappJVM = webapp.jvm
     resourceGenerators in Compile += Def.task {
       val (js, map) = andSourceMap(fastOpt.value.data)
       IO.copy(Seq(
-        js -> target.value / clientJs,
+        js -> target.value / js.getName,
         map -> target.value / map.getName
       )).toSeq
     }.taskValue,
     mappings in (Compile,packageBin) := (mappings in (Compile,packageBin)).value.filterNot{ case (f, r) =>
-      f.getName.endsWith(clientJs) ||
+      f.getName.endsWith("-fastopt.js") ||
       f.getName.endsWith("js.map")
     } ++ {
       val (js, map) = andSourceMap(fullOpt.value.data)
       Seq(
-        js -> clientJs,
+        js -> js.getName,
         map -> map.getName
       )
     },
-    watchSources ++= (watchSources in webappJS).value,
-    buildInfoKeys := Seq(
-      "js" -> clientJs
-    )
+    watchSources ++= (watchSources in webappJS).value
   ).dependsOn(evaluation).enablePlugins(SbtWeb, BuildInfoPlugin)
 
 lazy val codemirror = project

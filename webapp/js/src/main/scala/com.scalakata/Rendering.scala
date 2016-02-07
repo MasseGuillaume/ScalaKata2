@@ -171,19 +171,8 @@ object Rendering {
           val startPos = doc.posFromIndex(start)
           val endPos = doc.posFromIndex(end)
           repr match {
-            case EString(v) ⇒ {
-              if(v.contains(nl)) {
-                nextline(endPos, v, n => n.className = n.className + " cm-string")
-              } else {
-                val quoted = '"' + v + '"'
-                inline(startPos, quoted, {
-                  node => CodeMirror.runMode(quoted, modeScala, node)
-                  ()
-                })
-              }
-            }
-            case Other(v) ⇒ {
-              val process = (node: HTMLElement) => {CodeMirror.runMode(v, modeScala, node); () }
+            case Value(v, tpe) ⇒ {
+              val process = (node: HTMLElement) => {CodeMirror.runMode(v + s"//: $tpe", modeScala, node); () }
               if(v.contains(nl)) nextline(endPos, v, process)
               else inline(startPos, v, process)             
             }
@@ -205,8 +194,6 @@ object Rendering {
                   }
                   itt(v0)
                 }
-
-                
 
                 val res = 
                   fix{ v =>

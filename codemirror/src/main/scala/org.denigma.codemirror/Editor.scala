@@ -96,9 +96,9 @@ class Doc protected () extends js.Object {
 }
 
 trait Coords extends js.Object {
-  val left: Int = js.native
-  val top: Int = js.native
-  val bottom: Int = js.native
+  val left: Double = js.native
+  val top: Double = js.native
+  val bottom: Double = js.native
 }
 
 trait Range extends js.Object {

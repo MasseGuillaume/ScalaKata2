@@ -35,8 +35,7 @@ case class EvalRequest(
 )
 
 sealed trait Render
-case class EString(v: String) extends Render
-case class Other(repr: String) extends Render
+case class Value(v: String, className: String) extends Render
 case class Markdown(a: String, folded: Boolean = false) extends Render {
   def stripMargin = Markdown(a.stripMargin)
   def fold = copy(folded = true)

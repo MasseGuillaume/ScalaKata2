@@ -9,6 +9,7 @@ trait EvalImpl extends Api {
   val scalacOptions: Seq[String]
   val security: Boolean
   val timeout: Duration
+  val prod: Boolean
 
 
   implicit val system: akka.actor.ActorRefFactory

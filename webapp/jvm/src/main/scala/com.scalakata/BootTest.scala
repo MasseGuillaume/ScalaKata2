@@ -12,7 +12,8 @@ object BootTest {
         scalacOptions = build.BuildInfo.scalacOptions.to[Seq],
         host = "localhost",
         port = 8080,
-        readyPort = None
+        readyPort = None,
+        prod = false
     )
   }
 }

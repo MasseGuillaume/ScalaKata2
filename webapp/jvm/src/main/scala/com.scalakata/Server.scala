@@ -12,9 +12,9 @@ import java.nio.file.Path
 
 object Server {
   def start(timeout: Duration, security: Boolean, artifacts: Seq[Path], 
-            scalacOptions: Seq[String], host: String, port: Int, readyPort: Option[Int]): Unit = {
+            scalacOptions: Seq[String], host: String, port: Int, readyPort: Option[Int], prod: Boolean): Unit = {
 
-    println((timeout, security, artifacts, scalacOptions, host, port, readyPort))    
+    println((timeout, security, artifacts, scalacOptions, host, port, readyPort, prod))
 
     val config: Config = ConfigFactory.parseString(s"""
       spray {
@@ -28,7 +28,7 @@ object Server {
     implicit val system = ActorSystem("scalakata-playground", config)
 
     val service = system.actorOf(Props(classOf[RouteActor],
-      artifacts, scalacOptions, security, timeout
+      artifacts, scalacOptions, security, timeout, prod
     ), "scalakata-service")
 
     import akka.pattern.ask

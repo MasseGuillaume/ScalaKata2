@@ -23,7 +23,8 @@ class RouteActor(
   override val artifacts: Seq[Path],
   override val scalacOptions: Seq[String],
   override val security: Boolean,
-  override val timeout: Duration
+  override val timeout: Duration,
+  override val prod: Boolean
   ) extends Actor with Route {
 
   def actorRefFactory = context
@@ -37,7 +38,17 @@ object AutowireServer extends autowire.Server[String, upickle.Reader, upickle.Wr
 }
 
 trait Route extends HttpService with EvalImpl {
-  def route = 
+  def route =
+    get {
+      path("assets" / "client-fastopt.js.map") {
+        getFromResource("client-fastopt.js.map")
+      }
+    } ~
+    get {
+      path("assets" / "client-fullopt.js.map") {
+        getFromResource("client-fullopt.js.map")
+      }
+    } ~
     cache(simpleCache) {
       encodeResponse(Gzip) {
         get {
@@ -71,5 +82,5 @@ trait Route extends HttpService with EvalImpl {
     case RequestContext(HttpRequest(_, uri, _, entity, _), _, _) => (uri, entity)
   }
   private val simpleCache = routeCache()
-  private val index = HttpEntity(MediaTypes.`text/html`, Template.txt)
+  private val index = HttpEntity(MediaTypes.`text/html`, Template.txt(prod))
 }

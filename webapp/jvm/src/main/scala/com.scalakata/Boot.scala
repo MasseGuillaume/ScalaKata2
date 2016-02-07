@@ -20,7 +20,8 @@ object Boot {
       scalacOptions,
       host,
       port.toInt,
-      readyPort
+      readyPort,
+      prod = true
     )
   }
 }

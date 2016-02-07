@@ -1,14 +1,9 @@
 @import "solarized.less";
 @import "codemirror.less";
 
-::-webkit-scrollbar-thumb {
-  min-height: 50px;
-}
-
-
 .CodeMirror {
   background: transparent;
-  font-size: 18px;
+  font-size: 16px;
 }
 
 
@@ -202,6 +197,21 @@ kbd {
   }
 }
 
+.CodeMirror-simplescroll-horizontal div {
+  height: 12px;
+}
+
+.CodeMirror-simplescroll-vertical div {
+  width: 12px;
+}
+
+.CodeMirror-simplescroll-horizontal,
+.CodeMirror-simplescroll-vertical {
+  div {
+    border: none;
+  }
+}
+
 
 .cm-s-solarized {
   .solarized-pallette;
@@ -212,6 +222,8 @@ kbd {
 
   &.cm-s-dark {
     & + .menu,
+    .CodeMirror-simplescroll-horizontal div,
+    .CodeMirror-simplescroll-vertical div,
     .CodeMirror-hints {
       box-shadow: 1px 1px 5px 1px rgba(0, 0, 0, 0.75);
     }
@@ -242,20 +254,23 @@ kbd {
       color: @base01;
     }
 
-    &, .CodeMirror-hints {
-      ::-webkit-scrollbar-corner {
+    .CodeMirror-simplescroll-horizontal,
+    .CodeMirror-simplescroll-vertical,
+    .CodeMirror-hints {
+      & {
         background: @base03;
       }
 
-      ::-webkit-scrollbar-thumb {
+      div {
         background: @base02;
-        box-shadow: 0 0 1px black inset;
       }
     }
   }
 
   &.cm-s-light {
     & + .menu,
+    .CodeMirror-simplescroll-horizontal div,
+    .CodeMirror-simplescroll-vertical div,
     .CodeMirror-hints {
       box-shadow: 1px 1px 5px 1px rgba(200, 200, 200, 0.75);
     }
@@ -286,12 +301,14 @@ kbd {
       color: @base1;
     }
 
-    &, .CodeMirror-hints {
-      ::-webkit-scrollbar-corner {
+    .CodeMirror-simplescroll-horizontal,
+    .CodeMirror-simplescroll-vertical,
+    .CodeMirror-hints {
+      & {
         background: @base3;
       }
 
-      ::-webkit-scrollbar-thumb {
+      div {
         background: @base02;
         box-shadow: 0 0 1px grey inset;
       }

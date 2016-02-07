@@ -172,7 +172,7 @@ object Rendering {
           val endPos = doc.posFromIndex(end)
           repr match {
             case Value(v, tpe) ⇒ {
-              val process = (node: HTMLElement) => {CodeMirror.runMode(v + s"//: $tpe", modeScala, node); () }
+              val process = (node: HTMLElement) => {CodeMirror.runMode(v + s": $tpe", modeScala, node); () }
               if(v.contains(nl)) nextline(endPos, v, process)
               else inline(startPos, v, process)             
             }

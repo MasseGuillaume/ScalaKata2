@@ -23,13 +23,14 @@ object Main {
       mode(Rendering.modeScala).
       autofocus(true).
       lineNumbers(false).
-      lineWrapping(true).
+      lineWrapping(false).
       tabSize(2).
       indentWithTabs(false).
       theme("solarized dark").
       smartIndent(true).
       keyMap("sublime").
       scrollPastEnd(true).
+      scrollbarStyle("simple").
       extraKeys(js.Dictionary(
         s"$ctrl-Space" -> "autocomplete",
          "."           -> "autocompleteDot",

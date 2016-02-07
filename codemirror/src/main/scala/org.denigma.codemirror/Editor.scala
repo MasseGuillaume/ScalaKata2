@@ -185,7 +185,7 @@ trait EditorConfiguration extends js.Object {
   // Determines whether the gutter scrolls along with the content horizontally (false) or whether it stays fixed during horizontal scrolling (true, the default).
   var fixedGutter: Boolean = js.native
   // Chooses a scrollbar implementation. The default is "native", showing native scrollbars. The core library also provides the "null" style, which completely hides the scrollbars. Addons can implement additional scrollbar models.
-  // scrollbarStyle: string
+  var scrollbarStyle: String = js.native
 
   // When fixedGutter is on, and there is a horizontal scrollbar, by default the gutter will be visible to the left of this scrollbar. If this option is set to true, it will be covered by an element with class CodeMirror-gutter-filler.
   // coverGutterNextToScrollbar: boolean

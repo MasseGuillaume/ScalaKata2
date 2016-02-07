@@ -16,8 +16,15 @@ cache:
 notifications:
   email:
     - masgui@gmail.com
+before_install: ./.jdk_mac.sh
 script:
   - sbt -J-XX:ReservedCodeCacheSize=256M test
   # Tricks to avoid unnecessary cache updates
   - find $HOME/.sbt -name "*.lock" | xargs rm
   - find $HOME/.ivy2 -name "ivydata-*.properties" | xargs rm
+matrix:
+  exclude:
+    - os: osx
+      jdk: openjdk8
+    - os: osx
+      jdk: openjdk7

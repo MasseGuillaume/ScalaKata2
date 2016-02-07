@@ -31,7 +31,7 @@ object Template {
           ul(`class` := "menu")(
             li(id := "state", `class` := "oi", "data-glyph".attr := "media-play"),
             // li(id := "menu", `class` := "oi", "data-glyph".attr := "menu"),
-            li(id := "theme", "title".attr := "toogle theme (F2)", `class` := "oi", "data-glyph".attr := "sun"),
+            li(id := "theme", "title".attr := "toggle theme (F2)", `class` := "oi", "data-glyph".attr := "sun"),
             // li(id := "home", "title".attr := "home (F3)", `class` := "oi", "data-glyph".attr := "home"),
             li(id := "help", "title".attr := "help (F1)", `class` := "oi", "data-glyph".attr := "question-mark")
           )

@@ -1,14 +1,13 @@
 language: scala
 os:
-  - osx
   - linux
+  - osx
 scala:
   - 2.11.7
 jdk:
   - oraclejdk7
   - oraclejdk8
   - openjdk7
-  - openjdk8
 cache:
   directories:
     - $HOME/.ivy2/cache
@@ -16,7 +15,6 @@ cache:
 notifications:
   email:
     - masgui@gmail.com
-before_install: ./.jdk_mac.sh
 script:
   - sbt -J-XX:ReservedCodeCacheSize=256M test
   # Tricks to avoid unnecessary cache updates
@@ -25,6 +23,3 @@ script:
 matrix:
   exclude:
     - os: osx
-      jdk: openjdk8
-    - os: osx
-      jdk: openjdk7

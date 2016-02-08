@@ -215,9 +215,34 @@ object Rendering {
               else fold(startPos, endPos, v, process)
             }
             case Html(v, folded) ⇒ {
-              val process: (HTMLElement => Unit) = _.innerHTML = v
-              if(!folded) nextline(endPos, v, process)
-              else fold(startPos, endPos, v, process)
+
+              val frameId = s"frame-${java.util.UUID.randomUUID().toString()}"
+
+              val echoForm =
+                form(action := "/echo", target := frameId, method := "post")(
+                  input(name := "code", value := v, `type` := "hidden")
+                ).render
+
+              val echoFrame =
+                div(
+                  iframe(
+                    name := frameId,
+                    "scrolling".attr :="no",
+                    "allow-top-navigation".attr := "true",
+                    "allow-popups".attr := "true",
+                    "allowTransparency".attr := "true",
+                    style := "height: 0; width: 100%"
+                  ),
+                  script("iFrameResize({'checkOrigin': false, 'heightCalculationMethod': 'min'})")
+                ).render
+
+              dom.setTimeout( () => {
+                echoForm.submit()
+              }, 0)
+
+              val process: (HTMLElement => Unit) = _.appendChild(echoFrame)
+              if(!folded) nextline(endPos, "", process)
+              else fold(startPos, endPos, "", process)              
             }
           }
         }

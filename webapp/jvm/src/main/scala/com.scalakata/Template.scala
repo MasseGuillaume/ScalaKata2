@@ -26,7 +26,7 @@ object Template {
   }
 
   def txt(prod: Boolean) = {
-    val client = if(prod) "client-fullopt.js" else "client-fastopt.js"
+    val client = if(prod) "client-opt.js" else "client-fastopt.js"
 
     "<!DOCTYPE html>" +
     html(

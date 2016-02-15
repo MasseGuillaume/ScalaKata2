@@ -16,13 +16,13 @@ object KataMacro {
         if(aTree.pos == NoPosition) aTree
         else {
           tTree match {
-            case None =>
+            case None ⇒
               q"""{
                 val $t = $aTree
                 ${instrumentation}(${aTree.pos}) = render($t)
                 $t
               }"""
-            case Some(tpe) =>
+            case Some(tpe) ⇒
               q"""{
                 val $t: $tpe = $aTree
                 ${instrumentation}(${aTree.pos}) = render($t)
@@ -93,7 +93,7 @@ object KataMacro {
           }
           """
         } catch {
-          case scala.util.control.NonFatal(e) => {
+          case scala.util.control.NonFatal(e) ⇒ {
             println(s"compiler bug ${e.toString}")
             q"""
             class $name extends Instrumented {

@@ -18,6 +18,7 @@ import java.nio.file.Path
 
 import scala.concurrent.{Future, Await}
 
+import upickle.default._
 
 class RouteActor(
   override val artifacts: Seq[Path],
@@ -31,13 +32,15 @@ class RouteActor(
   def receive = runRoute(route)
 }
 
-import upickle._
-object AutowireServer extends autowire.Server[String, upickle.Reader, upickle.Writer]{
-  def read[Result: upickle.Reader](p: String) = upickle.read[Result](p)
-  def write[Result: upickle.Writer](r: Result) = upickle.write(r)
+import upickle.default.{Reader, Writer, write => uwrite, read => uread}
+object AutowireServer extends autowire.Server[String, Reader, Writer]{
+  def read[Result: Reader](p: String) = uread[Result](p)
+  def write[Result: Writer](r: Result) = uwrite(r)
 }
 
 trait Route extends HttpService with EvalImpl {
+  import system.dispatcher
+
   def route =
     get {
       path("assets" / "client-fastopt.js.map") {
@@ -45,8 +48,8 @@ trait Route extends HttpService with EvalImpl {
       }
     } ~
     get {
-      path("assets" / "client-fullopt.js.map") {
-        getFromResource("client-fullopt.js.map")
+      path("assets" / "client-opt.js.map") {
+        getFromResource("client-opt.js.map")
       }
     } ~
     path("echo") {
@@ -57,6 +60,17 @@ trait Route extends HttpService with EvalImpl {
               ContentType(MediaTypes.`text/html`, HttpCharsets.`UTF-8`),
               HttpData(Template.echo(code))
             ))
+          }
+        }
+      }
+    } ~
+    post {
+      path("api" / Segments){ s ⇒
+        extract(_.request.entity.asString) { e ⇒
+          complete {
+            AutowireServer.route[Api](this)(
+              autowire.Core.Request(s, read[Map[String, String]](e))
+            )
           }
         }
       }
@@ -73,17 +87,6 @@ trait Route extends HttpService with EvalImpl {
           path(Rest) { _ ⇒
             complete(index)
           }
-        } ~
-        post {
-          path("api" / Segments){ s ⇒
-            extract(_.request.entity.asString) { e ⇒
-              complete {
-                AutowireServer.route[Api](this)(
-                  autowire.Core.Request(s, upickle.read[Map[String, String]](e))
-                )
-              }
-            }
-          }
         }
       }
     }
@@ -91,7 +94,7 @@ trait Route extends HttpService with EvalImpl {
   implicit val system: akka.actor.ActorRefFactory = actorRefFactory
   private implicit val executionContext = actorRefFactory.dispatcher
   private implicit val Default: CacheKeyer = CacheKeyer {
-    case RequestContext(HttpRequest(_, uri, _, entity, _), _, _) => (uri, entity)
+    case RequestContext(HttpRequest(_, uri, _, entity, _), _, _) ⇒ (uri, entity)
   }
   private val simpleCache = routeCache()
   private val index = HttpEntity(MediaTypes.`text/html`, Template.txt(prod))

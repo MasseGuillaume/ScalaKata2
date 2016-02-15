@@ -6,6 +6,7 @@ import scala.scalajs.js
 import scala.scalajs.js._
 import scala.scalajs.js.annotation.JSName
 
+@js.native
 trait Editor extends js.Object {
   def hasFocus(): Boolean = js.native
   def findPosH(start: Position, amount: Double, unit: String, visually: Boolean): js.Any = js.native
@@ -49,6 +50,7 @@ trait Editor extends js.Object {
   def off(eventName: String, handler: js.Function2[Editor, js.Any, Unit]): Unit = js.native
 }
 
+@js.native
 @JSName("Doc")
 class Doc protected () extends js.Object {
   def this(text: String, mode: js.Any = js.native, firstLineNumber: Double = js.native) = this()
@@ -95,32 +97,38 @@ class Doc protected () extends js.Object {
   def indexFromPos(position: Position): Int = js.native
 }
 
+@js.native
 trait Coords extends js.Object {
   val left: Double = js.native
   val top: Double = js.native
   val bottom: Double = js.native
 }
 
+@js.native
 trait Range extends js.Object {
   val anchor: Position = js.native
   val head: Position = js.native
 }
 
+@js.native
 trait LineHandle extends js.Object {
   val text: String = js.native
 }
 
+@js.native
 trait TextMarker extends js.Object {
   def clear(): Unit = js.native
   def find(): Position = js.native
   def getOptions(copyWidget: Boolean): TextMarkerOptions = js.native
 }
 
+@js.native
 trait LineWidget extends js.Object {
   def clear(): Unit = js.native
   def changed(): Unit = js.native
 }
 
+@js.native
 trait EditorChange extends js.Object {
   var from: Position = js.native
   var to: Position = js.native
@@ -128,20 +136,24 @@ trait EditorChange extends js.Object {
   var removed: String = js.native
 }
 
+@js.native
 trait EditorChangeLinkedList extends EditorChange {
   var next: EditorChangeLinkedList = js.native
 }
 
+@js.native
 trait EditorChangeCancellable extends EditorChange {
   def update(from: Position = js.native, to: Position = js.native, text: String = js.native): Unit = js.native
   def cancel(): Unit = js.native
 }
 
+@js.native
 trait Position extends js.Object {
   var ch: Int = js.native
   var line: Int = js.native
 }
 
+@js.native
 trait EditorConfiguration extends js.Object {
   // string|CodeMirror.Doc
   // The starting value of the editor. Can be a string, or a document object.
@@ -242,6 +254,7 @@ trait EditorConfiguration extends js.Object {
   var highlightSelectionMatches: Boolean = js.native
 }
 
+@js.native
 trait TextMarkerOptions extends js.Object {
   var className: String = js.native
   var inclusiveLeft: Boolean = js.native
@@ -257,6 +270,7 @@ trait TextMarkerOptions extends js.Object {
   var shared: Boolean = js.native
 }
 
+@js.native
 trait LineStream extends js.Object {
   // Returns true only if the stream is at the end of the line.
   def eol: Boolean = js.native
@@ -298,6 +312,7 @@ trait LineStream extends js.Object {
   def current: String = js.native
 }
 
+@js.native
 trait ShowHintOptions extends js.Object {
   var alignWithWord: Boolean = js.native
   var async: Boolean = js.native
@@ -313,6 +328,7 @@ trait ShowHintOptions extends js.Object {
   // var words: js.Any = js.native
 }
 
+@js.native
 @JSName("CodeMirror")
 object CodeMirror extends js.Object {
   var Pass: js.Any = js.native

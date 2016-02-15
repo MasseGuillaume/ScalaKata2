@@ -55,11 +55,11 @@ object Main {
     CodeMirror.commands.typeAt = Hint.typeAt _
     CodeMirror.commands.autocomplete = Hint.autocomplete _
     CodeMirror.commands.autocompleteDot = Hint.autocompleteDot _
-    CodeMirror.commands.help = (editor: Editor) => {
+    CodeMirror.commands.help = (editor: Editor) ⇒ {
       editor.getDoc().setValue(Rendering.wrap("help"))
       Rendering.run(editor)
     }
-    CodeMirror.commands.solarizedToggle = (editor: Editor) => {
+    CodeMirror.commands.solarizedToggle = (editor: Editor) ⇒ {
       val isDark = editor.getOption("theme").asInstanceOf[String] == "solarized dark"
       val theme =
         if(isDark) "solarized light"
@@ -78,10 +78,10 @@ object Main {
         val doc = editor.getDoc()
         editor.focus()
         Rendering.resetCursor(doc)
-        themeButton.addEventListener("click", (e: dom.Event) => CodeMirror.commands.solarizedToggle(editor))
-        dom.document.getElementById("help").addEventListener("click", (e: dom.Event) => CodeMirror.commands.help(editor))
+        themeButton.addEventListener("click", (e: dom.Event) ⇒ CodeMirror.commands.solarizedToggle(editor))
+        dom.document.getElementById("help").addEventListener("click", (e: dom.Event) ⇒ CodeMirror.commands.help(editor))
         stateButton.setAttribute("title", s"run ($ctrlS + Enter)")
-        stateButton.addEventListener("click", (e: dom.Event) => {
+        stateButton.addEventListener("click", (e: dom.Event) ⇒ {
           if(Rendering.toclear) {
             Rendering.clear(doc)
             Rendering.toclear = false
@@ -92,7 +92,7 @@ object Main {
 
         val path = dom.location.pathname
         if(path != "/") {
-          Ajax.get(s"/assets/$path").onSuccess{ case xhr =>
+          Ajax.get(s"/assets/$path").onSuccess{ case xhr ⇒
             doc.setValue(xhr.responseText)
             Rendering.run(editor)
           }

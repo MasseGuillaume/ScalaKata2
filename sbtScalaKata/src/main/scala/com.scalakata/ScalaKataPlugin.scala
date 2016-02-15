@@ -11,7 +11,8 @@ import java.io.File
 import build.BuildInfo._
 
 import spray.revolver.Actions
-import spray.revolver.RevolverPlugin.Revolver
+import spray.revolver.RevolverPlugin
+import spray.revolver.RevolverPlugin.autoImport._
 
 import sbtdocker._
 import sbtdocker.DockerKeys._
@@ -62,23 +63,22 @@ object ScalaKataPlugin extends AutoPlugin {
         Defaults.compileBase ++
         Defaults.configTasks ++
         Defaults.configSettings ++
-        Revolver.settings ++
         Seq(
           scalaVersion := backendScalaVersion,
           securityManager := false,
           timeout := 20.seconds,
-          mainClass in Revolver.reStart := Some("com.scalakata.Boot"),
-          startArgs2 in Revolver.reStart := (startArgs in Revolver.reStart).value.toArgs,
-          fullClasspath in Revolver.reStart <<= fullClasspath,
-          Revolver.reStart <<= InputTask(Actions.startArgsParser) { args ⇒
+          mainClass in reStart := Some("com.scalakata.Boot"),
+          startArgs2 in reStart := (startArgs in reStart).value.toArgs,
+          fullClasspath in reStart <<= fullClasspath,
+          reStart <<= InputTask(Actions.startArgsParser) { args ⇒
             (
               streams,
-              Revolver.reLogTag,
+              reLogTag,
               thisProjectRef,
-              Revolver.reForkOptions,
-              mainClass in Revolver.reStart,
-              fullClasspath in Revolver.reStart,
-              startArgs2 in Revolver.reStart,
+              reForkOptions,
+              mainClass in reStart,
+              fullClasspath in reStart,
+              startArgs2 in reStart,
               args
             ).map(Actions.restartApp)
              .dependsOn(products in Compile)
@@ -86,7 +86,7 @@ object ScalaKataPlugin extends AutoPlugin {
           kataUri := new URI("http://localhost:7331"),
           readyPort := Some(8081),
           openBrowser := {
-            readyPort.value.map{ p =>
+            readyPort.value.map{ p ⇒
               val socket = new java.net.ServerSocket(p)
               socket.accept()
               socket.close()
@@ -94,7 +94,7 @@ object ScalaKataPlugin extends AutoPlugin {
                 case x if x contains "mac" ⇒ s"open ${kataUri.value.toString}".!
                 case _ ⇒
                   if(Desktop.isDesktopSupported) Desktop.getDesktop.browse(kataUri.value)
-                  else Stream("chromium", "google-chrome", "firefox").map(b => 
+                  else Stream("chromium", "google-chrome", "firefox").map(b ⇒ 
                     s"$b ${kataUri.value.toString}".! 
                   ).find(_ == 0)
               }
@@ -123,14 +123,14 @@ object ScalaKataPlugin extends AutoPlugin {
         unmanagedResourceDirectories in Backend += (sourceDirectory in Kata).value,
         resolvers += "masseguillaume" at "http://dl.bintray.com/content/masseguillaume/maven",
         dependencyClasspath in Kata ++= (fullClasspath in Compile).value ++ (fullClasspath in Test).value,
-        startArgs in (Backend, Revolver.reStart) := StartArgs(
+        startArgs in (Backend, reStart) := StartArgs(
           (readyPort in Backend).value,
           (kataUri in Backend).value,
           (securityManager in Backend).value,
           (timeout in Backend).value,
           (fullClasspath in Kata).value.
             map(_.data).
-            map(v => Paths.get(v.getAbsoluteFile.toString)),
+            map(v ⇒ Paths.get(v.getAbsoluteFile.toString)),
           (scalacOptions in Kata).value
         ),
         scalacOptions in Kata ++= evalScalacOptions
@@ -147,7 +147,7 @@ object ScalaKataPlugin extends AutoPlugin {
             )
           ),
           dockerfile in (Kata, docker) := {
-            val Some(main) = (mainClass in (Backend, Revolver.reStart)).value
+            val Some(main) = (mainClass in (Backend, reStart)).value
 
             val app = "/app"
             val libs = s"$app/libs"
@@ -160,7 +160,7 @@ object ScalaKataPlugin extends AutoPlugin {
               from("frolvlad/alpine-oraclejdk8")
 
               val args = {
-                val t = (startArgs in (Backend, Revolver.reStart)).value
+                val t = (startArgs in (Backend, reStart)).value
                 val kataClasspath =
                   (packageBin in Compile).value +:
                   (packageBin in Kata).value +:
@@ -211,7 +211,7 @@ object ScalaKataPlugin extends AutoPlugin {
         )
   }
   import autoImport._
-  override def requires = sbt.plugins.JvmPlugin && DockerPlugin
+  override def requires = sbt.plugins.JvmPlugin && DockerPlugin && RevolverPlugin
   override def trigger = allRequirements
 
   override lazy val projectSettings = scalaKataSettings ++ scalaKataDockerSettings

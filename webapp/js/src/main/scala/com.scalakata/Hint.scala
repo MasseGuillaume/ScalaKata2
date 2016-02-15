@@ -10,7 +10,7 @@ import scalatags.JsDom.all._
 import scala.concurrent.Future
 
 object Hint {
-  def hint[T](editor: Editor, dataFun: (Int => Future[T]), renderFun: ((T, String) =>  js.Array[Hint]), single: Boolean) = {
+  def hint[T](editor: Editor, dataFun: (Int ⇒ Future[T]), renderFun: ((T, String) ⇒  js.Array[Hint]), single: Boolean) = {
     val doc = editor.getDoc()
     val cursor = doc.getCursor()
     val cursorIndex = doc.indexFromPos(cursor)
@@ -48,8 +48,8 @@ object Hint {
 
     val line = doc.getLine(cursor.line)
 
-    dataFun(cursorIndex).onSuccess{ case result =>
-      CodeMirror.showHint(editor, (_, options) => {
+    dataFun(cursorIndex).onSuccess{ case result ⇒
+      CodeMirror.showHint(editor, (_, options) ⇒ {
         val (fromCh, toCh, list) =
           if(single) {  
             val (fromCh, toCh, term) = findTerm
@@ -73,11 +73,11 @@ object Hint {
   def typeAt(editor: Editor) = {
     val code = editor.getDoc().getValue()
     hint(editor, 
-      pos => Client[Api].typeAt(TypeAtRequest(code, RangePosition(pos, pos, pos))).call(),
-      (data: Option[TypeAtResponse], _) => data.map{ case TypeAtResponse(tpe) => 
+      pos ⇒ Client[Api].typeAt(TypeAtRequest(code, RangePosition(pos, pos, pos))).call(),
+      (data: Option[TypeAtResponse], _) ⇒ data.map{ case TypeAtResponse(tpe) ⇒ 
         HintConfig.className("typeAt")
                   .text(s" // $tpe")
-                  .render( (el, _, _) => {
+                  .render( (el, _, _) ⇒ {
                     el.appendChild(pre(tpe).render)
                     ()
                   }): Hint
@@ -88,13 +88,13 @@ object Hint {
   def autocomplete(editor: Editor) = {
     val code = editor.getDoc().getValue()
     hint(editor, 
-      pos => Client[Api].autocomplete(CompletionRequest(code, RangePosition(pos, pos, pos))).call(),
-      (data: List[CompletionResponse], term) => {
+      pos ⇒ Client[Api].autocomplete(CompletionRequest(code, RangePosition(pos, pos, pos))).call(),
+      (data: List[CompletionResponse], term) ⇒ {
         data.filter(_.name.toLowerCase.contains(term.toLowerCase))
-            .map{ case CompletionResponse(name, signature) =>
+            .map{ case CompletionResponse(name, signature) ⇒
               HintConfig.className("autocomplete")
                         .text(name)
-                        .render((el, _, _) => {
+                        .render((el, _, _) ⇒ {
                           val node = pre(`class` := "signature").render
                           CodeMirror.runMode(signature, Rendering.modeScala, node)
                           el.appendChild(span(`class` := "name cm-def")(name).render)

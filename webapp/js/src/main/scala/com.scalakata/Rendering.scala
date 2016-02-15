@@ -59,22 +59,22 @@ object Rendering {
 
     def noop[T](v: T): Unit = ()
 
-    def nextline2(endPos: Position, node: HTMLElement, process: (HTMLElement => Unit) = noop, options: js.Any = null): Anoted = {
+    def nextline2(endPos: Position, node: HTMLElement, process: (HTMLElement ⇒ Unit) = noop, options: js.Any = null): Anoted = {
       process(node)
       Line(editor.addLineWidget(endPos.line, node, options))
     }
 
-    def nextline(endPos: Position, content: String, process: (HTMLElement => Unit) = noop, options: js.Any = null): Anoted = {
+    def nextline(endPos: Position, content: String, process: (HTMLElement ⇒ Unit) = noop, options: js.Any = null): Anoted = {
       val node = pre(`class` := "line")(content).render
       nextline2(endPos, node, process, options)
     }
 
-    def fold(startPos: Position, endPos: Position, content: String, process: (HTMLElement => Unit) = noop): Anoted = {
+    def fold(startPos: Position, endPos: Position, content: String, process: (HTMLElement ⇒ Unit) = noop): Anoted = {
       val node = div(`class` := "fold")(content).render
       process(node)
       Marked(doc.markText(startPos, endPos, TextMarkerConfig.replacedWith(node)))
     }
-    def inline(startPos: Position, content: String, process: (HTMLElement => Unit) = noop): Anoted = {
+    def inline(startPos: Position, content: String, process: (HTMLElement ⇒ Unit) = noop): Anoted = {
       // inspired by blink/devtools WebInspector.JavaScriptSourceFrame::_renderDecorations
       val basePos = Pos.line(startPos.line).ch(0)
       val offsetPos = Pos.line(startPos.line).ch(doc.getLine(startPos.line).length)
@@ -83,7 +83,7 @@ object Rendering {
       val base = editor.cursorCoords(basePos, mode)
       val offset = editor.cursorCoords(offsetPos, mode)
 
-      val node = div(`class` := "inline", left := offset.left - base.left)(content).render
+      val node = pre(`class` := "inline", left := offset.left - base.left)(content).render
       process(node)
 
       Line(editor.addLineWidget(startPos.line, node))
@@ -91,29 +91,8 @@ object Rendering {
 
     def doRender(startPos: Position, endPos: Position, render: Render): Anoted = render match {
       case Value(v, tpe) ⇒ {
-        def strip(r: String) = {
-
-          val startToken = "Playground@"
-          val endToken = "#Playground$"
-          def startsWith(v: String, p: String) = 
-            (0 until v.length).filter(v.startsWith(p, _))
-
-          (
-            Vector(0) ++ 
-            (
-              startsWith(r, startToken) ++ 
-              startsWith(r, endToken).map(_ + endToken.size)
-            ).sorted ++
-            Vector(r.length)
-          ).grouped(2).toList.map{ case Vector(s, e) =>r.slice(s, e)}.mkString("")
-            .replaceAll("scala.", "")
-            .replaceAll("scala.collection.immutable.", "")
-            .replaceAll("scala.collection.mutable.", "")
-            .replaceAll("java.lang.", "")
-        }
-
-        val process = (node: HTMLElement) => {
-          CodeMirror.runMode(v + s": ${strip(tpe)}", modeScala, node)
+        val process = (node: HTMLElement) ⇒ {
+          CodeMirror.runMode(s"$v: $tpe", modeScala, node)
           node.title = tpe
           () 
         }
@@ -130,7 +109,7 @@ object Rendering {
 
           import scala.scalajs.js.JSStringOps._
           // js regex only replace once
-          def fix(f: String => String)(v0: String) = {
+          def fix(f: String ⇒ String)(v0: String) = {
             def itt(v: String): String = {
               val t = f(v)
               if(t == v) t
@@ -140,8 +119,8 @@ object Rendering {
           }
 
           val res = 
-            fix{ v =>
-              v.jsReplace(RegexHelper.codeReg, (b: String, c: String) => {
+            fix{ v ⇒
+              v.jsReplace(RegexHelper.codeReg, (b: String, c: String) ⇒ {
                 val node =
                   if(c.contains(nl)) pre(`class` := "code block").render
                   else span(`class` := "code short").render
@@ -180,12 +159,12 @@ object Rendering {
             script("iFrameResize({'checkOrigin': false, 'heightCalculationMethod': 'min'})")
           ).render
 
-        dom.setTimeout( () => {
+        dom.setTimeout( () ⇒ {
           echoForm.submit()
         }, 0)
 
-        val process: (HTMLElement => Unit) = {
-          e => e.appendChild(echoFrame)
+        val process: (HTMLElement ⇒ Unit) = {
+          e ⇒ e.appendChild(echoFrame)
           ()
         }
         if(!folded) nextline(endPos, "", process)
@@ -194,6 +173,8 @@ object Rendering {
     }
 
     val request = EvalRequest(doc.getValue())
+    dom.console.log(upickle.default.write(request))
+
     Client[Api].eval(request).call().onSuccess{ case response ⇒
       clear(doc)
       toclear = true
@@ -206,21 +187,21 @@ object Rendering {
           info <- infos
         } yield {
           def severityToIcon(sev: Severity) = sev match {
-            case Info => "info"
-            case Warning => "warning"
-            case Error => "circle-x"
+            case Info ⇒ "info"
+            case Warning ⇒ "warning"
+            case Error ⇒ "circle-x"
           }
           val sev = severity.toString.toLowerCase
 
           info.pos match {
-            case None => {
+            case None ⇒ {
               val node = div(`class` := s"compiler $sev")(
                 i(`class`:="oi", "data-glyph".attr := severityToIcon(severity)),
                 span(info.message)
               ).render
               Line(editor.addLineWidget(doc.firstLine(), node))
             }
-            case Some(RangePosition(start, _, end)) => {
+            case Some(RangePosition(start, _, end)) ⇒ {
               val startPos = doc.posFromIndex(start)
               val tabSize = editor.getOption("tabSize").asInstanceOf[Int]
 
@@ -230,7 +211,7 @@ object Rendering {
               val spaceCount = line.count(_ == ' ')
 
               val tabs =
-                (0 until tabCount).map(_ =>
+                (0 until tabCount).map(_ ⇒
                   span(`class`:="cm-tab", role := "presentation", "cm-text".attr :="  ")(" " * tabSize)
                 ).toList
 
@@ -260,7 +241,7 @@ object Rendering {
         } else Nil
 
       val runtimeError =
-        response.runtimeError.map{ case RuntimeError(message, pos) =>
+        response.runtimeError.map{ case RuntimeError(message, pos) ⇒
           val node = div(`class` := "runtime-error")(
             i(`class`:="oi", "data-glyph".attr := "circle-x"),
             span(message)
@@ -276,16 +257,24 @@ object Rendering {
       val instrumentations: List[Anoted] = 
         response.instrumentation.
           groupBy(line).
-          values.flatMap{ renders =>
+          values.flatMap{ renders ⇒
             // join single line value
+            if(renders.forall{case (_, Value(v, t)) => !v.contains(nl); case _ => false}) {
+              val vs = renders.map{case (_, Value(v, _)) => v; case _ => ""}
+              val tpes = renders.map{case (_, Value(_, t)) => t; case _ => ""}
 
-            
-            renders.map{ case ((RangePosition(start, _, end), render)) =>
-              val startPos = doc.posFromIndex(start)
-              val endPos = doc.posFromIndex(end)
+              val joined =
+                if(vs.size == 1 && tpes.size == 1) Value(vs.head, tpes.head)
+                else Value(vs.mkString("(", ", ", ")"), tpes.mkString("(", ", ", ")"))
 
-              doRender(startPos, endPos, render)
+              List((renders.head._1, joined))
             }
+            else renders
+          }.map{case ((RangePosition(start, _, end), render)) ⇒
+            val startPos = doc.posFromIndex(start)
+            val endPos = doc.posFromIndex(end)
+
+            doRender(startPos, endPos, render)
           }.
           toList
 

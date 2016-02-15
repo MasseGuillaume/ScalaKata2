@@ -82,7 +82,7 @@ class PositionConfig(val dict:OptMap)
 }
 
 
-
+@js.native
 trait Hint extends js.Object {
   // The completion text. This is the only required property.
   var text: String = js.native

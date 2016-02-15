@@ -2,16 +2,14 @@ import sbt.Keys._
 import spray.revolver.AppProcess
 import spray.revolver.RevolverPlugin.Revolver
 
-def cls = Command.command("cls") { state =>
-  println("\033c") // xterm clear
-  state
-}
-
 lazy val commonSettings = Seq(
-  commands += cls,
+  commands += Command.command("cls") { state =>
+    println("\033c") // xterm clear
+    state
+  },
   scalaVersion := "2.11.7",
   organization := "com.scalakata",
-  version := "1.0.7",
+  version := "1.0.8",
   description := "Scala Interactive Playground",
   licenses := Seq("MIT" -> url("http://www.opensource.org/licenses/mit-license.html")),
   homepage := Some(url("http://scalakata.com")),
@@ -43,23 +41,14 @@ lazy val commonSettings = Seq(
 
 seq(commonSettings: _*)
 
-lazy val buildInfoMacro = Seq(
-  buildInfoPackage := "com.scalakata.build",
-  sourceGenerators in Test <+= (buildInfo in Compile),
-  buildInfoKeys := Seq[BuildInfoKey](
-    BuildInfoKey.map((fullClasspath in Runtime in annotation)){ case (k, v) ⇒ k -> v.map(_.data) },
-    (scalacOptions in Compile in annotation)
-  )
-)
-
 val paradiseVersion = "2.1.0"
 
 lazy val model = project
   .settings(commonSettings: _*)
   .settings(
     libraryDependencies ++= Seq(
-      "com.lihaoyi" %% "pprint" % "0.3.8",
-      "org.scala-lang"  % "scala-reflect"  % scalaVersion.value
+      "com.lihaoyi" % "ammonite-repl" % "0.5.4" cross CrossVersion.full,
+      "com.lihaoyi" %% "pprint" % "0.3.8"
     )
   )
   .enablePlugins(ScalaJSPlugin)
@@ -68,24 +57,33 @@ lazy val annotation = project
   .settings(commonSettings: _*)
   .settings(
     libraryDependencies ++= Seq(
+      "com.lihaoyi" % "ammonite-repl" % "0.5.4" cross CrossVersion.full,
       "org.scala-lang"  % "scala-compiler" % scalaVersion.value,
       "org.scala-lang"  % "scala-reflect"  % scalaVersion.value,
       compilerPlugin("org.scalamacros" % "paradise" % paradiseVersion cross CrossVersion.full)
     ),
-    scalacOptions -=  "-Ywarn-value-discard"
+    scalacOptions -= "-Ywarn-value-discard"
   ).dependsOn(model)
 
 lazy val evaluation = project
   .settings(commonSettings: _*)
-  .settings(buildInfoMacro: _*)
+  .settings(
+    buildInfoPackage := "com.scalakata.build",
+    sourceGenerators in Test <+= (buildInfo in Compile),
+    buildInfoKeys := Seq[BuildInfoKey](
+      BuildInfoKey.map((fullClasspath in Runtime in annotation)){ case (_, v) ⇒ "annotationClasspath" -> v.map(_.data) },
+      BuildInfoKey.map((fullClasspath in Runtime in model)){ case (_, v) ⇒ "modelClasspath" -> v.map(_.data) },
+      (scalacOptions in Compile in annotation)
+    )
+  )
   .enablePlugins(BuildInfoPlugin)
   .dependsOn(annotation)
 
 lazy val webapp = crossProject.settings(
   libraryDependencies ++= Seq(
-    "com.lihaoyi"          %%% "upickle"    % "0.2.6",
-    "com.lihaoyi"          %%% "autowire"   % "0.2.5",
-    "com.lihaoyi"          %%% "scalatags"  % "0.5.2"
+    "com.lihaoyi" %%% "scalatags" % "0.5.2",
+    "com.lihaoyi" %%% "upickle"   % "0.3.8",
+    "com.lihaoyi" %%% "autowire"  % "0.2.5"
   )
 ).settings(commonSettings: _*)
  .jsSettings(
@@ -95,17 +93,17 @@ lazy val webapp = crossProject.settings(
  .jvmSettings(
   name := "Server",
   libraryDependencies ++= Seq(
-    "com.lihaoyi"       %% "pprint"                   % "0.3.8",
-    "io.spray"          %% "spray-can"                % "1.3.3",
-    "io.spray"          %% "spray-caching"            % "1.3.3",
-    "io.spray"          %% "spray-json"               % "1.3.2",
-    "io.spray"          %% "spray-routing-shapeless2" % "1.3.3",
-    "io.spray"          %% "spray-client"             % "1.3.2",
-    "com.typesafe.akka" %% "akka-actor"               % "2.3.12",
-    "org.webjars.bower"  % "codemirror"               % "5.11.0",
-    "org.webjars.bower"  % "open-iconic"              % "1.1.1",
-    "org.webjars.bower"  % "pagedown"                 % "1.1.0",
-    "org.webjars.bower"  % "iframe-resizer"           % "2.8.10"
+    "com.lihaoyi" % "ammonite-repl" % "0.5.4" cross CrossVersion.full,
+    "io.spray"          %% "spray-can"                  % "1.3.3",
+    "io.spray"          %% "spray-caching"              % "1.3.3",
+    "io.spray"          %% "spray-json"                 % "1.3.2",
+    "io.spray"          %% "spray-routing-shapeless2"   % "1.3.3",
+    "io.spray"          %% "spray-client"               % "1.3.2",
+    "com.typesafe.akka" %% "akka-actor"                 % "2.3.12",
+    "org.webjars.bower"  % "codemirror"                 % "5.11.0",
+    "org.webjars.bower"  % "open-iconic"                % "1.1.1",
+    "org.webjars.bower"  % "pagedown"                   % "1.1.0",
+    "org.webjars.bower"  % "iframe-resizer"             % "2.8.10"
   ) 
 )
 

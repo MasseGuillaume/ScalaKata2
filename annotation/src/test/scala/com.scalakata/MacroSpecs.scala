@@ -6,6 +6,7 @@ class MacroSpecs extends org.specs2.Specification { def is = s2"""
     full $full
     val extraction $extraction
     typesplit $typesplit
+    hide instrumented class name $hideName
 """
 
   def withOffset(instr: Instrumented) = {
@@ -65,21 +66,21 @@ if(true) null
 }
 
     withOffset(new Full) ==== List(
-      RangePosition(  8,   8,  13) -> Value("L29", "java.lang.String"),
-      RangePosition( 22,  22,  27) -> Value("L30", "java.lang.String"),
-      RangePosition( 28,  28,  33) -> Value("L29L30", "java.lang.String"),
-      RangePosition( 42,  42,  47) -> Value("L29L30", "java.lang.String"),
-      RangePosition( 49,  49,  56) -> Value("Set(33)", "scala.collection.immutable.Set[Int]"),
-      RangePosition(151, 151, 160) -> Value("L34v", "java.lang.String"),
-      RangePosition(175, 175, 176) -> Value("L40", "java.lang.String"),
-      RangePosition(177, 177, 225) -> Value("L42-1L42-2", "java.lang.String"),
+      RangePosition(  8,   8,  13) -> Value("L29", "String"),
+      RangePosition( 22,  22,  27) -> Value("L30", "String"),
+      RangePosition( 28,  28,  33) -> Value("L29L30", "String"),
+      RangePosition( 42,  42,  47) -> Value("L29L30", "String"),
+      RangePosition( 49,  49,  56) -> Value("Set(33)", "Set[Int]"),
+      RangePosition(151, 151, 160) -> Value("L34v", "String"),
+      RangePosition(175, 175, 176) -> Value("L40", "String"),
+      RangePosition(177, 177, 225) -> Value("L42-1L42-2", "String"),
       RangePosition(229, 229, 263) -> Value("true", "Boolean"),
-      RangePosition(272, 272, 277) -> Value("L45", "java.lang.String"),
-      RangePosition(282, 282, 287) -> Value("L46", "java.lang.String"),
-      RangePosition(296, 296, 327) -> Value("Map(1 -> 47)", "scala.collection.mutable.Map[Int, Int]"),
+      RangePosition(272, 272, 277) -> Value("L45", "String"),
+      RangePosition(282, 282, 287) -> Value("L46", "String"),
+      RangePosition(296, 296, 327) -> Value("Map(1 -> 47)", "collection.mutable.Map[Int, Int]"),
       RangePosition(335, 335, 337) -> Value("48", "Int"),
-      RangePosition(339, 339, 392) -> Value("535454", "java.lang.String"),
-      RangePosition(437, 437, 444) -> Value("L56-t", "java.lang.String"),
+      RangePosition(339, 339, 392) -> Value("535454", "String"),
+      RangePosition(437, 437, 444) -> Value("L56-t", "String"),
       RangePosition(467, 467, 471) -> Value("null", "Null")
     )
   }
@@ -97,13 +98,25 @@ if(true) null
 
   def typesplit = {
 @instrument class TypeSplit {
-  val withDefault: Option[Int] => Int = {
-    case Some(x) => x
-    case None => 0
+  val withDefault: Option[Int] ⇒ Int = {
+    case Some(x) ⇒ x
+    case None ⇒ 0
   }
 }
 
     withOffset(new TypeSplit) ====
-      List((RangePosition(40,40,86),Value("<function1>","scala.Function1[scala.Option[Int], Int]")))
+      List((RangePosition(39,39,83),Value("<function1>","Option[Int] => Int")))
+  }
+
+  def hideName = {
+@instrument class FooBar {
+  trait B
+  case class A() extends B
+  def a: B = A()
+  a
+}
+
+    withOffset(new FooBar) ====
+      List((RangePosition(56,56,57),Value("A()","B")))
   }
 }

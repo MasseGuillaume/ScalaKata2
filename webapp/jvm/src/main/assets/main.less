@@ -197,12 +197,19 @@ kbd {
   }
 }
 
+::-webkit-scrollbar:horizontal,
 .CodeMirror-simplescroll-horizontal div {
   height: 12px;
 }
 
+::-webkit-scrollbar:vertical,
 .CodeMirror-simplescroll-vertical div {
   width: 12px;
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
 }
 
 .CodeMirror-simplescroll-horizontal,
@@ -212,7 +219,6 @@ kbd {
   }
 }
 
-
 .cm-s-solarized {
   .solarized-pallette;
 
@@ -221,21 +227,6 @@ kbd {
   }
 
   &.cm-s-dark {
-    & + .menu,
-    .CodeMirror-simplescroll-horizontal div,
-    .CodeMirror-simplescroll-vertical div,
-    .CodeMirror-hints {
-      box-shadow: 1px 1px 5px 1px rgba(0, 0, 0, 0.75);
-    }
-
-    & + .menu {
-      background-color: @base02;
-      color: @base01;
-      *:hover {
-        color: @base1;
-      }
-    }
-
     .CodeMirror-widget .fold,
     .CodeMirror-linewidget .line,
     .CodeMirror-linewidget .inline,
@@ -246,12 +237,37 @@ kbd {
     .CodeMirror-widget .code,
     .CodeMirror-hint-active {
       color: inherit;
-      background-color: fade(@base03, 50%);
+      background-color: @base02;
     }
 
     .CodeMirror-dialog {
       background-color: @base02;
       color: @base01;
+    }
+
+    & + .menu,
+    ::-webkit-scrollbar-thumb,
+    .CodeMirror-simplescroll-horizontal div,
+    .CodeMirror-simplescroll-vertical div,
+    .CodeMirror-hints {
+      box-shadow: 1px 1px 5px 1px rgba(0, 0, 0, 0.75);
+    }
+
+    ::-webkit-scrollbar-track,
+    ::-webkit-scrollbar-corner {
+      background: @base03;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: @base02;
+    }
+
+    & + .menu {
+      background-color: @base02;
+      color: @base01;
+      *:hover {
+        color: @base1;
+      }
     }
 
     .CodeMirror-simplescroll-horizontal,
@@ -268,7 +284,26 @@ kbd {
   }
 
   &.cm-s-light {
+    .CodeMirror-widget .fold,
+    .CodeMirror-linewidget .line,
+    .CodeMirror-linewidget .inline,
+    .CodeMirror-hints {
+      background-color: @base2;
+    }
+
+    .CodeMirror-widget .code,
+    .CodeMirror-hint-active {
+      color: inherit;
+      background-color: @base2;
+    }
+
+    .CodeMirror-dialog {
+      background-color: @base2;
+      color: @base1;
+    }
+
     & + .menu,
+    ::-webkit-scrollbar-thumb,
     .CodeMirror-simplescroll-horizontal div,
     .CodeMirror-simplescroll-vertical div,
     .CodeMirror-hints {
@@ -283,22 +318,13 @@ kbd {
       }
     }
 
-    .CodeMirror-widget .fold,
-    .CodeMirror-linewidget .line,
-    .CodeMirror-linewidget .inline,
-    .CodeMirror-hints {
-      background-color: @base2;
+    ::-webkit-scrollbar-track,
+    ::-webkit-scrollbar-corner {
+      background: @base3;
     }
 
-    .CodeMirror-widget .code,
-    .CodeMirror-hint-active {
-      color: inherit;
-      background-color: fade(@base3, 50%);
-    }
-
-    .CodeMirror-dialog {
-      background-color: @base2;
-      color: @base1;
+    ::-webkit-scrollbar-thumb {
+      background: @base2;
     }
 
     .CodeMirror-simplescroll-horizontal,
@@ -309,7 +335,7 @@ kbd {
       }
 
       div {
-        background: @base02;
+        background: @base2;
         box-shadow: 0 0 1px grey inset;
       }
     }

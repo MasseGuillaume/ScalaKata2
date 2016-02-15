@@ -1,21 +1,23 @@
 package com.scalakata
 
-import upickle._
+import upickle.default._
 import autowire._
 
 import org.scalajs.dom
 import scala.concurrent.Future
 import scalajs.concurrent.JSExecutionContext.Implicits.queue
 
-object Client extends autowire.Client[String, upickle.Reader, upickle.Writer]{
+import upickle.default.{Reader, Writer, write => uwrite, read => uread}
+
+object Client extends autowire.Client[String, Reader, Writer]{
   override def doCall(req: Request): Future[String] = {
     dom.ext.Ajax.post(
       url = "/api/" + req.path.mkString("/"),
-      data = upickle.write(req.args)
+      data = write(req.args)
     ).map(_.responseText)
   }
 
-  def read[Result: upickle.Reader](p: String) = upickle.read[Result](p)
-  def write[Result: upickle.Writer](r: Result) = upickle.write(r)
+  def read[T: Reader](p: String) = uread[T](p)
+  def write[T: Writer](r: T) = uwrite(r)
 }
 

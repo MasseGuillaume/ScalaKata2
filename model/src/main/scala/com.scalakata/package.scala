@@ -5,14 +5,12 @@ package object scalakata {
     Ordering.by{ case (rp, r) => RangePosition.unapply(rp) }
 
   type Instrumentation = List[(RangePosition, Render)]
-  
+  // import scala.reflect.runtime.universe.
   def render[T](a: T)(implicit m: Manifest[T]): Render = {
     a match {
-      case null ⇒ Value("null", m.toString)
-      case ar: Array[_] ⇒ Value(ar.deep.toString, m.toString)
       case md: Markdown ⇒ md
       case html: Html ⇒ html
-      case other ⇒ Value(other.toString, m.toString)
+      case v ⇒ Value(pprint.tokenize(v).mkString(""), m.toString)
     }
   }
 

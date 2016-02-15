@@ -4,6 +4,27 @@ object Template {
   import scalatags.Text.all._
   import scalatags.Text.tags2.title
 
+  def echo(code: String) = {
+    "<!DOCTYPE html>" +
+    html(
+      head(
+        meta(charset:="utf-8"),
+        link(rel:="stylesheet", href:="/assets/lib/codemirror/addon/dialog/dialog.css"),
+        link(rel:="stylesheet", href:="/assets/lib/codemirror/addon/fold/foldgutter.css"),
+        link(rel:="stylesheet", href:="/assets/lib/codemirror/addon/hint/show-hint.css"),
+        link(rel:="stylesheet", href:="/assets/lib/codemirror/addon/scroll/simplescrollbars.css"),
+        link(rel:="stylesheet", href:="/assets/lib/codemirror/lib/codemirror.css"),
+        link(rel:="stylesheet", href:="/assets/lib/codemirror/theme/mdn-like.css"),
+        link(rel:="stylesheet", href:="/assets/lib/open-iconic/font/css/open-iconic.css"),
+        link(rel:="stylesheet", href:="/assets/main.css")
+      ),
+      body(style := "margin:0")(
+        raw(code),
+        script(src := "/assets/lib/iframe-resizer/js/iframeResizer.contentWindow.min.js")
+      )
+    )
+  }
+
   def txt(prod: Boolean) = {
     val client = if(prod) "client-fullopt.js" else "client-fastopt.js"
 

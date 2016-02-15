@@ -4,7 +4,7 @@ import autowire._
 import org.denigma.codemirror._
 import org.scalajs.dom.raw.HTMLElement
 import org.scalajs.dom
-import scalajs.concurrent.JSExecutionContext.Implicits.runNow
+import scalajs.concurrent.JSExecutionContext.Implicits.queue
 import scalajs.js
 import scalatags.JsDom.all._
 import scala.concurrent.Future

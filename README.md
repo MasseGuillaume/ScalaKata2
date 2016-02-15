@@ -31,4 +31,3 @@ or
 `sudo docker run -p 7331:7331 --name scalakata masseguillaume/scalakata-bundle:v1.0.6`
 
 open your browser at `http://localhost:7331`
-

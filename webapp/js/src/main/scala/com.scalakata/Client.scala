@@ -5,7 +5,7 @@ import autowire._
 
 import org.scalajs.dom
 import scala.concurrent.Future
-import scalajs.concurrent.JSExecutionContext.Implicits.runNow
+import scalajs.concurrent.JSExecutionContext.Implicits.queue
 
 object Client extends autowire.Client[String, upickle.Reader, upickle.Writer]{
   override def doCall(req: Request): Future[String] = {

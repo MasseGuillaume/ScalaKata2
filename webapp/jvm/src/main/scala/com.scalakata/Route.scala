@@ -53,16 +53,9 @@ trait Route extends HttpService with EvalImpl {
       post {
         formFields('code){ code ⇒
           respondWithHeader(HttpHeaders.RawHeader("X-XSS-Protection", "0")) {
-            val res =
-             s"""|<html>
-                 |<body style="margin:0">
-                 |  $code
-                 |  <script src="/assets/lib/iframe-resizer/js/iframeResizer.contentWindow.min.js"></script>
-                 |</body>
-                 |</html>""".stripMargin
             complete(HttpEntity(
               ContentType(MediaTypes.`text/html`, HttpCharsets.`UTF-8`),
-              HttpData(res)
+              HttpData(Template.echo(code))
             ))
           }
         }

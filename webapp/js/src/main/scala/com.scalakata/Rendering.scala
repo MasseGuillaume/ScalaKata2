@@ -5,13 +5,11 @@ import org.denigma.codemirror._
 import org.scalajs.dom
 import org.scalajs.dom.navigator
 import org.scalajs.dom.raw.HTMLElement
-import scalajs.concurrent.JSExecutionContext.Implicits.runNow
+import scalajs.concurrent.JSExecutionContext.Implicits.queue
 import scalajs.js
 import scalatags.JsDom.all._
 import scala.concurrent.Future
 import org.scalajs.dom.KeyboardEvent
-
-
 
 object Rendering {
   var toclear = false
@@ -59,44 +57,148 @@ object Rendering {
     })  
     resetDefault()
 
+    def noop[T](v: T): Unit = ()
+
+    def nextline2(endPos: Position, node: HTMLElement, process: (HTMLElement => Unit) = noop, options: js.Any = null): Anoted = {
+      process(node)
+      Line(editor.addLineWidget(endPos.line, node, options))
+    }
+
+    def nextline(endPos: Position, content: String, process: (HTMLElement => Unit) = noop, options: js.Any = null): Anoted = {
+      val node = pre(`class` := "line")(content).render
+      nextline2(endPos, node, process, options)
+    }
+
+    def fold(startPos: Position, endPos: Position, content: String, process: (HTMLElement => Unit) = noop): Anoted = {
+      val node = div(`class` := "fold")(content).render
+      process(node)
+      Marked(doc.markText(startPos, endPos, TextMarkerConfig.replacedWith(node)))
+    }
+    def inline(startPos: Position, content: String, process: (HTMLElement => Unit) = noop): Anoted = {
+      // inspired by blink/devtools WebInspector.JavaScriptSourceFrame::_renderDecorations
+      val basePos = Pos.line(startPos.line).ch(0)
+      val offsetPos = Pos.line(startPos.line).ch(doc.getLine(startPos.line).length)
+
+      val mode = "local"
+      val base = editor.cursorCoords(basePos, mode)
+      val offset = editor.cursorCoords(offsetPos, mode)
+
+      val node = div(`class` := "inline", left := offset.left - base.left)(content).render
+      process(node)
+
+      Line(editor.addLineWidget(startPos.line, node))
+    }
+
+    def doRender(startPos: Position, endPos: Position, render: Render): Anoted = render match {
+      case Value(v, tpe) ⇒ {
+        def strip(r: String) = {
+
+          val startToken = "Playground@"
+          val endToken = "#Playground$"
+          def startsWith(v: String, p: String) = 
+            (0 until v.length).filter(v.startsWith(p, _))
+
+          (
+            Vector(0) ++ 
+            (
+              startsWith(r, startToken) ++ 
+              startsWith(r, endToken).map(_ + endToken.size)
+            ).sorted ++
+            Vector(r.length)
+          ).grouped(2).toList.map{ case Vector(s, e) =>r.slice(s, e)}.mkString("")
+            .replaceAll("scala.", "")
+            .replaceAll("scala.collection.immutable.", "")
+            .replaceAll("scala.collection.mutable.", "")
+            .replaceAll("java.lang.", "")
+        }
+
+        val process = (node: HTMLElement) => {
+          CodeMirror.runMode(v + s": ${strip(tpe)}", modeScala, node)
+          node.title = tpe
+          () 
+        }
+        if(v.contains(nl)) nextline(endPos, v, process)
+        else inline(startPos, v, process)             
+      }
+      case Markdown(v, folded) ⇒ {
+
+        def process(elem: HTMLElement): Unit = {
+          val escaper = span().render
+          val content = converter.makeHtml(v)
+
+          dom.console.log(content)
+
+          import scala.scalajs.js.JSStringOps._
+          // js regex only replace once
+          def fix(f: String => String)(v0: String) = {
+            def itt(v: String): String = {
+              val t = f(v)
+              if(t == v) t
+              else itt(t)
+            }
+            itt(v0)
+          }
+
+          val res = 
+            fix{ v =>
+              v.jsReplace(RegexHelper.codeReg, (b: String, c: String) => {
+                val node =
+                  if(c.contains(nl)) pre(`class` := "code block").render
+                  else span(`class` := "code short").render
+                escaper.innerHTML = c
+                CodeMirror.runMode(escaper.textContent, modeScala, node)
+                node.outerHTML
+              })
+            }(content)
+
+          dom.console.log(res)
+
+          elem.innerHTML = res  
+        }
+        if(!folded) nextline(endPos, v, process)
+        else fold(startPos, endPos, v, process)
+      }
+      case Html(v, folded) ⇒ {
+
+        val frameId = s"frame-${java.util.UUID.randomUUID().toString()}"
+
+        val echoForm =
+          form(action := "/echo", target := frameId, method := "post")(
+            input(name := "code", value := v, `type` := "hidden")
+          ).render
+
+        val echoFrame =
+          div(
+            iframe(
+              name := frameId,
+              "scrolling".attr :="no",
+              "allow-top-navigation".attr := "true",
+              "allow-popups".attr := "true",
+              "allowTransparency".attr := "true",
+              style := "width: 100%"
+            ),
+            script("iFrameResize({'checkOrigin': false, 'heightCalculationMethod': 'min'})")
+          ).render
+
+        dom.setTimeout( () => {
+          echoForm.submit()
+        }, 0)
+
+        val process: (HTMLElement => Unit) = {
+          e => e.appendChild(echoFrame)
+          ()
+        }
+        if(!folded) nextline(endPos, "", process)
+        else fold(startPos, endPos, "", process)              
+      }
+    }
+
     val request = EvalRequest(doc.getValue())
     Client[Api].eval(request).call().onSuccess{ case response ⇒
       clear(doc)
       toclear = true
       stateButton.setAttribute("data-glyph", "circle-x")
       stateButton.setAttribute("title", s"Clear (Esc)")
-
-      def noop[T](v: T): Unit = ()
-
-      def nextline2(endPos: Position, node: HTMLElement, process: (HTMLElement => Unit) = noop, options: js.Any = null): Anoted = {
-        process(node)
-        Line(editor.addLineWidget(endPos.line, node, options))
-      }
-
-      def nextline(endPos: Position, content: String, process: (HTMLElement => Unit) = noop, options: js.Any = null): Anoted = {
-        val node = div(`class` := "line")(content).render
-        nextline2(endPos, node, process, options)
-      }
-
-      def fold(startPos: Position, endPos: Position, content: String, process: (HTMLElement => Unit) = noop): Anoted = {
-        val node = div(`class` := "fold")(content).render
-        process(node)
-        Marked(doc.markText(startPos, endPos, TextMarkerConfig.replacedWith(node)))
-      }
-      def inline(startPos: Position, content: String, process: (HTMLElement => Unit) = noop): Anoted = {
-        // inspired by blink/devtools WebInspector.JavaScriptSourceFrame::_renderDecorations
-        val basePos = Pos.line(startPos.line).ch(0)
-        val offsetPos = Pos.line(startPos.line).ch(doc.getLine(startPos.line).length)
-
-        val mode = "local"
-        val base = editor.cursorCoords(basePos, mode)
-        val offset = editor.cursorCoords(offsetPos, mode)
-
-        val node = div(`class` := "inline", left := offset.left - base.left)(content).render
-        process(node)
-
-        Line(editor.addLineWidget(startPos.line, node))
-      }
 
       val complilationInfos = {
         for {
@@ -166,86 +268,26 @@ object Rendering {
           nextline2(Pos.ch(0).line(pos.map(_ - 1).getOrElse(0)), node)
         }.toList
 
-      val instrumentations = 
-        response.instrumentation.map{ case (RangePosition(start, _, end), repr) ⇒
-          val startPos = doc.posFromIndex(start)
-          val endPos = doc.posFromIndex(end)
-          repr match {
-            case Value(v, tpe) ⇒ {
-              val process = (node: HTMLElement) => {CodeMirror.runMode(v + s": $tpe", modeScala, node); () }
-              if(v.contains(nl)) nextline(endPos, v, process)
-              else inline(startPos, v, process)             
+      def line(instr: (RangePosition, Render)) = {
+        val (RangePosition(start, _, _), _) = instr
+        doc.posFromIndex(start).line
+      }
+
+      val instrumentations: List[Anoted] = 
+        response.instrumentation.
+          groupBy(line).
+          values.flatMap{ renders =>
+            // join single line value
+
+            
+            renders.map{ case ((RangePosition(start, _, end), render)) =>
+              val startPos = doc.posFromIndex(start)
+              val endPos = doc.posFromIndex(end)
+
+              doRender(startPos, endPos, render)
             }
-            case Markdown(v, folded) ⇒ {
-
-              def process(elem: HTMLElement): Unit = {
-                val escaper = span().render
-                val content = converter.makeHtml(v)
-
-                dom.console.log(content)
-
-                import scala.scalajs.js.JSStringOps._
-                // js regex only replace once
-                def fix(f: String => String)(v0: String) = {
-                  def itt(v: String): String = {
-                    val t = f(v)
-                    if(t == v) t
-                    else itt(t)
-                  }
-                  itt(v0)
-                }
-
-                val res = 
-                  fix{ v =>
-                    v.jsReplace(RegexHelper.codeReg, (b: String, c: String) => {
-                      val node =
-                        if(c.contains(nl)) pre(`class` := "code block").render
-                        else span(`class` := "code short").render
-                      escaper.innerHTML = c
-                      CodeMirror.runMode(escaper.textContent, modeScala, node)
-                      node.outerHTML
-                    })
-                  }(content)
-
-                dom.console.log(res)
-
-                elem.innerHTML = res  
-              }
-              if(!folded) nextline(endPos, v, process)
-              else fold(startPos, endPos, v, process)
-            }
-            case Html(v, folded) ⇒ {
-
-              val frameId = s"frame-${java.util.UUID.randomUUID().toString()}"
-
-              val echoForm =
-                form(action := "/echo", target := frameId, method := "post")(
-                  input(name := "code", value := v, `type` := "hidden")
-                ).render
-
-              val echoFrame =
-                div(
-                  iframe(
-                    name := frameId,
-                    "scrolling".attr :="no",
-                    "allow-top-navigation".attr := "true",
-                    "allow-popups".attr := "true",
-                    "allowTransparency".attr := "true",
-                    style := "height: 0; width: 100%"
-                  ),
-                  script("iFrameResize({'checkOrigin': false, 'heightCalculationMethod': 'min'})")
-                ).render
-
-              dom.setTimeout( () => {
-                echoForm.submit()
-              }, 0)
-
-              val process: (HTMLElement => Unit) = _.appendChild(echoFrame)
-              if(!folded) nextline(endPos, "", process)
-              else fold(startPos, endPos, "", process)              
-            }
-          }
-        }
+          }.
+          toList
 
       annotations = timeout ::: runtimeError ::: instrumentations ::: complilationInfos
       editor.scrollIntoView(doc.getCursor(), dom.screen.height/2)

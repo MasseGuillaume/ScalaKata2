@@ -11,7 +11,7 @@ lazy val commonSettings = Seq(
   commands += cls,
   scalaVersion := "2.11.7",
   organization := "com.scalakata",
-  version := "1.0.6",
+  version := "1.0.7",
   description := "Scala Interactive Playground",
   licenses := Seq("MIT" -> url("http://www.opensource.org/licenses/mit-license.html")),
   homepage := Some(url("http://scalakata.com")),
@@ -52,10 +52,16 @@ lazy val buildInfoMacro = Seq(
   )
 )
 
-val paradiseVersion = "2.1.0-M5"
+val paradiseVersion = "2.1.0"
 
 lazy val model = project
   .settings(commonSettings: _*)
+  .settings(
+    libraryDependencies ++= Seq(
+      "com.lihaoyi" %% "pprint" % "0.3.8",
+      "org.scala-lang"  % "scala-reflect"  % scalaVersion.value
+    )
+  )
   .enablePlugins(ScalaJSPlugin)
 
 lazy val annotation = project
@@ -77,9 +83,9 @@ lazy val evaluation = project
 
 lazy val webapp = crossProject.settings(
   libraryDependencies ++= Seq(
-    "com.lihaoyi" %%% "upickle"   % "0.2.6",
-    "com.lihaoyi" %%% "autowire"  % "0.2.5",
-    "com.lihaoyi" %%% "scalatags" % "0.5.2"
+    "com.lihaoyi"          %%% "upickle"    % "0.2.6",
+    "com.lihaoyi"          %%% "autowire"   % "0.2.5",
+    "com.lihaoyi"          %%% "scalatags"  % "0.5.2"
   )
 ).settings(commonSettings: _*)
  .jsSettings(
@@ -89,17 +95,18 @@ lazy val webapp = crossProject.settings(
  .jvmSettings(
   name := "Server",
   libraryDependencies ++= Seq(
+    "com.lihaoyi"       %% "pprint"                   % "0.3.8",
     "io.spray"          %% "spray-can"                % "1.3.3",
     "io.spray"          %% "spray-caching"            % "1.3.3",
     "io.spray"          %% "spray-json"               % "1.3.2",
     "io.spray"          %% "spray-routing-shapeless2" % "1.3.3",
     "io.spray"          %% "spray-client"             % "1.3.2",
     "com.typesafe.akka" %% "akka-actor"               % "2.3.12",
-    "org.webjars.bower"  % "codemirror"               % "5.4.0",
-    "org.webjars.bower"  % "iframe-resizer"           % "2.8.10",
+    "org.webjars.bower"  % "codemirror"               % "5.11.0",
     "org.webjars.bower"  % "open-iconic"              % "1.1.1",
-    "org.webjars.bower"  % "pagedown"                 % "1.1.0"
-  )
+    "org.webjars.bower"  % "pagedown"                 % "1.1.0",
+    "org.webjars.bower"  % "iframe-resizer"           % "2.8.10"
+  ) 
 )
 
 def andSourceMap(aFile: java.io.File) = (
@@ -152,11 +159,11 @@ lazy val sbtScalaKata = project
   .settings(
     sbtPlugin := true,
     name := "sbt-scalakata",
-    addSbtPlugin("io.spray" % "sbt-revolver" % "0.7.2"),
-    addSbtPlugin("se.marcuslonnberg" % "sbt-docker" % "1.2.0"),
+    addSbtPlugin("io.spray" % "sbt-revolver" % "0.8.0"),
+    addSbtPlugin("se.marcuslonnberg" % "sbt-docker" % "1.3.0"),
     bintrayRepository := "sbt-plugins",
     bintrayOrganization := None,
-    scalaVersion := "2.10.5",
+    scalaVersion := "2.10.6",
     scalacOptions := Seq(
       "-deprecation",
       "-encoding", "UTF-8",

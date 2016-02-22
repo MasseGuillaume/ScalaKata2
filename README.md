@@ -4,7 +4,6 @@
 
 ![Insight](/Doc/insight.png)
 ![Autocomplete](/Doc/autocomplete.png)
-![Type Inferance](/Doc/typeInferance.png)
 
 ## Distributions
 
@@ -13,7 +12,7 @@
 Add the following line to `project/plugins.sbt`
 
 ```scala
-addSbtPlugin("com.scalakata" % "sbt-scalakata" % "1.0.9")
+addSbtPlugin("com.scalakata" % "sbt-scalakata" % "1.0.10")
 ```
 
 And add the following line to `build.sbt`
@@ -24,10 +23,10 @@ enablePlugins(ScalaKataPlugin)
 
 ### Docker containers
 
-`sudo docker run -p 7331:7331 --name scalakata masseguillaume/scalakata:v1.0.9`
+`sudo docker run -p 7331:7331 --name scalakata masseguillaume/scalakata:v1.0.10`
 
 or
 
-`sudo docker run -p 7331:7331 --name scalakata masseguillaume/scalakata-bundle:v1.0.9`
+`sudo docker run -p 7331:7331 --name scalakata masseguillaume/scalakata-bundle:v1.0.10`
 
 open your browser at `http://localhost:7331`

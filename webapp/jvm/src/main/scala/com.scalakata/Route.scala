@@ -5,10 +5,7 @@ import spray.routing._
 import spray.http._
 import spray.http.Uri._
 import spray.util._
-import spray.httpx.encoding.Gzip
-import spray.routing.directives.CachingDirectives._
 
-import spray.routing.directives.CacheKeyer
 import spray.client.pipelining._
 
 import scala.concurrent.duration._
@@ -42,16 +39,6 @@ trait Route extends HttpService with EvalImpl {
   import system.dispatcher
 
   def route =
-    get {
-      path("assets" / "client-fastopt.js.map") {
-        getFromResource("client-fastopt.js.map")
-      }
-    } ~
-    get {
-      path("assets" / "client-opt.js.map") {
-        getFromResource("client-opt.js.map")
-      }
-    } ~
     path("echo") {
       post {
         formFields('code){ code ⇒
@@ -75,27 +62,20 @@ trait Route extends HttpService with EvalImpl {
         }
       }
     } ~
-    cache(simpleCache) {
-      encodeResponse(Gzip) {
-        get {
-          pathSingleSlash {
-           complete(index)
-          } ~
-          path("assets" / Rest) { path ⇒
-            getFromResource(path)
-          } ~
-          path(Rest) { _ ⇒
-            complete(index)
-          }
-        }
+    get {
+      pathSingleSlash {
+       complete(index)
+      } ~
+      path("assets" / Rest) { path ⇒
+        getFromResource(path)
+      } ~
+      path(Rest) { _ ⇒
+        complete(index)
       }
     }
 
   implicit val system: akka.actor.ActorRefFactory = actorRefFactory
   private implicit val executionContext = actorRefFactory.dispatcher
-  private implicit val Default: CacheKeyer = CacheKeyer {
-    case RequestContext(HttpRequest(_, uri, _, entity, _), _, _) ⇒ (uri, entity)
-  }
-  private val simpleCache = routeCache()
+
   private val index = HttpEntity(MediaTypes.`text/html`, Template.txt(prod))
 }

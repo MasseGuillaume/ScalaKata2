@@ -75,7 +75,7 @@ lazy val scalakata = (project in file(".")).
   settings(
     organization := "masseguillaume",
     name := "scalakata-bundle",
-    version := "1.0.8",
+    version := "1.0.9",
     description := "Docker Container with various librairies",
     scalaVersion := "2.11.7",
     libraryDependencies ++= dependencies,

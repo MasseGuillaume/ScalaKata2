@@ -9,7 +9,7 @@ lazy val commonSettings = Seq(
   },
   scalaVersion := "2.11.7",
   organization := "com.scalakata",
-  version := "1.0.8",
+  version := "1.0.9",
   description := "Scala Interactive Playground",
   licenses := Seq("MIT" -> url("http://www.opensource.org/licenses/mit-license.html")),
   homepage := Some(url("http://scalakata.com")),

@@ -138,6 +138,11 @@ object Rendering {
         else fold(startPos, endPos, v, process)
       }
       case Html(v, folded) ⇒ {
+        val process: (HTMLElement => Unit) = _.innerHTML = v
+        if(!folded) nextline(endPos, v, process)
+        else fold(startPos, endPos, v, process)
+      }
+      case Html2(v, folded) ⇒ {
 
         val frameId = s"frame-${java.util.UUID.randomUUID().toString()}"
 

@@ -16,6 +16,11 @@ object Main {
   @JSExport
   def main(): Unit = {
     val isMac = navigator.userAgent.contains("Mac")
+
+    dom.document.body.className =
+      if (isMac) "mac"
+      else "pc"
+
     val ctrl = if(isMac) "Cmd" else "Ctrl"
     val ctrlS = if(isMac) "⌘" else "Ctrl"
 

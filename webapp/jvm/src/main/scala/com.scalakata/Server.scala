@@ -1,13 +1,13 @@
 package com.scalakata
 
-import akka.actor.{ActorSystem, Props}
-import akka.io.IO
-import spray.can.Http
-
-import com.typesafe.config.{ ConfigValueFactory, ConfigFactory, Config }
-
+import akka.actor.ActorSystem
+import akka.http.scaladsl.Http
+import akka.stream.ActorMaterializer
 import akka.util.Timeout
+
+import com.typesafe.config.{ConfigFactory, Config}
 import scala.concurrent.duration._
+import scala.concurrent.Await
 import java.nio.file.Path
 
 object Server {
@@ -17,32 +17,29 @@ object Server {
     println((timeout, security, artifacts, scalacOptions, host, port, readyPort, prod))
 
     val config: Config = ConfigFactory.parseString(s"""
-      spray {
-        can.server {
-          idle-timeout = ${timeout.toSeconds + 5}s
-          request-timeout = ${timeout.toSeconds + 2}s
-        }
+      akka.http.server {
+        idle-timeout = ${timeout.toSeconds + 5}s
       }
     """)
 
     implicit val system = ActorSystem("scalakata-playground", config)
-
-    val service = system.actorOf(Props(classOf[RouteActor],
-      artifacts, scalacOptions, security, timeout, prod
-    ), "scalakata-service")
-
-    import akka.pattern.ask
     import system.dispatcher
-    implicit val bindingTimeout = Timeout(5.seconds)
-    (IO(Http) ? Http.Bind(service, host, port)) onSuccess {
-      case _: Http.Bound ⇒ {
-        readyPort.map{ p ⇒
+    implicit val materializer = ActorMaterializer()
+
+    val api = new ApiImpl(new Compiler(artifacts, scalacOptions, security, timeout))
+    val route = (new Route(api, prod)).route
+
+    val setup = 
+      Http().bindAndHandle(route, host, port).map{ _ =>
+        // notify sbt plugin to open browser
+        readyPort.map{ p =>
           val ready = new java.net.Socket(host, p)
           ready.sendUrgentData(0)
           ready.close()
         }
+        ()
       }
-    }
-    ()
+
+    Await.result(setup, 20.seconds)
   }
 }

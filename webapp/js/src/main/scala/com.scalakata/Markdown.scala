@@ -17,5 +17,5 @@ trait MarkdownConverter extends js.Object {
 
 @js.native
 object RegexHelper extends js.GlobalScope {
-  val codeReg: scalajs.js.RegExp = js.native
+  def codeReg: scalajs.js.RegExp = js.native
 }

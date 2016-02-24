@@ -1,33 +1,15 @@
 package com.scalakata
 
-import akka.actor._
-import spray.routing._
-import spray.http._
-import spray.http.Uri._
-import spray.util._
-
-import spray.client.pipelining._
+import akka.http.scaladsl._
+import server.Directives._
+import model._
+import model.headers._
 
 import scala.concurrent.duration._
+import scala.concurrent.ExecutionContext
 import akka.util.Timeout
 
 import java.nio.file.Path
-
-import scala.concurrent.{Future, Await}
-
-import upickle.default._
-
-class RouteActor(
-  override val artifacts: Seq[Path],
-  override val scalacOptions: Seq[String],
-  override val security: Boolean,
-  override val timeout: Duration,
-  override val prod: Boolean
-  ) extends Actor with Route {
-
-  def actorRefFactory = context
-  def receive = runRoute(route)
-}
 
 import upickle.default.{Reader, Writer, write => uwrite, read => uread}
 object AutowireServer extends autowire.Server[String, Reader, Writer]{
@@ -35,28 +17,29 @@ object AutowireServer extends autowire.Server[String, Reader, Writer]{
   def write[Result: Writer](r: Result) = uwrite(r)
 }
 
-trait Route extends HttpService with EvalImpl {
-  import system.dispatcher
+class ApiImpl(compiler: Compiler) extends Api {
+  def autocomplete(request: CompletionRequest) = compiler.autocomplete(request)
+  def eval(request: EvalRequest) = compiler.eval(request)
+  def typeAt(request: TypeAtRequest) = compiler.typeAt(request)
+}
 
+class Route(api: Api, prod: Boolean)(implicit ec: ExecutionContext){
   def route =
     path("echo") {
       post {
         formFields('code){ code ⇒
-          respondWithHeader(HttpHeaders.RawHeader("X-XSS-Protection", "0")) {
-            complete(HttpEntity(
-              ContentType(MediaTypes.`text/html`, HttpCharsets.`UTF-8`),
-              HttpData(Template.echo(code))
-            ))
+          respondWithHeader(RawHeader("X-XSS-Protection", "0")) {
+            complete(html(Template.echo(code)))
           }
         }
       }
     } ~
     post {
       path("api" / Segments){ s ⇒
-        extract(_.request.entity.asString) { e ⇒
+        entity(as[String]) { e ⇒
           complete {
-            AutowireServer.route[Api](this)(
-              autowire.Core.Request(s, read[Map[String, String]](e))
+            AutowireServer.route[Api](api)(
+              autowire.Core.Request(s, uread[Map[String, String]](e))
             )
           }
         }
@@ -73,9 +56,6 @@ trait Route extends HttpService with EvalImpl {
         complete(index)
       }
     }
-
-  implicit val system: akka.actor.ActorRefFactory = actorRefFactory
-  private implicit val executionContext = actorRefFactory.dispatcher
-
-  private val index = HttpEntity(MediaTypes.`text/html`, Template.txt(prod))
+  private def html(content: String) = HttpResponse(entity = HttpEntity(ContentTypes.`text/html(UTF-8)`, content))
+  private val index = html(Template.txt(prod))
 }

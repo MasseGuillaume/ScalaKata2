@@ -7,6 +7,7 @@ lazy val commonSettings = Seq(
     println("\033c") // xterm clear
     state
   },
+  offline := true,
   scalaVersion := "2.11.7",
   organization := "com.scalakata",
   version := "1.0.10",
@@ -23,7 +24,7 @@ lazy val commonSettings = Seq(
     "-language:implicitConversions",
     "-unchecked",
     "-Xexperimental",
-    // "-Xfatal-warnings",
+    "-Xfatal-warnings",
     "-Xfuture",
     "-Xlint",
     "-Ybackend:GenBCode",
@@ -34,6 +35,10 @@ lazy val commonSettings = Seq(
     "-Ywarn-dead-code",
     "-Ywarn-numeric-widen",
     "-Ywarn-value-discard"
+  ),
+  scalacOptions in (Compile, console) --= Seq(
+    "-Yno-imports",
+    "-Ywarn-unused-import"
   ),
   resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases",
   libraryDependencies += "org.specs2" %% "specs2-core" % "3.6.4" % "test"
@@ -68,6 +73,7 @@ lazy val annotation = project
 lazy val evaluation = project
   .settings(commonSettings: _*)
   .settings(
+    scalacOptions -= "-Xfatal-warnings", // Thread.stop()
     buildInfoPackage := "com.scalakata.build",
     sourceGenerators in Test <+= (buildInfo in Compile),
     buildInfoKeys := Seq[BuildInfoKey](
@@ -94,16 +100,11 @@ lazy val webapp = crossProject.settings(
   name := "Server",
   libraryDependencies ++= Seq(
     "com.lihaoyi" % "ammonite-repl" % "0.5.4" cross CrossVersion.full,
-    "io.spray"          %% "spray-can"                  % "1.3.3",
-    "io.spray"          %% "spray-caching"              % "1.3.3",
-    "io.spray"          %% "spray-json"                 % "1.3.2",
-    "io.spray"          %% "spray-routing-shapeless2"   % "1.3.3",
-    "io.spray"          %% "spray-client"               % "1.3.2",
-    "com.typesafe.akka" %% "akka-actor"                 % "2.3.12",
-    "org.webjars.bower"  % "codemirror"                 % "5.11.0",
-    "org.webjars.bower"  % "open-iconic"                % "1.1.1",
-    "org.webjars.bower"  % "pagedown"                   % "1.1.0",
-    "org.webjars.bower"  % "iframe-resizer"             % "2.8.10"
+    "com.typesafe.akka" %% "akka-http-experimental" % "2.0.3",
+    "org.webjars.bower"  % "codemirror"             % "5.11.0",
+    "org.webjars.bower"  % "open-iconic"            % "1.1.1",
+    "org.webjars.bower"  % "pagedown"               % "1.1.0",
+    "org.webjars.bower"  % "iframe-resizer"         % "2.8.10"
   ) 
 )
 

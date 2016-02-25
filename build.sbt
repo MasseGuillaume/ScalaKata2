@@ -7,13 +7,13 @@ lazy val commonSettings = Seq(
     println("\033c") // xterm clear
     state
   },
-  offline := true,
-  scalaVersion := "2.11.7",
+  scalaVersion := "2.11.8",
   organization := "com.scalakata",
-  version := "1.0.10",
+  version := "1.1.0",
   description := "Scala Interactive Playground",
   licenses := Seq("MIT" -> url("http://www.opensource.org/licenses/mit-license.html")),
   homepage := Some(url("http://scalakata.com")),
+  offline := true,
   scalacOptions ++= Seq(
     "-deprecation",
     "-encoding", "UTF-8",
@@ -40,7 +40,10 @@ lazy val commonSettings = Seq(
     "-Yno-imports",
     "-Ywarn-unused-import"
   ),
-  resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases",
+  resolvers ++= Seq(
+    "masseguillaume" at "http://dl.bintray.com/content/masseguillaume/maven",
+    "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"
+  ),
   libraryDependencies += "org.specs2" %% "specs2-core" % "3.6.4" % "test"
 )
 
@@ -51,9 +54,11 @@ val paradiseVersion = "2.1.0"
 lazy val model = project
   .settings(commonSettings: _*)
   .settings(
+    resolvers += "masseguillaume" at "http://dl.bintray.com/content/masseguillaume/maven",
     libraryDependencies ++= Seq(
-      "com.lihaoyi" % "ammonite-repl" % "0.5.4" cross CrossVersion.full,
-      "com.lihaoyi" %% "pprint" % "0.3.8"
+      "com.lihaoyi"            % "ammonite-repl_2.11.7" % "0.5.4",
+      "com.lihaoyi"           %% "pprint"               % "0.3.8",
+      "com.dallaway.richard" %%% "woot-model"           % "0.1.0"
     )
   )
   .enablePlugins(ScalaJSPlugin)
@@ -62,9 +67,9 @@ lazy val annotation = project
   .settings(commonSettings: _*)
   .settings(
     libraryDependencies ++= Seq(
-      "com.lihaoyi" % "ammonite-repl" % "0.5.4" cross CrossVersion.full,
-      "org.scala-lang"  % "scala-compiler" % scalaVersion.value,
-      "org.scala-lang"  % "scala-reflect"  % scalaVersion.value,
+      "com.lihaoyi"     % "ammonite-repl_2.11.7" % "0.5.4",
+      "org.scala-lang"  % "scala-compiler"       % scalaVersion.value,
+      "org.scala-lang"  % "scala-reflect"        % scalaVersion.value,
       compilerPlugin("org.scalamacros" % "paradise" % paradiseVersion cross CrossVersion.full)
     ),
     scalacOptions -= "-Ywarn-value-discard"
@@ -99,9 +104,9 @@ lazy val webapp = crossProject.settings(
  .jvmSettings(
   name := "Server",
   libraryDependencies ++= Seq(
-    "com.lihaoyi" % "ammonite-repl" % "0.5.4" cross CrossVersion.full,
+    "com.lihaoyi"        % "ammonite-repl_2.11.7"   % "0.5.4",
     "com.typesafe.akka" %% "akka-http-experimental" % "2.0.3",
-    "org.webjars.bower"  % "codemirror"             % "5.11.0",
+    "org.webjars.bower"  % "codemirror"             % "5.12.0",
     "org.webjars.bower"  % "open-iconic"            % "1.1.1",
     "org.webjars.bower"  % "pagedown"               % "1.1.0",
     "org.webjars.bower"  % "iframe-resizer"         % "2.8.10"
@@ -158,8 +163,8 @@ lazy val sbtScalaKata = project
   .settings(
     sbtPlugin := true,
     name := "sbt-scalakata",
-    addSbtPlugin("io.spray" % "sbt-revolver" % "0.8.0"),
-    addSbtPlugin("se.marcuslonnberg" % "sbt-docker" % "1.3.0"),
+    addSbtPlugin("io.spray"          % "sbt-revolver" % "0.8.0"),
+    addSbtPlugin("se.marcuslonnberg" % "sbt-docker"   % "1.3.0"),
     bintrayRepository := "sbt-plugins",
     bintrayOrganization := None,
     scalaVersion := "2.10.6",

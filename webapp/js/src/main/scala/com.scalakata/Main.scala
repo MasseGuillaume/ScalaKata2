@@ -37,6 +37,7 @@ object Main {
       scrollPastEnd(true).
       scrollbarStyle("simple").
       extraKeys(js.Dictionary(
+        s"$ctrl-l"     -> null,
         s"$ctrl-Space" -> "autocomplete",
          "."           -> "autocompleteDot",
         s"$ctrl-."     -> "typeAt",
@@ -61,7 +62,7 @@ object Main {
     CodeMirror.commands.autocomplete = Hint.autocomplete _
     CodeMirror.commands.autocompleteDot = Hint.autocompleteDot _
     CodeMirror.commands.help = (editor: Editor) ⇒ {
-      editor.getDoc().setValue(Rendering.wrap("help"))
+      editor.getDoc().setValue(Util.wrap("help"))
       Rendering.run(editor)
     }
     CodeMirror.commands.solarizedToggle = (editor: Editor) ⇒ {
@@ -97,9 +98,13 @@ object Main {
 
         val path = dom.location.pathname
         if(path != "/") {
-          Ajax.get(s"/assets/$path").onSuccess{ case xhr ⇒
-            doc.setValue(xhr.responseText)
-            Rendering.run(editor)
+          if(path.startsWith("/room/")) {
+            Collaborative(editor)
+          } else {
+            Ajax.get(s"/assets/$path").onSuccess{ case xhr ⇒
+              doc.setValue(xhr.responseText)
+              Rendering.run(editor)
+            }
           }
         } else {
           val storage = dom.localStorage.getItem(Rendering.localStorageKey)

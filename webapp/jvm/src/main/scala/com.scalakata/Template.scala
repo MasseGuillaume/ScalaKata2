@@ -2,7 +2,7 @@ package com.scalakata
 
 object Template {
   import scalatags.Text.all._
-  import scalatags.Text.tags2.title
+  import scalatags.Text.tags2.{title, noscript}
 
   def echo(code: String) = {
     "<!DOCTYPE html>" +
@@ -47,14 +47,13 @@ object Template {
 
         link(rel:="stylesheet", href:="/assets/main.css")
       ),
-      body(
+      body(`class` := "cm-s-solarized cm-s-dark")(
         div(`id` := "code")(
-          textarea(id := "scalakata"),
+          noscript("No Javscript, No Scala!"),
+          textarea(id := "scalakata", style := "display: none;"),
           ul(`class` := "menu")(
             li(id := "state", `class` := "oi", "data-glyph".attr := "media-play"),
-            // li(id := "menu", `class` := "oi", "data-glyph".attr := "menu"),
             li(id := "theme", "title".attr := "toggle theme (F2)", `class` := "oi", "data-glyph".attr := "sun"),
-            // li(id := "home", "title".attr := "home (F3)", `class` := "oi", "data-glyph".attr := "home"),
             li(id := "help", "title".attr := "help (F1)", `class` := "oi", "data-glyph".attr := "question-mark")
           )
         ),

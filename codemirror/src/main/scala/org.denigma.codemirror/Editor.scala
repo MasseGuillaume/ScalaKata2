@@ -57,7 +57,9 @@ class Doc protected () extends js.Object {
   def getValue(seperator: String = js.native): String = js.native
   def setValue(content: String): Unit = js.native
   def getRange(from: Position, to: Position, seperator: String = js.native): String = js.native
+  def replaceRange(replacement: String, from: Position): Unit = js.native
   def replaceRange(replacement: String, from: Position, to: Position): Unit = js.native
+
   def getLine(n: Int): String = js.native
   def lineCount(): Int = js.native
   def firstLine(): Int = js.native
@@ -129,11 +131,23 @@ trait LineWidget extends js.Object {
 }
 
 @js.native
+trait EditorBeforeChange extends js.Object {
+  def cancel(): Unit = js.native
+  val canceled: Boolean = js.native
+  val from: Position = js.native
+  val origin: String = js.native
+  val text: js.Array[String] = js.native
+  val to: Position = js.native
+  def update(from: Position, to: Position, text: String, origin: String): Unit = js.native 
+}
+
+@js.native
 trait EditorChange extends js.Object {
-  var from: Position = js.native
-  var to: Position = js.native
-  var text: js.Array[String] = js.native
-  var removed: String = js.native
+  val from: Position = js.native
+  val to: Position = js.native
+  val text: js.Array[String] = js.native
+  val removed: js.Array[String] = js.native
+  val origin: String = js.native
 }
 
 @js.native
@@ -331,6 +345,7 @@ trait ShowHintOptions extends js.Object {
 @js.native
 @JSName("CodeMirror")
 object CodeMirror extends js.Object {
+
   var Pass: js.Any = js.native
   def fromTextArea(host: HTMLTextAreaElement, options: EditorConfiguration = js.native): Editor = js.native
   def runMode(value: String, mode: String, dst: HTMLElement): Editor = js.native

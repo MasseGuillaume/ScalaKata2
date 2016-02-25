@@ -12,6 +12,7 @@ import scala.concurrent.Future
 import org.scalajs.dom.KeyboardEvent
 
 object Rendering {
+  import Util._
   var toclear = false
 
   val modeScala = "text/x-scala"
@@ -297,14 +298,5 @@ object Rendering {
   private var annotations = List.empty[Anoted]        
   private val converter = Pagedown.getSanitizingConverter()
  
-  private val nl = '\n'
-  private val prelude = 
-    """|import com.scalakata._
-       |
-       |@instrument class Playground {
-       |  """.stripMargin
-    
-  def wrap(code: String): String = prelude + code + nl + "}"
-
   val localStorageKey = "code"
 }

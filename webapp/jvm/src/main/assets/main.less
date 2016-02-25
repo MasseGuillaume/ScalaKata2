@@ -249,6 +249,7 @@ kbd {
     }
 
     & + .menu,
+    & .menu,
     ::-webkit-scrollbar-thumb,
     .CodeMirror-simplescroll-horizontal div,
     .CodeMirror-simplescroll-vertical div,
@@ -265,7 +266,8 @@ kbd {
       background: @base02;
     }
 
-    & + .menu {
+    & + .menu,
+    & .menu, {
       background-color: @base02;
       color: @base01;
       *:hover {
@@ -306,6 +308,7 @@ kbd {
     }
 
     & + .menu,
+    & .menu,
     ::-webkit-scrollbar-thumb,
     .CodeMirror-simplescroll-horizontal div,
     .CodeMirror-simplescroll-vertical div,
@@ -313,14 +316,15 @@ kbd {
       box-shadow: 1px 1px 5px 1px rgba(200, 200, 200, 0.75);
     }
 
-    & + .menu {
+    & + .menu
+    & .menu, {
       background-color: @base2;
       color: @base1;
       *:hover {
         color: @base01;
       }
     }
-
+    
     ::-webkit-scrollbar-track,
     ::-webkit-scrollbar-corner {
       background: @base3;
@@ -347,4 +351,12 @@ kbd {
 
 iframe {
   border: none;
+}
+
+noscript {
+  font-size: 40px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
 }

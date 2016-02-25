@@ -1,89 +1,8 @@
 package com
 
-package scalakata {
-  case class RangePosition(
-    start: Int,
-    point: Int,
-    end: Int
-  )
-
-  sealed trait Severity
-  final case object Info extends Severity
-  final case object Warning extends Severity
-  final case object Error extends Severity
-
-  case class CompilationInfo(
-    message: String,
-    pos: Option[RangePosition]
-  )
-
-  // TODO: stacktrace
-  // stack: List[StackElement]
-  // String  getClassName()
-  // String  getFileName()
-  // int getLineNumber()
-  // String  getMethodName()
-  // TODO: range pos ?
-  case class RuntimeError(
-    message: String,
-    position: Option[Int]
-  )
-
-  // TODO: scalacOptions & dependencies
-  case class EvalRequest(
-    code: String
-  )
-
-  sealed trait Render
-  case class Value(v: String, className: String) extends Render
-  case class Markdown(a: String, folded: Boolean = false) extends Render {
-    def stripMargin = Markdown(a.stripMargin)
-    def fold = copy(folded = true)
-  }
-  case class Html(a: String, folded: Boolean = false) extends Render {
-    def stripMargin = copy(a = a.stripMargin)
-    def fold = copy(folded = true)
-  }
-  case class Html2(a: String, folded: Boolean = false) extends Render {
-    def stripMargin = copy(a = a.stripMargin)
-    def fold = copy(folded = true)
-  }
-
-  case class EvalResponse(
-    complilationInfos: Map[Severity, List[CompilationInfo]],
-    timeout: Boolean,
-    runtimeError: Option[RuntimeError],
-    instrumentation: List[(RangePosition, Render)]
-  )
-  object EvalResponse {
-    val empty = EvalResponse(Map.empty, false, None, Nil)
-  }
-
-  // TODO: scalacOptions & dependencies
-  case class TypeAtRequest(
-    code: String,
-    position: RangePosition
-  )
-
-  case class TypeAtResponse(
-    val tpe: String
-  )
-
-  // TODO: scalacOptions & dependencies
-  case class CompletionRequest(
-    code: String,
-    position: RangePosition
-  )
-
-  case class CompletionResponse(
-    val name: String,
-    signature: String
-  )
-}
-
-import ammonite.repl.frontend.TPrint
-
 package object scalakata {
+  import ammonite.repl.frontend.TPrint
+
   implicit val rangePositionOrdering: Ordering[(RangePosition, Render)] =
     Ordering.by{ case (rp, r) ⇒ RangePosition.unapply(rp) }
 
@@ -135,7 +54,7 @@ package object scalakata {
                     |toggle theme    $F2
                     |<a target="_blank" href="$sublime">Sublime Text Keyboard Shortcuts</a>
                     |</pre>
-                    |<a target="_blank" href="https://github.com/MasseGuillaume/ScalaKata2/blob/master/dockerContainerBundle/built.sbt#L1">A lot of dependencies are included</a> with scalakata.
+                    |<a target="_blank" href="https://github.com/MasseGuillaume/ScalaKata2/blob/master/misc/dockerContainerBundle/built.sbt#L1">A lot of dependencies are included</a> with scalakata.
                     |The source code is available at <a target="_blank" href="https://github.com/MasseGuillaume/ScalaKata2">MasseGuillaume/ScalaKata2</a>
                     |published under the MIT license
                     |Scalac ${util.Properties.versionString}

@@ -123,11 +123,35 @@ object Main {
           }
         })
 
+        val searchString = dom.window.location.search
+        println(s"searchString: ${dom.window.location.search}")
+
+        def getContent(files: js.Dictionary[String]): String = files(files.keys.head).asInstanceOf[js.Dictionary[String]]("content")
+
+        val gistId: Option[String] = if (searchString != null) {
+          searchString.substring(1)
+            .split("&")
+            .map(_.split("="))
+            .filter(_ (0) == "gist")
+            .map(_ (1))
+            .toSeq.headOption
+        } else
+          None
+
         val path = dom.location.pathname
         if(path != "/") {
           Ajax.get(s"/assets/$path").onSuccess{ case xhr ⇒
             doc.setValue(xhr.responseText)
             Rendering.run(editor)
+          }
+        }  else if (gistId.isDefined) {
+          dom.ext.Ajax.get(
+            url = "https://api.github.com/gists/" + gistId.get,
+            responseType = "json"
+          ).onSuccess {
+            case data =>
+              doc.setValue(getContent(data.response.asInstanceOf[js.Dictionary[js.Dictionary[String]]]("files")))
+              Rendering.run(editor)
           }
         } else {
           val storage = dom.localStorage.getItem(Rendering.localStorageKey)

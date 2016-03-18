@@ -13,7 +13,6 @@ import org.scalajs.dom.KeyboardEvent
 
 object Rendering {
   var toclear = false
-
   val modeScala = "text/x-scala"
   val stateButton = dom.document.getElementById("state")
   val isMac = navigator.userAgent.contains("Mac")
@@ -41,7 +40,7 @@ object Rendering {
         resetCursor(doc)
       }
     }
-    
+
     editor.on("keyup", (_, event) ⇒ {
       val ev = event.asInstanceOf[KeyboardEvent]
       val esc = 27
@@ -54,7 +53,7 @@ object Rendering {
     editor.on("change", (_, _) ⇒ {
       dom.localStorage.setItem(localStorageKey, doc.getValue())
       resetDefault()
-    })  
+    })
     resetDefault()
 
     def noop[T](v: T): Unit = ()
@@ -94,10 +93,10 @@ object Rendering {
         val process = (node: HTMLElement) ⇒ {
           CodeMirror.runMode(s"$v: $tpe", modeScala, node)
           node.title = tpe
-          () 
+          ()
         }
         if(v.contains(nl)) nextline(endPos, v, process)
-        else inline(startPos, v, process)             
+        else inline(startPos, v, process)
       }
       case Markdown(v, folded) ⇒ {
 
@@ -118,7 +117,7 @@ object Rendering {
             itt(v0)
           }
 
-          val res = 
+          val res =
             fix{ v ⇒
               v.jsReplace(RegexHelper.codeReg, (b: String, c: String) ⇒ {
                 val node =
@@ -132,7 +131,7 @@ object Rendering {
 
           dom.console.log(res)
 
-          elem.innerHTML = res  
+          elem.innerHTML = res
         }
         if(!folded) nextline(endPos, v, process)
         else fold(startPos, endPos, v, process)
@@ -173,7 +172,7 @@ object Rendering {
           ()
         }
         if(!folded) nextline(endPos, "", process)
-        else fold(startPos, endPos, "", process)              
+        else fold(startPos, endPos, "", process)
       }
     }
 
@@ -211,7 +210,7 @@ object Rendering {
               val tabSize = editor.getOption("tabSize").asInstanceOf[Int]
 
               val line = doc.getLine(startPos.line)
-              
+
               val tabCount = line.count(_ == '\t')
               val spaceCount = line.count(_ == ' ')
 
@@ -222,7 +221,7 @@ object Rendering {
 
               val spaces = if(spaceCount != 0) List(span(" " * spaceCount)) else Nil
 
-              val childs = 
+              val childs =
                 tabs ::: spaces ::: List(
                   span("^"),
                   i(`class`:="oi", "data-glyph".attr := severityToIcon(severity)),
@@ -259,7 +258,7 @@ object Rendering {
         doc.posFromIndex(start).line
       }
 
-      val instrumentations: List[Anoted] = 
+      val instrumentations: List[Anoted] =
         response.instrumentation.
           groupBy(line).
           values.flatMap{ renders ⇒
@@ -294,16 +293,16 @@ object Rendering {
   private case class Widget(node: HTMLElement) extends Anoted { def clear() = {node.parentNode.removeChild(node); ()} }
   private case object Empty extends Anoted { def clear() = () }
 
-  private var annotations = List.empty[Anoted]        
+  private var annotations = List.empty[Anoted]
   private val converter = Pagedown.getSanitizingConverter()
- 
+
   private val nl = '\n'
-  private val prelude = 
+  private val prelude =
     """|import com.scalakata._
        |
        |@instrument class Playground {
        |  """.stripMargin
-    
+
   def wrap(code: String): String = prelude + code + nl + "}"
 
   val localStorageKey = "code"

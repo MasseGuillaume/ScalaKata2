@@ -81,28 +81,17 @@ object Main {
       editor.setOption("theme", theme)
     }
     CodeMirror.commands.share = (editor: Editor) ⇒ {
-      dom.ext.Ajax.post(
-        url = "https://api.github.com/gists",
-        data = js.JSON.stringify(js.Dictionary[js.Any](
-            "description" -> "Scala Kata shared content",
-            "public" -> true,
-            "files" -> js.Dictionary[js.Any](
-              "kata.scala" -> js.Dictionary[js.Any](
-                "content" -> editor.getDoc().getValue(),
-                "language" -> "Scala"
-              )
-            )
-          )
-        ),
-        responseType = "json"
-      )
-      .map(xhr ⇒ xhr.response.asInstanceOf[js.Dictionary[String]]("html_url"))
-      .map(html_url ⇒ s"Your code has been shared on <a href='$html_url' target='_blank'>GitHub</a>")
-      .recover { case t ⇒ s"Failed to share your code: ${t.getMessage}" }
-      .foreach { text ⇒
-        sharedDiv.setAttribute("style", "display: block")
-        sharedDiv.innerHTML = text
-      }
+      GitHub.share(editor.getDoc().getValue())
+        .map(id ⇒ {
+          val scalaKataLink = s"${dom.window.location}?gist=$id"
+          val gitHubLink = s"https://gist.github.com/anonymous/$id"
+          s"Shared as: <a href='$scalaKataLink' target='_blank'>$scalaKataLink</a> (or view on <a href='$gitHubLink'>GitHub</a>)"
+        })
+        .recover { case t ⇒ s"Failed to share your code: ${t.getMessage}" }
+        .foreach { text ⇒
+          sharedDiv.setAttribute("style", "display: block")
+          sharedDiv.innerHTML = text
+        }
     }
 
     dom.document.getElementById("scalakata") match {
@@ -124,20 +113,12 @@ object Main {
           }
         })
 
-        val searchString = dom.window.location.search
-        println(s"searchString: ${dom.window.location.search}")
-
-        def getContent(files: js.Dictionary[String]): String = files(files.keys.head).asInstanceOf[js.Dictionary[String]]("content")
-
-        val gistId: Option[String] = if (searchString != null) {
-          searchString.substring(1)
-            .split("&")
-            .map(_.split("="))
-            .filter(_ (0) == "gist")
-            .map(_ (1))
-            .toSeq.headOption
-        } else
-          None
+        val getParameters = dom.window.location.search
+          .substring(1)
+          .split("&")
+          .map(_.split("="))
+          .collect { case Array(key, value) => (key -> value) }
+          .toMap
 
         val path = dom.location.pathname
         if(path != "/") {
@@ -149,14 +130,10 @@ object Main {
               Rendering.run(editor)
             }
           }
-        }  else if (gistId.isDefined) {
-          dom.ext.Ajax.get(
-            url = "https://api.github.com/gists/" + gistId.get,
-            responseType = "json"
-          ).onSuccess {
-            case data =>
-              doc.setValue(getContent(data.response.asInstanceOf[js.Dictionary[js.Dictionary[String]]]("files")))
-              Rendering.run(editor)
+        } else if (getParameters.contains("gist")) {
+          GitHub.fetch(getParameters("gist")).onSuccess{ case content ⇒
+            doc.setValue(content)
+            Rendering.run(editor)
           }
         } else {
           val storage = dom.localStorage.getItem(Rendering.localStorageKey)

@@ -43,7 +43,8 @@ object Main {
         s"$ctrl-Enter" -> "run",
         // s"$ctrl-,"     -> "config", // TODO: edit configs
         "F1"           -> "help",
-        "F2"           -> "solarizedToggle"
+        "F2"           -> "solarizedToggle",
+        "F7"           -> "share"
       )).
       autoCloseBrackets(true).
       matchBrackets(true).
@@ -52,9 +53,11 @@ object Main {
       highlightSelectionMatches(js.Dictionary(
         "showToken" -> js.Dynamic.global.RegExp("\\w")
       ))
-    
+
     val themeButton = dom.document.getElementById("theme")
     val stateButton = dom.document.getElementById("state")
+    val shareButton = dom.document.getElementById("share")
+    val sharedDiv = dom.document.getElementById("shared")
 
     CodeMirror.commands.run = Rendering.run _
     CodeMirror.commands.typeAt = Hint.typeAt _
@@ -76,6 +79,19 @@ object Main {
       themeButton.setAttribute("data-glyph", icon)
       editor.setOption("theme", theme)
     }
+    CodeMirror.commands.share = (editor: Editor) ⇒ {
+      GitHub.share(editor.getDoc().getValue())
+        .map(id ⇒ {
+          val scalaKataLink = s"${dom.window.location}?gist=$id"
+          val gitHubLink = s"https://gist.github.com/anonymous/$id"
+          s"Shared as: <a href='$scalaKataLink' target='_blank'>$scalaKataLink</a> (or view on <a href='$gitHubLink'>GitHub</a>)"
+        })
+        .recover { case t ⇒ s"Failed to share your code: ${t.getMessage}" }
+        .foreach { text ⇒
+          sharedDiv.setAttribute("style", "display: block")
+          sharedDiv.innerHTML = text
+        }
+    }
 
     dom.document.getElementById("scalakata") match {
       case el:HTMLTextAreaElement ⇒ {
@@ -84,6 +100,7 @@ object Main {
         editor.focus()
         Rendering.resetCursor(doc)
         themeButton.addEventListener("click", (e: dom.Event) ⇒ CodeMirror.commands.solarizedToggle(editor))
+        shareButton.addEventListener("click", (e: dom.Event) ⇒ CodeMirror.commands.share(editor))
         dom.document.getElementById("help").addEventListener("click", (e: dom.Event) ⇒ CodeMirror.commands.help(editor))
         stateButton.setAttribute("title", s"run ($ctrlS + Enter)")
         stateButton.addEventListener("click", (e: dom.Event) ⇒ {
@@ -95,10 +112,22 @@ object Main {
           }
         })
 
+        val getParameters = dom.window.location.search
+          .substring(1)
+          .split("&")
+          .map(_.split("="))
+          .collect { case Array(key, value) => (key -> value) }
+          .toMap
+
         val path = dom.location.pathname
         if(path != "/") {
           Ajax.get(s"/assets/$path").onSuccess{ case xhr ⇒
             doc.setValue(xhr.responseText)
+            Rendering.run(editor)
+          }
+        } else if (getParameters.contains("gist")) {
+          GitHub.fetch(getParameters("gist")).onSuccess{ case content ⇒
+            doc.setValue(content)
             Rendering.run(editor)
           }
         } else {

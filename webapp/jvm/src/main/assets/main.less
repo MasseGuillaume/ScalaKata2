@@ -36,7 +36,7 @@ body.pc kbd.mac { display: none }
   width: 100%;
   padding: @margin;
   white-space: pre-wrap;
-  
+
   p {
     display: inline-block;
   }
@@ -96,14 +96,14 @@ body.pc kbd.mac { display: none }
   }
 
   .timeout,
-  .runtime-error, 
+  .runtime-error,
   .compiler.error {
     i { color: red;}
   }
 
   .compiler.warning {
     i { color: yellow; }
-  } 
+  }
 
   .runtime-error,
   .compiler {
@@ -200,6 +200,22 @@ kbd {
   }
 }
 
+.shared {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  margin: 16px;
+  border-radius: 5px;
+  z-index: 20;
+  padding: 16px;
+  display: none;
+  font-size: 32px;
+
+  a {
+    color: #268bd2;
+  }
+}
+
 ::-webkit-scrollbar:horizontal,
 .CodeMirror-simplescroll-horizontal div {
   height: 12px;
@@ -249,6 +265,7 @@ kbd {
     }
 
     & + .menu,
+    & + .menu + .shared,
     ::-webkit-scrollbar-thumb,
     .CodeMirror-simplescroll-horizontal div,
     .CodeMirror-simplescroll-vertical div,
@@ -265,7 +282,8 @@ kbd {
       background: @base02;
     }
 
-    & + .menu {
+    & + .menu,
+    & + .menu + .shared {
       background-color: @base02;
       color: @base01;
       *:hover {
@@ -306,6 +324,7 @@ kbd {
     }
 
     & + .menu,
+    & + .menu + .shared,
     ::-webkit-scrollbar-thumb,
     .CodeMirror-simplescroll-horizontal div,
     .CodeMirror-simplescroll-vertical div,
@@ -313,7 +332,8 @@ kbd {
       box-shadow: 1px 1px 5px 1px rgba(200, 200, 200, 0.75);
     }
 
-    & + .menu {
+    & + .menu,
+    & + .menu + .shared {
       background-color: @base2;
       color: @base1;
       *:hover {

@@ -105,8 +105,6 @@ object Rendering {
           val escaper = span().render
           val content = converter.makeHtml(v)
 
-          dom.console.log(content)
-
           import scala.scalajs.js.JSStringOps._
           // js regex only replace once
           def fix(f: String ⇒ String)(v0: String) = {
@@ -118,7 +116,7 @@ object Rendering {
             itt(v0)
           }
 
-          val res =
+          elem.innerHTML =
             fix{ v ⇒
               v.jsReplace(RegexHelper.codeReg, (b: String, c: String) ⇒ {
                 val node =
@@ -129,10 +127,6 @@ object Rendering {
                 node.outerHTML
               })
             }(content)
-
-          dom.console.log(res)
-
-          elem.innerHTML = res
         }
         if(!folded) nextline(endPos, v, process)
         else fold(startPos, endPos, v, process)
@@ -177,14 +171,11 @@ object Rendering {
       }
     }
 
-    val request = EvalRequest(doc.getValue())
-    dom.console.log(upickle.default.write(request))
-
-    Client[Api].eval(request).call().onSuccess{ case response ⇒
+    Client[Api].eval(EvalRequest(doc.getValue())).call().onSuccess{ case response ⇒
       clear(doc)
       toclear = true
       stateButton.setAttribute("data-glyph", "circle-x")
-      stateButton.setAttribute("title", s"Clear (Esc)")
+      stateButton.setAttribute("title", s"clear (Esc)")
 
       val complilationInfos = {
         for {

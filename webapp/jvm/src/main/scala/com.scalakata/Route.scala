@@ -60,7 +60,13 @@ class Route(api: Api, prod: Boolean)(implicit fm: Materializer, system: ActorSys
       pathSingleSlash {
        complete(index)
       } ~
-      path("room" / Rest) { path ⇒
+      path("room" / Rest) { _ ⇒
+        complete(index)
+      } ~
+      path("gist" / Segment) { _ ⇒
+        complete(index)
+      } ~
+      path("gist" / Segment / Segment) { (_, _) ⇒
         complete(index)
       } ~
       path("assets" / Rest) { path ⇒

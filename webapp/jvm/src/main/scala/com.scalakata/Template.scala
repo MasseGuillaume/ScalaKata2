@@ -57,7 +57,7 @@ object Template {
             li(id := "help", "title".attr := "help (F1)", `class` := "oi", "data-glyph".attr := "question-mark"),
             li(id := "share", "title".attr := "share (F7)", `class` := "oi", "data-glyph".attr := "share-boxed")
           ),
-          div(`id` := "shared", `class` := "shared")
+          div(id := "shared")
         ),
 
         script(src:="/assets/lib/codemirror/lib/codemirror.js"),

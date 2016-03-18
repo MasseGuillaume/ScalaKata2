@@ -200,22 +200,6 @@ kbd {
   }
 }
 
-.shared {
-  position: fixed;
-  bottom: 0;
-  right: 0;
-  margin: 16px;
-  border-radius: 5px;
-  z-index: 20;
-  padding: 16px;
-  display: none;
-  font-size: 32px;
-
-  a {
-    color: #268bd2;
-  }
-}
-
 ::-webkit-scrollbar:horizontal,
 .CodeMirror-simplescroll-horizontal div {
   height: 12px;
@@ -240,6 +224,34 @@ kbd {
 
 .cm-s-solarized {
   .solarized-pallette;
+
+  & ~ #shared {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+
+    margin: 16px;
+    border-radius: 5px;
+    z-index: 20;
+    padding: 16px;
+    display: none;
+    font-size: 16px;
+
+    div {
+      position: relative;
+    }
+
+    a {
+      color: @blue;
+    }
+
+    i {
+      padding-left: 10px;
+      font-size: 20px;
+      vertical-align: middle;
+    }
+  }
+
 
   .autocomplete .signature {
     color: @cyan;
@@ -266,7 +278,7 @@ kbd {
 
     & + .menu,
     & .menu,
-    & + .menu + .shared,
+    & + .menu + #shared,
     ::-webkit-scrollbar-thumb,
     .CodeMirror-simplescroll-horizontal div,
     .CodeMirror-simplescroll-vertical div,
@@ -285,10 +297,10 @@ kbd {
 
     & + .menu,
     & .menu,
-    & + .menu + .shared {
+    & + .menu + #shared {
       background-color: @base02;
       color: @base01;
-      *:hover {
+      .oi:hover {
         color: @base1;
       }
     }
@@ -327,7 +339,7 @@ kbd {
 
     & + .menu,
     & .menu,
-    & + .menu + .shared,
+    & + .menu + #shared,
     ::-webkit-scrollbar-thumb,
     .CodeMirror-simplescroll-horizontal div,
     .CodeMirror-simplescroll-vertical div,
@@ -338,10 +350,10 @@ kbd {
     & + .menu
     & .menu,
     & + .menu,
-    & + .menu + .shared {
+    & + .menu + #shared {
       background-color: @base2;
       color: @base1;
-      *:hover {
+      .oi:hover {
         color: @base01;
       }
     }

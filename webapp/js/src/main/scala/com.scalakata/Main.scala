@@ -10,6 +10,8 @@ import scalajs.concurrent.JSExecutionContext.Implicits.queue
 import scalajs.js
 import scalajs.js.annotation.JSExport
 import scalatags.JsDom.all._
+import scala.util.{Success, Failure}
+
 
 @JSExport
 object Main {
@@ -58,8 +60,7 @@ object Main {
     val themeButton = dom.document.getElementById("theme")
     val stateButton = dom.document.getElementById("state")
     val shareButton = dom.document.getElementById("share")
-    val sharedDiv = dom.document.getElementById("shared")
-
+    
     CodeMirror.commands.run = Rendering.run _
     CodeMirror.commands.typeAt = Hint.typeAt _
     CodeMirror.commands.autocomplete = Hint.autocomplete _
@@ -82,15 +83,28 @@ object Main {
     }
     CodeMirror.commands.share = (editor: Editor) ⇒ {
       GitHub.share(editor.getDoc().getValue())
-        .map(id ⇒ {
-          val scalaKataLink = s"${dom.window.location}?gist=$id"
-          val gitHubLink = s"https://gist.github.com/anonymous/$id"
-          s"Shared as: <a href='$scalaKataLink' target='_blank'>$scalaKataLink</a> (or view on <a href='$gitHubLink'>GitHub</a>)"
-        })
         .recover { case t ⇒ s"Failed to share your code: ${t.getMessage}" }
-        .foreach { text ⇒
+        .foreach { gistId ⇒
+          val sharedDiv = dom.document.getElementById("shared")
           sharedDiv.setAttribute("style", "display: block")
-          sharedDiv.innerHTML = text
+
+          val scalaKataLink = s"${dom.window.location}gist/$gistId"
+          val gitHubLink = s"https://gist.github.com/anonymous/$gistId"
+
+          val close = i(`class` := "oi", "data-glyph".attr := "circle-x").render
+
+          close.addEventListener("click", (e: dom.Event) ⇒ 
+            sharedDiv.setAttribute("style", "display: none")            
+          )
+
+          while (sharedDiv.firstChild != null) {
+            sharedDiv.removeChild(sharedDiv.firstChild)
+          }
+          sharedDiv.appendChild(div(
+            "Shared as:", a(href := scalaKataLink, target := "_blank")(scalaKataLink),
+            "(", a(href := gitHubLink, target := "_blank")("GitHub"), ")",
+            close            
+          ).render)
         }
     }
 
@@ -113,27 +127,23 @@ object Main {
           }
         })
 
-        val getParameters = dom.window.location.search
-          .substring(1)
-          .split("&")
-          .map(_.split("="))
-          .collect { case Array(key, value) => (key -> value) }
-          .toMap
-
         val path = dom.location.pathname
         if(path != "/") {
           if(path.startsWith("/room/")) {
             Collaborative(editor)
+          } else if(path.startsWith("/gist/")) {
+            val gistId = dom.location.pathname.drop("/gist/".length)
+            GitHub.fetch(gistId)
+              .recover { case _ ⇒ Util.wrap(s"// Failed to load gist") }
+              .foreach { content ⇒
+                doc.setValue(content)
+                Rendering.run(editor)
+              }
           } else {
             Ajax.get(s"/assets/$path").onSuccess{ case xhr ⇒
               doc.setValue(xhr.responseText)
               Rendering.run(editor)
             }
-          }
-        } else if (getParameters.contains("gist")) {
-          GitHub.fetch(getParameters("gist")).onSuccess{ case content ⇒
-            doc.setValue(content)
-            Rendering.run(editor)
           }
         } else {
           val storage = dom.localStorage.getItem(Rendering.localStorageKey)

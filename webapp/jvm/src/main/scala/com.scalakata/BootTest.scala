@@ -12,7 +12,7 @@ object BootTest {
         artifacts = (annotationClasspath ++ modelClasspath).distinct.map(v ⇒ Paths.get(v.toURI)),
         scalacOptions = scalacOptions.to[Seq],
         host = "localhost",
-        port = 8080,
+        port = 7331,
         readyPort = None,
         prod = false
     )

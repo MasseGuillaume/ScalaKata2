@@ -39,6 +39,7 @@ package object scalakata {
   private val Cmd = "<kbd class='mac'>&nbsp;⌘&nbsp;</kbd>"
   private val Enter = "<kbd>&nbsp;&nbsp;Enter&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</kbd>"
   private val F2 = "<kbd>&nbsp;F2&nbsp;</kbd>"
+  private val F7 = "<kbd>&nbsp;F7&nbsp;</kbd>"
   private val Esc = "<kbd>&nbsp;Esc&nbsp;</kbd>"
   private val sublime = "http://sublime-text-unofficial-documentation.readthedocs.org/en/latest/reference/keyboard_shortcuts_osx.html"
 
@@ -52,6 +53,7 @@ package object scalakata {
                     |find type       $Ctrl $Cmd + $Dot
                     |run             $Ctrl $Cmd + $Enter
                     |toggle theme    $F2
+                    |share           $F7
                     |<a target="_blank" href="$sublime">Sublime Text Keyboard Shortcuts</a>
                     |</pre>
                     |<a target="_blank" href="https://github.com/MasseGuillaume/ScalaKata2/blob/master/misc/dockerContainerBundle/built.sbt#L1">A lot of dependencies are included</a> with scalakata.

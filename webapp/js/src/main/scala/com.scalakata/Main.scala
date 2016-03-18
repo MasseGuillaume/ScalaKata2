@@ -44,7 +44,8 @@ object Main {
         s"$ctrl-Enter" -> "run",
         // s"$ctrl-,"     -> "config", // TODO: edit configs
         "F1"           -> "help",
-        "F2"           -> "solarizedToggle"
+        "F2"           -> "solarizedToggle",
+        "F7"           -> "share"
       )).
       autoCloseBrackets(true).
       matchBrackets(true).
@@ -53,9 +54,11 @@ object Main {
       highlightSelectionMatches(js.Dictionary(
         "showToken" -> js.Dynamic.global.RegExp("\\w")
       ))
-    
+
     val themeButton = dom.document.getElementById("theme")
     val stateButton = dom.document.getElementById("state")
+    val shareButton = dom.document.getElementById("share")
+    val sharedDiv = dom.document.getElementById("shared")
 
     CodeMirror.commands.run = Rendering.run _
     CodeMirror.commands.typeAt = Hint.typeAt _
@@ -77,6 +80,30 @@ object Main {
       themeButton.setAttribute("data-glyph", icon)
       editor.setOption("theme", theme)
     }
+    CodeMirror.commands.share = (editor: Editor) ⇒ {
+      dom.ext.Ajax.post(
+        url = "https://api.github.com/gists",
+        data = js.JSON.stringify(js.Dictionary[js.Any](
+            "description" -> "Scala Kata shared content",
+            "public" -> true,
+            "files" -> js.Dictionary[js.Any](
+              "kata.scala" -> js.Dictionary[js.Any](
+                "content" -> editor.getDoc().getValue(),
+                "language" -> "Scala"
+              )
+            )
+          )
+        ),
+        responseType = "json"
+      )
+      .map(xhr ⇒ xhr.response.asInstanceOf[js.Dictionary[String]]("html_url"))
+      .map(html_url ⇒ s"Your code has been shared on <a href='$html_url' target='_blank'>GitHub</a>")
+      .recover { case t ⇒ s"Failed to share your code: ${t.getMessage}" }
+      .foreach { text ⇒
+        sharedDiv.setAttribute("style", "display: block")
+        sharedDiv.innerHTML = text
+      }
+    }
 
     dom.document.getElementById("scalakata") match {
       case el:HTMLTextAreaElement ⇒ {
@@ -85,6 +112,7 @@ object Main {
         editor.focus()
         Rendering.resetCursor(doc)
         themeButton.addEventListener("click", (e: dom.Event) ⇒ CodeMirror.commands.solarizedToggle(editor))
+        shareButton.addEventListener("click", (e: dom.Event) ⇒ CodeMirror.commands.share(editor))
         dom.document.getElementById("help").addEventListener("click", (e: dom.Event) ⇒ CodeMirror.commands.help(editor))
         stateButton.setAttribute("title", s"run ($ctrlS + Enter)")
         stateButton.addEventListener("click", (e: dom.Event) ⇒ {

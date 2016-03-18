@@ -43,7 +43,7 @@ object Template {
         link(rel:="stylesheet", href:="/assets/lib/codemirror/lib/codemirror.css"),
         link(rel:="stylesheet", href:="/assets/lib/codemirror/theme/mdn-like.css"),
         link(rel:="stylesheet", href:="/assets/lib/open-iconic/font/css/open-iconic.css"),
-        
+
 
         link(rel:="stylesheet", href:="/assets/main.css")
       ),
@@ -54,10 +54,12 @@ object Template {
           ul(`class` := "menu")(
             li(id := "state", `class` := "oi", "data-glyph".attr := "media-play"),
             li(id := "theme", "title".attr := "toggle theme (F2)", `class` := "oi", "data-glyph".attr := "sun"),
-            li(id := "help", "title".attr := "help (F1)", `class` := "oi", "data-glyph".attr := "question-mark")
-          )
+            li(id := "help", "title".attr := "help (F1)", `class` := "oi", "data-glyph".attr := "question-mark"),
+            li(id := "share", "title".attr := "share (F7)", `class` := "oi", "data-glyph".attr := "share-boxed")
+          ),
+          div(`id` := "shared", `class` := "shared")
         ),
-        
+
         script(src:="/assets/lib/codemirror/lib/codemirror.js"),
 
         script(src:="/assets/lib/codemirror/addon/comment/comment.js"),

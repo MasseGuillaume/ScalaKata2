@@ -199,22 +199,10 @@ object Rendering {
             }
             case Some(RangePosition(start, _, end)) ⇒ {
               val startPos = doc.posFromIndex(start)
-              val tabSize = editor.getOption("tabSize").asInstanceOf[Int]
-
-              val line = doc.getLine(startPos.line)
-
-              val tabCount = line.count(_ == '\t')
-              val spaceCount = line.count(_ == ' ')
-
-              val tabs =
-                (0 until tabCount).map(_ ⇒
-                  span(`class`:="cm-tab", role := "presentation", "cm-text".attr :="  ")(" " * tabSize)
-                ).toList
-
-              val spaces = if(spaceCount != 0) List(span(" " * spaceCount)) else Nil
 
               val childs =
-                tabs ::: spaces ::: List(
+                List(
+                  span(" " * startPos.ch),
                   span("^"),
                   i(`class`:="oi", "data-glyph".attr := severityToIcon(severity)),
                   pre(info.message)

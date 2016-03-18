@@ -39,6 +39,7 @@ object Main {
       scrollPastEnd(true).
       scrollbarStyle("simple").
       extraKeys(js.Dictionary(
+        "Tab"          -> "insertSoftTab",
         s"$ctrl-l"     -> null,
         s"$ctrl-Space" -> "autocomplete",
          "."           -> "autocompleteDot",

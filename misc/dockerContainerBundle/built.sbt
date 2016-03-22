@@ -1,88 +1,98 @@
 lazy val dependencies = Seq(
-  "cc.factorie"                  %% "factorie"                 % "1.1.1",
-  "ch.qos.logback"                % "logback-classic"          % "1.1.5",
-  "com.assembla.scala-incubator" %% "graph-core"               % "1.10.1",
-  "com.assembla.scala-incubator" %% "graph-json"               % "1.10.0",
-  "com.chuusai"                  %% "shapeless"                % "2.2.5",
-  "com.github.julien-truffaut"   %% "monocle-core"             % "1.2.0",
-  "com.github.julien-truffaut"   %% "monocle-generic"          % "1.2.0",
-  "com.github.julien-truffaut"   %% "monocle-law"              % "1.2.0-M1",
-  "com.github.julien-truffaut"   %% "monocle-macro"            % "1.2.0-M1",
-  "com.github.julien-truffaut"   %% "monocle-state"            % "1.2.0-M1",     
-  "com.github.scala-blitz"       %% "scala-blitz"              % "1.2",
-  "com.h2database"                % "h2"                       % "1.4.187",
-  "org.mongodb"                   % "mongo-java-driver"        % "3.0.2",
-  "com.lihaoyi"                  %% "ammonite-ops"             % "0.3.2",
-  "com.lihaoyi"                  %% "ammonite-pprint"          % "0.3.2",
-  "com.lihaoyi"                  %% "ammonite-tools"           % "0.3.2",
-  "com.lihaoyi"                  %% "fastparse"                % "0.3.0",
-  "com.lihaoyi"                  %% "pprint"                   % "0.3.4",
-  "com.lihaoyi"                  %% "scalaparse"               % "0.3.0",
-  "com.lihaoyi"                  %% "scalarx"                  % "0.2.8",
-  "com.lihaoyi"                  %% "scalatags"                % "0.5.2",
-  "com.lihaoyi"                  %% "upickle"                  % "0.2.6",
-  "com.squants"                  %% "squants"                  % "0.5.3",
-  "com.twitter"                  %% "algebird"                 % "0.11.0",
-  "com.typesafe.play"            %% "play"                     % "2.4.2",
-  "io.argonaut"                  %% "argonaut"                 % "6.1",
-  "io.spray"                     %% "spray-can"                % "1.3.3",
-  "io.spray"                     %% "spray-client"             % "1.3.3",
-  "io.spray"                     %% "spray-http"               % "1.3.3",
-  "io.spray"                     %% "spray-httpx"              % "1.3.3",
-  "io.spray"                     %% "spray-io"                 % "1.3.3",
-  "io.spray"                     %% "spray-json"               % "1.3.2",
-  "io.spray"                     %% "spray-routing-shapeless2" % "1.3.3",
-  "io.spray"                     %% "spray-testkit"            % "1.3.3",
-  "io.spray"                     %% "spray-util"               % "1.3.3",
-  "org.http4s"                   %% "http4s-blaze-client"      % "0.9.2",
-  "org.http4s"                   %% "http4s-blaze-server"      % "0.9.2",
-  "org.http4s"                   %% "http4s-core"              % "0.9.2",
-  "org.http4s"                   %% "http4s-dsl"               % "0.9.2",
-  "org.http4s"                   %% "http4s-jetty"             % "0.9.2",
-  "org.http4s"                   %% "http4s-servlet"           % "0.9.2",
-  "org.parboiled"                %% "parboiled"                % "2.1.0",
-  "org.scala-lang.modules"       %% "scala-async"              % "0.9.5",
-  "org.scala-lang.modules"       %% "scala-parser-combinators" % "1.0.3",
-  "org.scala-lang.modules"       %% "scala-pickling"           % "0.10.1",
-  "org.scala-lang.modules"       %% "scala-xml"                % "1.0.5",
-  "org.scala-saddle"             %% "saddle-core"              % "1.3.4",
-  "org.scala-sbt"                %% "collections"              % "0.13.8",
-  "org.scala-sbt"                %% "completion"               % "0.13.8",
-  "org.scala-sbt"                %% "control"                  % "0.13.8",
-  "org.scala-sbt"                %% "io"                       % "0.13.8",
-  "org.scalacheck"               %% "scalacheck"               % "1.12.4",
+  // typelevel stack
+  // "com.chuusai"                  %% "shapeless"                % "2.2.5"  ,
+  "org.typelevel"                %% "cats"                     % "0.4.1"  ,
+  "org.spire-math"               %% "spire"                    % "0.7.4"  , // 0.11.0 (spark-mllib -> breeze  -> ...)
+  "org.spire-math"               %% "algebra"                  % "0.3.1"  ,
+  "eu.timepit"                   %% "refined"                  % "0.3.5"  ,
+  "com.github.julien-truffaut"   %% "monocle-core"             % "1.1.1"  ,
+  "org.http4s"                   %% "http4s-blaze-client"      % "0.12.4" ,
+  "org.http4s"                   %% "http4s-blaze-server"      % "0.12.4" ,
+
+  "org.scodec"                   %% "scodec-core"              % "1.9.0"  ,
+
+  // scalaz
+  "org.scalaz"                   %% "scalaz-core"              % "7.1.4" ,
+  "org.scalaz.stream"            %% "scalaz-stream"            % "0.8"  ,
+
+  // lightbend stack
+  "com.typesafe.akka"            %% "akka-http-experimental"   % "2.0.3" ,
+  "com.typesafe.slick"           %% "slick"                    % "3.1.1" ,
+
+  // spark / data science
+  "org.apache.spark"             %% "spark-core"               % "1.6.1" ,
+  "org.apache.spark"             %% "spark-mllib"              % "1.6.1" ,
+  "org.apache.spark"             %% "spark-sql"                % "1.6.1" ,
+  "org.apache.spark"             %% "spark-streaming"          % "1.6.1" ,
   "org.scalanlp"                 %% "breeze"                   % "0.11.2",
-  "org.scalaz"                   %% "scalaz-core"              % "7.1.3",
-  "org.scalaz.stream"            %% "scalaz-stream"            % "0.7.2a",
-  "org.scalikejdbc"              %% "scalikejdbc"              % "2.2.7",
-  "org.scodec"                   %% "scodec-bits"              % "1.0.9",
-  "org.scodec"                   %% "scodec-core"              % "1.8.1",
-  "org.scodec"                   %% "scodec-protocols"         % "0.11.0",
-  "org.scodec"                   %% "scodec-scalaz"            % "1.1.0",
-  "org.scodec"                   %% "scodec-spire"             % "0.2.0",
-  "org.scodec"                   %% "scodec-stream"            % "0.10.0",
-  "org.spire-math"               %% "cats"                     % "0.1.2",
-  "org.spire-math"               %% "debox"                    % "0.7.3",
-  "org.spire-math"               %% "jawn-ast"                 % "0.8.3",
-  "org.spire-math"               %% "jawn-parser"              % "0.8.3",
-  "org.spire-math"               %% "spire"                    % "0.10.1",
-  "org.w3"                       %% "banana-rdf"               % "0.8.1"
+
+  // misc 
+  "org.parboiled"                %% "parboiled"                % "2.1.1"  ,
+  "ch.qos.logback"                % "logback-classic"          % "1.1.6"  ,
+  "org.slf4j"                     % "slf4j-api"                % "1.7.19" ,
+  "com.h2database"                % "h2"                       % "1.4.191",
+  "cc.factorie"                  %% "factorie"                 % "1.1.1" ,
+  "com.squants"                  %% "squants"                  % "0.5.3" ,
+  
+  // lihaoyi's 100 tools :P
+  "com.lihaoyi"                   % "ammonite-repl_2.11.7"     % "0.5.6" ,
+  "com.lihaoyi"                  %% "ammonite-ops"             % "0.5.6" ,
+  "com.lihaoyi"                  %% "fastparse"                % "0.3.7" ,
+  "com.lihaoyi"                  %% "scalaparse"               % "0.3.7" ,
+  "com.lihaoyi"                  %% "scalarx"                  % "0.3.1" ,
+  "com.lihaoyi"                  %% "scalatags"                % "0.5.4" ,
+  "com.lihaoyi"                  %% "upickle"                  % "0.3.8" ,
+  "com.lihaoyi"                  %% "pprint"                   % "0.3.8" ,
+  "com.lihaoyi"                  %% "sourcecode"               % "0.1.1" ,
+
+  // scala modules
+  "org.scala-lang.modules"       %% "scala-async"              % "0.9.5" ,
+  "org.scala-lang.modules"       %% "scala-parser-combinators" % "1.0.4" ,
+  "org.scala-lang.modules"       %% "scala-pickling"           % "0.10.1",
+  "org.scala-lang.modules"       %% "scala-xml"                % "1.0.5" ,
+
+  // testing
+  "org.scalacheck"               %% "scalacheck"               % "1.12.5",
+  "org.specs2"                   %% "specs2-core"              % "3.7.2-scalaz-7.1.7",
+  "com.lihaoyi"                  %% "utest"                    % "0.4.3"
 )
 
-lazy val scalakata = (project in file(".")).
-  enablePlugins(ScalaKataPlugin).
-  settings(net.virtualvoid.sbt.graph.Plugin.graphSettings: _*).
-  settings(
-    organization := "masseguillaume",
-    name := "scalakata-bundle",
-    version := "1.1.0",
-    description := "Docker Container with various librairies",
-    scalaVersion := "2.11.7",
-    libraryDependencies ++= dependencies,
-    resolvers ++= Seq(
-      Resolver.sonatypeRepo("releases"),
-      Resolver.typesafeIvyRepo("releases")
-    ),
-    securityManager in Backend := true
-  )
 
+enablePlugins(ScalaKataPlugin)
+
+organization := "masseguillaume"
+name := "scalakata-bundle"
+version := "1.1.0"
+description := "Docker Container with various librairies"
+
+scalaVersion := "2.11.8"
+scalacOptions ++= Seq(
+  "-deprecation",
+  "-encoding", "UTF-8",
+  "-feature",
+  "-language:existentials",
+  "-language:experimental.macros",
+  "-language:higherKinds",
+  "-language:implicitConversions",
+  "-unchecked",
+  "-Xexperimental",
+  "-Xfuture",
+  "-Xlint",
+  "-Ybackend:GenBCode",
+  "-Ydelambdafy:method",
+  "-Yinline-warnings",
+  "-Yno-adapted-args",
+  "-Yrangepos",
+  "-Ywarn-dead-code",
+  "-Ywarn-numeric-widen",
+  "-Ywarn-value-discard"
+)
+libraryDependencies ++= dependencies
+
+resolvers ++= Seq(
+  "oncue" at "https://dl.bintray.com/oncue/releases",
+  Resolver.sonatypeRepo("releases"),
+  Resolver.typesafeIvyRepo("releases")
+)
+
+securityManager in Backend := true

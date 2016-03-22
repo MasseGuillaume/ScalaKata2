@@ -58,7 +58,7 @@ lazy val model = project
     libraryDependencies ++= Seq(
       "com.lihaoyi"            % "ammonite-repl_2.11.7" % "0.5.4",
       "com.lihaoyi"           %% "pprint"               % "0.3.8",
-      "com.dallaway.richard" %%% "woot-model"           % "0.1.0"
+      "com.dallaway.richard" %%% "woot-model"           % "0.1.1"
     )
   )
   .enablePlugins(ScalaJSPlugin)

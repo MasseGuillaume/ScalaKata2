@@ -23,12 +23,8 @@ And add the following line to `build.sbt`
 enablePlugins(ScalaKataPlugin)
 ```
 
-### Docker containers
+### Docker container
 
 `sudo docker run -p 7331:7331 --name scalakata masseguillaume/scalakata:v1.1.0`
-
-or
-
-`sudo docker run -p 7331:7331 --name scalakata masseguillaume/scalakata-bundle:v1.1.0`
 
 open your browser at `http://localhost:7331`

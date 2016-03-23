@@ -8,7 +8,6 @@ import model.headers._
 import akka.actor.ActorSystem
 import akka.stream.Materializer
 import akka.stream.scaladsl._
-import ws.UpgradeToWebsocket
 
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext
@@ -54,7 +53,7 @@ class Route(api: Api, prod: Boolean)(implicit fm: Materializer, system: ActorSys
     get {
       pathPrefix("collaborative" / Segment) { room ⇒
         parameter('username) { username ⇒
-          handleWebsocketMessages(websocketCollaborationFlow(room, username))
+          handleWebSocketMessages(websocketCollaborationFlow(room, username))
         }
       } ~
       pathSingleSlash {
@@ -77,7 +76,7 @@ class Route(api: Api, prod: Boolean)(implicit fm: Materializer, system: ActorSys
       }
     }
 
-  private def websocketCollaborationFlow(room: String, username: String): Flow[ws.Message, ws.Message, Any] =
+  private def websocketCollaborationFlow(room: String, username: String): Flow[ws.Message, ws.Message, _] =
     Flow[ws.Message]
       .collect{case ws.TextMessage.Strict(json) ⇒ uread[DocChange](json)}
       .via(collaboration.flow(room, username))

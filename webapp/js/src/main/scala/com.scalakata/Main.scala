@@ -39,7 +39,7 @@ object Main {
       scrollPastEnd(true).
       scrollbarStyle("simple").
       extraKeys(js.Dictionary(
-        "Tab"          -> "insertSoftTab",
+        "Tab"          -> "specialTab",
         s"$ctrl-l"     -> null,
         s"$ctrl-Space" -> "autocomplete",
          "."           -> "autocompleteDot",
@@ -62,6 +62,7 @@ object Main {
     val stateButton = dom.document.getElementById("state")
     val shareButton = dom.document.getElementById("share")
     
+
     CodeMirror.commands.run = Rendering.run _
     CodeMirror.commands.typeAt = Hint.typeAt _
     CodeMirror.commands.autocomplete = Hint.autocomplete _
@@ -69,6 +70,10 @@ object Main {
     CodeMirror.commands.help = (editor: Editor) ⇒ {
       editor.getDoc().setValue(Util.wrap("help"))
       Rendering.run(editor)
+    }
+    CodeMirror.commands.specialTab = (editor: Editor) ⇒ {
+      if (editor.somethingSelected()) editor.indentSelection("add");
+      else editor.execCommand("insertSoftTab");
     }
     CodeMirror.commands.solarizedToggle = (editor: Editor) ⇒ {
       val isDark = editor.getOption("theme").asInstanceOf[String] == "solarized dark"

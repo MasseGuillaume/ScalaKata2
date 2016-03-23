@@ -37,6 +37,7 @@ trait Editor extends js.Object {
   def defaultCharWidth(): Double = js.native
   def getViewport(): js.Any = js.native
   def refresh(): Unit = js.native
+  def indentSelection(how: String): Unit = js.native
   def getTokenAt(pos: Position): js.Any = js.native
   def getStateAfter(line: Double = js.native): js.Dynamic = js.native
   def operation[T](fn: js.Function0[T]): T = js.native
@@ -46,6 +47,8 @@ trait Editor extends js.Object {
   def getWrapperElement(): HTMLElement = js.native
   def getScrollerElement(): HTMLElement = js.native
   def getGutterElement(): HTMLElement = js.native
+  def execCommand(command: String): Unit = js.native
+  def somethingSelected(): Boolean = js.native
   def on(eventName: String, handler: js.Function2[Editor, js.Any, Unit]): Unit = js.native
   def off(eventName: String, handler: js.Function2[Editor, js.Any, Unit]): Unit = js.native
 }

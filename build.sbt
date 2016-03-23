@@ -9,11 +9,10 @@ lazy val commonSettings = Seq(
   },
   scalaVersion := "2.11.8",
   organization := "com.scalakata",
-  version := "1.1.0",
+  version := "1.1.1",
   description := "Scala Interactive Playground",
   licenses := Seq("MIT" -> url("http://www.opensource.org/licenses/mit-license.html")),
   homepage := Some(url("http://scalakata.com")),
-  offline := true,
   scalacOptions ++= Seq(
     "-deprecation",
     "-encoding", "UTF-8",
@@ -105,7 +104,7 @@ lazy val webapp = crossProject.settings(
   name := "Server",
   libraryDependencies ++= Seq(
     "com.lihaoyi"        % "ammonite-repl_2.11.7"   % "0.5.4",
-    "com.typesafe.akka" %% "akka-http-experimental" % "2.0.3",
+    "com.typesafe.akka" %% "akka-http-experimental" % "2.4.2",
     "org.webjars.bower"  % "codemirror"             % "5.12.0",
     "org.webjars.bower"  % "open-iconic"            % "1.1.1",
     "org.webjars.bower"  % "pagedown"               % "1.1.0",
@@ -145,7 +144,7 @@ lazy val webappJVM = webapp.jvm
         map -> map.getName
       )
     },
-    watchSources ++= (watchSources in webappJS).value
+    watchSources ++= ((watchSources in webappJS).value ++ (watchSources in codemirror).value)
   ).dependsOn(evaluation).enablePlugins(SbtWeb, BuildInfoPlugin)
 
 lazy val codemirror = project

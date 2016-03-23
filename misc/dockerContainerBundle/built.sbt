@@ -16,7 +16,7 @@ lazy val dependencies = Seq(
   "org.scalaz.stream"            %% "scalaz-stream"            % "0.8"  ,
 
   // lightbend stack
-  "com.typesafe.akka"            %% "akka-http-experimental"   % "2.0.3" ,
+  "com.typesafe.akka"            %% "akka-http-experimental"   % "2.4.2" ,
   "com.typesafe.slick"           %% "slick"                    % "3.1.1" ,
 
   // spark / data science
@@ -62,7 +62,7 @@ enablePlugins(ScalaKataPlugin)
 
 organization := "masseguillaume"
 name := "scalakata-bundle"
-version := "1.1.0"
+version := "1.1.1"
 description := "Docker Container with various librairies"
 
 scalaVersion := "2.11.8"

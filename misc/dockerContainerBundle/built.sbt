@@ -62,7 +62,7 @@ enablePlugins(ScalaKataPlugin)
 
 organization := "masseguillaume"
 name := "scalakata-bundle"
-version := "1.1.1"
+version := "1.1.2"
 description := "Docker Container with various librairies"
 
 scalaVersion := "2.11.8"

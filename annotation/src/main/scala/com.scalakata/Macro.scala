@@ -13,22 +13,20 @@ object KataMacro {
 
       def w(aTree: Tree, tTree: Option[Tree] = None) = {
         val t = TermName(c.freshName)
+        val pp = TermName(c.freshName)
+
         if(aTree.pos == NoPosition) aTree
         else {
-          tTree match {
-            case None ⇒
-              q"""{
-                val $t = $aTree
-                ${instrumentation}(${aTree.pos}) = render($t)
-                $t
-              }"""
-            case Some(tpe) ⇒
-              q"""{
-                val $t: $tpe = $aTree
-                ${instrumentation}(${aTree.pos}) = render($t)
-                $t
-              }"""
-          }
+          val tTreeQuote =
+            tTree match {
+              case None      ⇒ q"val $t = $aTree"
+              case Some(tpe) ⇒ q"val $t: $tpe = $aTree"
+            }
+          q"""{
+            $tTreeQuote
+            ${instrumentation}(${aTree.pos}) = render($t, pprint.tokenize($t).mkString)
+            $t
+          }"""
         }
       }
 

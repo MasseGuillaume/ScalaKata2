@@ -8,13 +8,12 @@ package object scalakata {
 
   type Instrumentation = List[(RangePosition, Render)]
 
-  def render[T](a: T)(implicit tp: TPrint[T]): Render = {
-    val config = pprint.Config.Defaults.PPrintConfig
+  def render[T](a: T, p: => String)(implicit tp: TPrint[T]): Render = {
     a match {
       case md: Markdown ⇒ md
       case html: Html ⇒ html
       case html2: Html2 ⇒ html2
-      case v ⇒ Value(pprint.tokenize(v).mkString(System.lineSeparator), tp.render(config))
+      case v ⇒ Value(p, tp.render(pprint.Config.Defaults.PPrintConfig))
     }
   }
 

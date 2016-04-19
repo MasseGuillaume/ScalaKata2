@@ -9,6 +9,8 @@ class MacroSpecs extends org.specs2.Specification { def is = s2"""
     hide instrumented class name $hideName
 """
 
+  def s(v: String) = "\"" + v + "\""
+
   def withOffset(instr: Instrumented) = {
     val by = instr.offset$
     instr.instrumentation$.map{ case (RangePosition(start, pos, end), repr) ⇒
@@ -66,22 +68,22 @@ if(true) null
 }
 
     withOffset(new Full) ==== List(
-      RangePosition(  8,   8,  13) -> Value("L29", "String"),
-      RangePosition( 22,  22,  27) -> Value("L30", "String"),
-      RangePosition( 28,  28,  33) -> Value("L29L30", "String"),
-      RangePosition( 42,  42,  47) -> Value("L29L30", "String"),
-      RangePosition( 49,  49,  56) -> Value("Set(33)", "Set[Int]"),
-      RangePosition(151, 151, 160) -> Value("L34v", "String"),
-      RangePosition(175, 175, 176) -> Value("L40", "String"),
-      RangePosition(177, 177, 225) -> Value("L42-1L42-2", "String"),
-      RangePosition(229, 229, 263) -> Value("true", "Boolean"),
-      RangePosition(272, 272, 277) -> Value("L45", "String"),
-      RangePosition(282, 282, 287) -> Value("L46", "String"),
-      RangePosition(296, 296, 327) -> Value("Map(1 -> 47)", "collection.mutable.Map[Int, Int]"),
-      RangePosition(335, 335, 337) -> Value("48", "Int"),
-      RangePosition(339, 339, 392) -> Value("535454", "String"),
-      RangePosition(437, 437, 444) -> Value("L56-t", "String"),
-      RangePosition(467, 467, 471) -> Value("null", "Null")
+      RangePosition(  8,   8,  13) -> Value(s("L29")        , "String"),
+      RangePosition( 22,  22,  27) -> Value(s("L30")        , "String"),
+      RangePosition( 28,  28,  33) -> Value(s("L29L30")     , "String"),
+      RangePosition( 42,  42,  47) -> Value(s("L29L30")     , "String"),
+      RangePosition( 49,  49,  56) -> Value("Set(33)"       , "Set[Int]"),
+      RangePosition(151, 151, 160) -> Value(s("L34v")       , "String"),
+      RangePosition(175, 175, 176) -> Value(s("L40")        , "String"),
+      RangePosition(177, 177, 225) -> Value(s("L42-1L42-2") , "String"),
+      RangePosition(229, 229, 263) -> Value("true"          , "Boolean"),
+      RangePosition(272, 272, 277) -> Value(s("L45")        , "String"),
+      RangePosition(282, 282, 287) -> Value(s("L46")        , "String"),
+      RangePosition(296, 296, 327) -> Value("Map(1 -> 47)"  , "collection.mutable.Map[Int, Int]"),
+      RangePosition(335, 335, 337) -> Value("48"            , "Int"),
+      RangePosition(339, 339, 392) -> Value(s("535454")     , "String"),
+      RangePosition(437, 437, 444) -> Value(s("L56-t")      , "String"),
+      RangePosition(467, 467, 471) -> Value("null"          , "Null")
     )
   }
 

@@ -4,18 +4,19 @@ import akka.http.scaladsl._
 import server.Directives._
 import model._
 import model.headers._
+import ws.TextMessage._
 
 import akka.actor.ActorSystem
 import akka.stream.Materializer
 import akka.stream.scaladsl._
 
 import scala.concurrent.duration._
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 import akka.util.Timeout
 
 import java.nio.file.Path
 
-import upickle.default.{Reader, Writer, write => uwrite, read => uread}
+import upickle.default.{Reader, Writer, write ⇒ uwrite, read ⇒ uread}
 object AutowireServer extends autowire.Server[String, Reader, Writer]{
   def read[Result: Reader](p: String) = uread[Result](p)
   def write[Result: Writer](r: Result) = uwrite(r)
@@ -78,7 +79,17 @@ class Route(api: Api, prod: Boolean)(implicit fm: Materializer, system: ActorSys
 
   private def websocketCollaborationFlow(room: String, username: String): Flow[ws.Message, ws.Message, _] =
     Flow[ws.Message]
-      .collect{case ws.TextMessage.Strict(json) ⇒ uread[DocChange](json)}
+      .mapAsync(1){
+        case Streamed(source) ⇒ {
+          // when a websocket message is too large it's streamed
+          // we want to get a strict value but we cap it at 100 000 chars to avoid DoS
+          val limit = 100000L
+          source.take(limit).runWith(Sink.reduce((a: String, b: String) => a + b))
+        }
+        case Strict(json) ⇒ Future.successful(json)
+        case e => Future.failed(new Exception(e.toString))
+      }
+      .map(uread[DocChange](_))
       .via(collaboration.flow(room, username))
       .map{case event: CollaborationEvent ⇒ ws.TextMessage.Strict(uwrite(event))}
 

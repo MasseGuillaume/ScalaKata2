@@ -1,14 +1,12 @@
 package com
 
 package object scalakata {
-  import ammonite.repl.frontend.TPrint
-
   implicit val rangePositionOrdering: Ordering[(RangePosition, Render)] =
     Ordering.by{ case (rp, r) ⇒ RangePosition.unapply(rp) }
 
   type Instrumentation = List[(RangePosition, Render)]
 
-  def render[T](a: T, p: => String)(implicit tp: TPrint[T]): Render = {
+  def render[T](a: T, p: ⇒ String)(implicit tp: pprint.TPrint[T]): Render = {
     a match {
       case md: Markdown ⇒ md
       case html: Html ⇒ html

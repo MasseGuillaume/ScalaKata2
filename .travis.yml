@@ -5,9 +5,7 @@ os:
 scala:
   - 2.11.7
 jdk:
-  - oraclejdk7
   - oraclejdk8
-  - openjdk7
 cache:
   directories:
     - $HOME/.ivy2/cache
@@ -22,4 +20,5 @@ script:
   - find $HOME/.ivy2 -name "ivydata-*.properties" | xargs rm
 matrix:
   exclude:
+    # no jdk switcher
     - os: osx

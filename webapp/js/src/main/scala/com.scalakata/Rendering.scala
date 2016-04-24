@@ -132,7 +132,7 @@ object Rendering {
         else fold(startPos, endPos, v, process)
       }
       case Html(v, folded) ⇒ {
-        val process: (HTMLElement => Unit) = _.innerHTML = v
+        val process: (HTMLElement ⇒ Unit) = _.innerHTML = v
         if(!folded) nextline(endPos, v, process)
         else fold(startPos, endPos, v, process)
       }
@@ -243,9 +243,9 @@ object Rendering {
           groupBy(line).
           values.flatMap{ renders ⇒
             // join single line value
-            if(renders.forall{case (_, Value(v, t)) => !v.contains(nl); case _ => false}) {
-              val vs = renders.map{case (_, Value(v, _)) => v; case _ => ""}
-              val tpes = renders.map{case (_, Value(_, t)) => t; case _ => ""}
+            if(renders.forall{case (_, Value(v, t)) ⇒ !v.contains(nl); case _ ⇒ false}) {
+              val vs = renders.map{case (_, Value(v, _)) ⇒ v; case _ ⇒ ""}
+              val tpes = renders.map{case (_, Value(_, t)) ⇒ t; case _ ⇒ ""}
 
               val joined =
                 if(vs.size == 1 && tpes.size == 1) Value(vs.head, tpes.head)

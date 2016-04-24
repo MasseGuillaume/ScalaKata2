@@ -11,7 +11,7 @@ object GitHub {
   def fetch(gistId: String): Future[String] = dom.ext.Ajax.get(
     url = "https://api.github.com/gists/" + gistId,
     responseType = "json"
-  ).map(e => content(e.response.asInstanceOf[js.Dictionary[js.Dictionary[String]]]("files")))
+  ).map(e ⇒ content(e.response.asInstanceOf[js.Dictionary[js.Dictionary[String]]]("files")))
 
   private def id(xhr: dom.XMLHttpRequest) = dict(xhr)("id")
   private def dict(xhr: dom.XMLHttpRequest) = xhr.response.asInstanceOf[js.Dictionary[String]]

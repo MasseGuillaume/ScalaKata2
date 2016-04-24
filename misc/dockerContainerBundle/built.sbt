@@ -41,8 +41,8 @@ lazy val dependencies = Seq(
   "com.lihaoyi"                  %% "scalaparse"               % "0.3.7" ,
   "com.lihaoyi"                  %% "scalarx"                  % "0.3.1" ,
   "com.lihaoyi"                  %% "scalatags"                % "0.5.4" ,
-  "com.lihaoyi"                  %% "upickle"                  % "0.3.8" ,
-  "com.lihaoyi"                  %% "pprint"                   % "0.3.8" ,
+  "com.lihaoyi"                  %% "upickle"                  % "0.4.0" ,
+  "com.lihaoyi"                  %% "pprint"                   % "0.4.0" ,
   "com.lihaoyi"                  %% "sourcecode"               % "0.1.1" ,
 
   // scala modules
@@ -62,7 +62,7 @@ enablePlugins(ScalaKataPlugin)
 
 organization := "masseguillaume"
 name := "scalakata-bundle"
-version := "1.1.2"
+version := "1.1.3"
 description := "Docker Container with various librairies"
 
 scalaVersion := "2.11.8"

@@ -5,16 +5,16 @@ import woot._
 import Util._
 
 import scala.scalajs._
-import org.scalajs.dom.{Position => _, _}
+import org.scalajs.dom.{Position ⇒ _, _}
 import org.denigma.codemirror._
 
-import upickle.default.{Reader, Writer, write => uwrite, read => uread}
+import upickle.default.{Reader, Writer, write ⇒ uwrite, read ⇒ uread}
 
 object Collaborative {
   def apply(editor: Editor): Unit = {
     var doc: Option[woot.WString] = None
     var onAir = true
-    def offAir[T](body: => T): Unit = {
+    def offAir[T](body: ⇒ T): Unit = {
       onAir = false
       body
       onAir = true
@@ -31,14 +31,14 @@ object Collaborative {
     }
 
     def applyOps(operations: List[Operation]): Unit = {
-      doc.foreach( d =>
-        operations.foldLeft(d){ case (cd, operation) =>
+      doc.foreach( d ⇒
+        operations.foldLeft(d){ case (cd, operation) ⇒
           if (operation.from != d.site) {
             val (ops, cd2) = cd.integrate(operation)
             doc = Some(cd2)
             ops.foreach{
-              case InsertOp(ch, _) => applyOp(ch.alpha.toString, true,  cd2.visibleIndexOf(ch.id))
-              case DeleteOp(ch, _) => applyOp(ch.alpha.toString, false, cd2.visibleIndexOf(ch.id))
+              case InsertOp(ch, _) ⇒ applyOp(ch.alpha.toString, true,  cd2.visibleIndexOf(ch.id))
+              case DeleteOp(ch, _) ⇒ applyOp(ch.alpha.toString, false, cd2.visibleIndexOf(ch.id))
             }
             cd2
           } else cd
@@ -55,14 +55,14 @@ object Collaborative {
     val uri = s"$protocol://${location.host}/collaborative/$room?username=$username"
     val socket = new WebSocket(uri)
     
-    socket.onmessage = { e: raw.MessageEvent =>
+    socket.onmessage = { e: raw.MessageEvent ⇒
       uread[CollaborationEvent](e.data.toString) match {
-        case HeartBeat => ()
-        case JoinedDoc(user) => console.log(s"joined $user")
-        case LeftDoc(user) => console.log(s"left $user")
-        case ChangeDoc(operation) => applyOps(List(operation))
-        case ChangeBatchDoc(operations) => applyOps(operations)
-        case SetDoc(d) => {
+        case HeartBeat ⇒ ()
+        case JoinedDoc(user) ⇒ console.log(s"joined $user")
+        case LeftDoc(user) ⇒ console.log(s"left $user")
+        case ChangeDoc(operation) ⇒ applyOps(List(operation))
+        case ChangeBatchDoc(operations) ⇒ applyOps(operations)
+        case SetDoc(d) ⇒ {
           doc = Some(d)
           offAir {
             editor.getDoc().setValue(d.text)
@@ -71,40 +71,40 @@ object Collaborative {
       }
     }
 
-    socket.onopen = { _ =>
-      editor.on("change", (_, e) => {
+    socket.onopen = { _ ⇒
+      editor.on("change", (_, e) ⇒ {
         change(e.asInstanceOf[EditorChange])
       })
 
-      setInterval(() => socket.send(uwrite(HeartBeat)), 10000)
+      setInterval(() ⇒ socket.send(uwrite(HeartBeat)), 10000)
       
-      // editor.on("cursorActivity", (_, e) => {
+      // editor.on("cursorActivity", (_, e) ⇒ {
       //   console.log("cursorActivity", e)
       // })
-      // editor.on("beforeSelectionChange", (_, e) => {
+      // editor.on("beforeSelectionChange", (_, e) ⇒ {
       //   console.log("beforeSelectionChange", e)
       // })
       ()
     }
 
     def doChange(added: Seq[String], removed: Seq[String], from: Position): Unit = {
-      if(onAir) { doc.foreach{ d =>
+      if(onAir) { doc.foreach{ d ⇒
         val pos = editor.getDoc().indexFromPos(from)
                 
         def indexed(changes: Seq[String]): Seq[(Char, Int)] = 
-          changes.mkString(nl.toString).zipWithIndex.map{ case (c, i) => (c, pos + i)}
+          changes.mkString(nl.toString).zipWithIndex.map{ case (c, i) ⇒ (c, pos + i)}
 
 
-        def foldChanges(changes: Seq[(Char, Int)], doc: WString)(f: (WString, Char, Int) => (Operation, WString)) = {
-          val (os, d) = changes.foldLeft((List.empty[Operation], doc)){ case ((ops, cd), (char, i)) =>
+        def foldChanges(changes: Seq[(Char, Int)], doc: WString)(f: (WString, Char, Int) ⇒ (Operation, WString)) = {
+          val (os, d) = changes.foldLeft((List.empty[Operation], doc)){ case ((ops, cd), (char, i)) ⇒
             val (op, nd) = f(cd, char, i)
             (op :: ops, nd)
           }
           (os.reverse, d)
         }
 
-        val (removeOps, d2) = foldChanges(indexed(removed).reverse, d)((cd, _, i) => cd.delete(i))
-        val (addOps   , d3) = foldChanges(indexed(added), d2)((cd, char, i) => cd.insert(char, i))
+        val (removeOps, d2) = foldChanges(indexed(removed).reverse, d)((cd, _, i) ⇒ cd.delete(i))
+        val (addOps   , d3) = foldChanges(indexed(added), d2)((cd, char, i) ⇒ cd.insert(char, i))
 
         doc = Some(d3)
         if (!(addOps.isEmpty && removeOps.isEmpty)) {

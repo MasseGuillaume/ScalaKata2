@@ -30,9 +30,9 @@ object Server {
     val route = (new Route(api, prod)).route
 
     val setup = 
-      Http().bindAndHandle(route, host, port).map{ _ =>
+      Http().bindAndHandle(route, host, port).map{ _ ⇒
         // notify sbt plugin to open browser
-        readyPort.map{ p =>
+        readyPort.map{ p ⇒
           val ready = new java.net.Socket(host, p)
           ready.sendUrgentData(0)
           ready.close()

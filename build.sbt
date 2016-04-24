@@ -1,7 +1,3 @@
-import sbt.Keys._
-import spray.revolver.AppProcess
-import spray.revolver.RevolverPlugin.Revolver
-
 lazy val commonSettings = Seq(
   commands += Command.command("cls") { state =>
     println("\033c") // xterm clear
@@ -9,7 +5,7 @@ lazy val commonSettings = Seq(
   },
   scalaVersion := "2.11.8",
   organization := "com.scalakata",
-  version := "1.1.2",
+  version := "1.1.3",
   description := "Scala Interactive Playground",
   licenses := Seq("MIT" -> url("http://www.opensource.org/licenses/mit-license.html")),
   homepage := Some(url("http://scalakata.com")),
@@ -43,7 +39,13 @@ lazy val commonSettings = Seq(
     "masseguillaume" at "http://dl.bintray.com/content/masseguillaume/maven",
     "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"
   ),
-  libraryDependencies += "org.specs2" %% "specs2-core" % "3.6.4" % "test"
+  libraryDependencies += "org.specs2" %% "specs2-core" % "3.6.4" % "test",
+  pomExtra := (
+    <scm>
+      <url>git@github.com:MasseGuillaume/ScalaKata2.git</url>
+      <connection>scm:git:git@github.com:MasseGuillaume/ScalaKata2.git</connection>
+    </scm>
+  )
 )
 
 seq(commonSettings: _*)
@@ -55,9 +57,8 @@ lazy val model = project
   .settings(
     resolvers += "masseguillaume" at "http://dl.bintray.com/content/masseguillaume/maven",
     libraryDependencies ++= Seq(
-      "com.lihaoyi"            % "ammonite-repl_2.11.7" % "0.5.4",
-      "com.lihaoyi"           %% "pprint"               % "0.3.8",
-      "com.dallaway.richard" %%% "woot-model"           % "0.1.1"
+      "com.lihaoyi"           %% "pprint"     % "0.4.0",
+      "com.dallaway.richard" %%% "woot-model" % "0.1.1"
     )
   )
   .enablePlugins(ScalaJSPlugin)
@@ -66,7 +67,6 @@ lazy val annotation = project
   .settings(commonSettings: _*)
   .settings(
     libraryDependencies ++= Seq(
-      "com.lihaoyi"     % "ammonite-repl_2.11.7" % "0.5.4",
       "org.scala-lang"  % "scala-compiler"       % scalaVersion.value,
       "org.scala-lang"  % "scala-reflect"        % scalaVersion.value,
       compilerPlugin("org.scalamacros" % "paradise" % paradiseVersion cross CrossVersion.full)
@@ -92,7 +92,7 @@ lazy val evaluation = project
 lazy val webapp = crossProject.settings(
   libraryDependencies ++= Seq(
     "com.lihaoyi" %%% "scalatags" % "0.5.2",
-    "com.lihaoyi" %%% "upickle"   % "0.3.8",
+    "com.lihaoyi" %%% "upickle"   % "0.4.0",
     "com.lihaoyi" %%% "autowire"  % "0.2.5"
   )
 ).settings(commonSettings: _*)
@@ -103,9 +103,8 @@ lazy val webapp = crossProject.settings(
  .jvmSettings(
   name := "Server",
   libraryDependencies ++= Seq(
-    "com.lihaoyi"        % "ammonite-repl_2.11.7"   % "0.5.4",
-    "com.typesafe.akka" %% "akka-http-experimental" % "2.4.2",
-    "org.webjars.bower"  % "codemirror"             % "5.12.0",
+    "com.typesafe.akka" %% "akka-http-experimental" % "2.4.4",
+    "org.webjars.bower"  % "codemirror"             % "5.14.2",
     "org.webjars.bower"  % "open-iconic"            % "1.1.1",
     "org.webjars.bower"  % "pagedown"               % "1.1.0",
     "org.webjars.bower"  % "iframe-resizer"         % "2.8.10"
@@ -124,8 +123,8 @@ lazy val webappJS = webapp.js.dependsOn(codemirror, model)
 lazy val webappJVM = webapp.jvm
   .settings(
     JsEngineKeys.engineType := JsEngineKeys.EngineType.Node,
-    mainClass in Revolver.reStart := Some("com.scalakata.BootTest"),
-    Revolver.reStart <<= Revolver.reStart.dependsOn(WebKeys.assets in Assets),
+    mainClass in reStart := Some("com.scalakata.BootTest"),
+    reStart <<= reStart.dependsOn(WebKeys.assets in Assets),
     unmanagedResourceDirectories in Compile += (WebKeys.public in Assets).value,
     resourceGenerators in Compile += Def.task {
       val (js, map) = andSourceMap(fastOpt.value.data)

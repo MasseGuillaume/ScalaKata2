@@ -33,7 +33,8 @@ body.pc kbd.mac { display: none }
 .CodeMirror-linewidget .line,
 .CodeMirror-widget .fold {
   margin-left: -(@margin + 4px);
-  width: 100%;
+  width: calc(~"100% + "(@margin + 4px));
+
   padding: @margin;
   white-space: pre-wrap;
 

@@ -11,7 +11,7 @@ import scala.concurrent.Await
 import java.nio.file.Path
 
 object Server {
-  def start(timeout: Duration, security: Boolean, artifacts: Seq[Path], 
+  def start(timeout: FiniteDuration, security: Boolean, artifacts: Seq[Path], 
             scalacOptions: Seq[String], host: String, port: Int, readyPort: Option[Int], prod: Boolean): Unit = {
 
     println((timeout, security, artifacts, scalacOptions, host, port, readyPort, prod))
@@ -26,7 +26,7 @@ object Server {
     import system.dispatcher
     implicit val materializer = ActorMaterializer()
 
-    val api = new ApiImpl(new Compiler(artifacts, scalacOptions, security, timeout))
+    val api = new ApiImpl(artifacts, scalacOptions, security, timeout)
     val route = (new Route(api, prod)).route
 
     val setup = 

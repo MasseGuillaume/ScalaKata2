@@ -1,17 +1,14 @@
 package com.scalakata
+package evaluation
 
-import java.io.File
+
 import java.nio.file.Path
 import java.math.BigInteger
 import java.security.MessageDigest
 import java.util.Random
-import java.util.concurrent.{TimeoutException, Callable, FutureTask, TimeUnit}
-
-import scala.util.control.NonFatal
-import scala.concurrent.duration._
 
 import scala.tools.nsc.interactive.Global
-import scala.tools.nsc.Settings
+
 import scala.tools.nsc.reporters.StoreReporter
 import scala.tools.nsc.io.VirtualDirectory
 import scala.reflect.internal.util._
@@ -19,35 +16,8 @@ import scala.tools.nsc.interactive.Response
 
 import scala.concurrent.duration._
 
-class Compiler(artifacts: Seq[Path], scalacOptions: Seq[String], security: Boolean, timeout: Duration) {
-  def eval(request: EvalRequest): EvalResponse = {
-    if (request.code.isEmpty) EvalResponse.empty
-    else {
-      try {
-        withTimeout{eval(request.code)}(timeout).getOrElse(EvalResponse.empty.copy(timeout = true))
-      } catch {
-        case NonFatal(e) ⇒ {
-          
-          def search(e: Throwable) = {
-            e.getStackTrace.find(_.getFileName == "(inline)").map(v ⇒ 
-              (e, Some(v.getLineNumber))
-            )
-          }
-
-          def loop(e: Throwable): Option[(Throwable, Option[Int])] = {
-            val s = search(e)
-            if(s.isEmpty)
-              if(e.getCause != null) loop(e.getCause)
-              else Some((e, None))
-            else s
-          }
-          EvalResponse.empty.copy(runtimeError = loop(e).map{ case (err, line) ⇒
-            RuntimeError(err.toString, line)
-          })
-        }
-      }
-    }
-  }
+class PresentationCompiler(artifacts: Seq[Path], scalacOptions: Seq[String], 
+  security: Boolean, timeout: Duration) {
 
   def autocomplete(request: CompletionRequest): List[CompletionResponse] = {
     def completion(f: (compiler.Position, compiler.Response[List[compiler.Member]]) ⇒ Unit,
@@ -109,11 +79,11 @@ class Compiler(artifacts: Seq[Path], scalacOptions: Seq[String], security: Boole
           case t ⇒ t
         }
       TypeAtResponse(res.tpe.toString)
-    }}{Function.const(None)}
+    }}{_ => None}
   }
 
   private def askTypeAt[A]
-    (code: String, position: RangePosition)
+    (code: String, position: com.scalakata.RangePosition)
     (f: (compiler.Tree, compiler.Position) ⇒ A)
     (fb: compiler.Position ⇒ Option[A]): Option[A] = {
 
@@ -144,33 +114,6 @@ class Compiler(artifacts: Seq[Path], scalacOptions: Seq[String], security: Boole
   }
 
   private val reporter = new StoreReporter()
-  private val settings = new Settings()
-
-  settings.processArguments(scalacOptions.to[List], true)
-
-  val classpath = artifacts.map(_.toAbsolutePath.toString).mkString(""+File.pathSeparatorChar)
-  settings.bootclasspath.value = classpath
-  settings.classpath.value = classpath
-  settings.Yrangepos.value = true
-  val evalSettings = settings.copy
-  private lazy val compiler = new Global(settings, reporter)
-  private lazy val eval = new Eval(evalSettings, security)
-  settings.plugin.value = settings.plugin.value.filterNot(_.contains("paradise"))
-  
-  private def withTimeout[T](f: ⇒ T)(timeout: Duration): Option[T]= {
-    val task = new FutureTask(new Callable[T]() {
-      def call = f
-    })
-    val thread = new Thread( task )
-    try {
-      thread.start()
-      Some(task.get(timeout.toMillis, TimeUnit.MILLISECONDS))
-    } catch {
-      case e: TimeoutException ⇒ None
-    } finally {
-      if( thread.isAlive ){
-        thread.stop()
-      }
-    }
-  }
+  private val settings = toSettings(artifacts, scalacOptions, withoutParadisePlugin = true)
+  private val compiler = new Global(settings, reporter)
 }

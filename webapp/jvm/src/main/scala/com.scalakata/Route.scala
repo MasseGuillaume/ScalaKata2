@@ -22,12 +22,6 @@ object AutowireServer extends autowire.Server[String, Reader, Writer]{
   def write[Result: Writer](r: Result) = uwrite(r)
 }
 
-class ApiImpl(compiler: Compiler) extends Api {
-  def autocomplete(request: CompletionRequest) = compiler.autocomplete(request)
-  def eval(request: EvalRequest) = compiler.eval(request)
-  def typeAt(request: TypeAtRequest) = compiler.typeAt(request)
-}
-
 class Route(api: Api, prod: Boolean)(implicit fm: Materializer, system: ActorSystem){
   val collaboration = Collaboration.create(system)
   import system.dispatcher

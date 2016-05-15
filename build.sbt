@@ -27,25 +27,21 @@ lazy val commonSettings = Seq(
     "-Yinline-warnings",
     "-Yno-adapted-args",
     "-Yrangepos",
+    "-Ywarn-unused-import",
     "-Ywarn-dead-code",
     "-Ywarn-numeric-widen",
     "-Ywarn-value-discard"
   ),
-  scalacOptions in (Compile, console) --= Seq(
-    "-Yno-imports",
-    "-Ywarn-unused-import"
-  ),
+  scalacOptions in (Compile, console) -= "-Ywarn-unused-import",
   resolvers ++= Seq(
     "masseguillaume" at "http://dl.bintray.com/content/masseguillaume/maven",
     "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"
   ),
   libraryDependencies += "org.specs2" %% "specs2-core" % "3.6.4" % "test",
-  pomExtra := (
-    <scm>
-      <url>git@github.com:MasseGuillaume/ScalaKata2.git</url>
-      <connection>scm:git:git@github.com:MasseGuillaume/ScalaKata2.git</connection>
-    </scm>
-  )
+  scmInfo := Some(ScmInfo(
+    browseUrl = url("https://github.com/MasseGuillaume/ScalaKata2"),
+    connection = "scm:git:git@github.com:MasseGuillaume/ScalaKata2.git"
+  ))
 )
 
 seq(commonSettings: _*)
@@ -67,8 +63,8 @@ lazy val annotation = project
   .settings(commonSettings: _*)
   .settings(
     libraryDependencies ++= Seq(
-      "org.scala-lang"  % "scala-compiler"       % scalaVersion.value,
-      "org.scala-lang"  % "scala-reflect"        % scalaVersion.value,
+      "org.scala-lang"  % "scala-compiler" % scalaVersion.value,
+      "org.scala-lang"  % "scala-reflect"  % scalaVersion.value,
       compilerPlugin("org.scalamacros" % "paradise" % paradiseVersion cross CrossVersion.full)
     ),
     scalacOptions -= "-Ywarn-value-discard"
@@ -77,6 +73,7 @@ lazy val annotation = project
 lazy val evaluation = project
   .settings(commonSettings: _*)
   .settings(
+    libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.4.4",
     scalacOptions -= "-Xfatal-warnings", // Thread.stop()
     buildInfoPackage := "com.scalakata.build",
     sourceGenerators in Test <+= (buildInfo in Compile),

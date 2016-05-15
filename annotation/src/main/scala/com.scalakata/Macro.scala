@@ -24,7 +24,7 @@ object KataMacro {
             }
           q"""{
             $tTreeQuote
-            ${instrumentation}(${aTree.pos}) = render($t, pprint.tokenize($t).mkString)
+            ${instrumentation}(${aTree.pos}) = render($t)
             $t
           }"""
         }
@@ -66,22 +66,21 @@ object KataMacro {
         case td: TypeDef                       ⇒ td                                           // type A = List
         case dd: DefDef                        ⇒ dd                                           // def f = 1
         case im: Import                        ⇒ im
-        case v                                 ⇒ { println(showRaw(v)); v }
+        case v                                 ⇒ v
       }
     }
 
-    
     c.Expr[Instrumented]{
-      annottees.map(_.tree).toList match { case q"class $name { ..$body }" :: Nil ⇒
-        val instrumentation = TermName(c.freshName)
+      annottees.map(_.tree).toList match {
+        case q"class $name { ..$body }" :: Nil ⇒ {
+          val instrumentation = TermName(c.freshName)
+          val offset = c.enclosingPosition.end + 
+          (
+            " " +
+            s"""|class $name {
+                |""".stripMargin
+          ).length
 
-        val offset = 
-          c.enclosingPosition.end + (
-          " " +
-          s"""|class $name {
-              |""".stripMargin).length
-
-        try {
           q"""
           class $name extends Instrumented {
             private val $instrumentation = scala.collection.mutable.Map[_root_.com.scalakata.RangePosition, Render]()
@@ -90,26 +89,32 @@ object KataMacro {
             ..${body.map(t ⇒ instrumentOne(t, instrumentation))}
           }
           """
-        } catch {
-          case scala.util.control.NonFatal(e) ⇒ {
-            println(s"compiler bug ${e.toString}")
-            q"""
-            class $name extends Instrumented {
-              private val $instrumentation = scala.collection.mutable.Map[_root_.com.scalakata.RangePosition, Render]()
-              def offset$$ = $offset
-              def instrumentation$$: _root_.com.scalakata.Instrumentation = ${instrumentation}.toList.sorted
-            }
-            """
-          }
+        }
+        case _  ⇒ {
+          q""
         }
       }
     }
   }
 }
 
+ // } catch {
+ //        case scala.util.control.NonFatal(e) ⇒ {
+ //          println(s"compiler bug ${e.toString}")
+ //          q""
+ //        }
+ //      }
+
 trait Instrumented {
   def instrumentation$: Instrumentation
   def offset$: Int
+}
+
+class FailedInstrumented(e: Throwable) extends Instrumented {
+  def instrumentation$ = List(
+    RangePosition(0, 0, 0) -> Value(e.toString, "Throwable")
+  )
+  def offset$ = 0
 }
 
 class instrument extends annotation.StaticAnnotation {

@@ -6,12 +6,12 @@ package object scalakata {
 
   type Instrumentation = List[(RangePosition, Render)]
 
-  def render[T](a: T, p: ⇒ String)(implicit tp: pprint.TPrint[T]): Render = {
+  def render[T: pprint.PPrint](a: T)(implicit tp: pprint.TPrint[T]): Render = {
     a match {
       case md: Markdown ⇒ md
       case html: Html ⇒ html
       case html2: Html2 ⇒ html2
-      case v ⇒ Value(p, tp.render(pprint.Config.Defaults.PPrintConfig))
+      case v ⇒ Value(pprint.tokenize(v).mkString, tp.render(pprint.Config.Defaults.PPrintConfig))
     }
   }
 

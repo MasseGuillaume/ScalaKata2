@@ -14,7 +14,7 @@ object Boot {
       else Some(rp.toInt)
 
     Server.start(
-      Duration(timeoutS),
+      FiniteDuration(timeoutS.toLong, SECONDS),
       security.toBoolean,
       artifacts.split(File.pathSeparatorChar).map(p ⇒ Paths.get(p)),
       scalacOptions,

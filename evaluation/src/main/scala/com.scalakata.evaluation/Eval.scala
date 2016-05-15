@@ -1,19 +1,35 @@
 package com.scalakata
+package evaluation
 
 import scala.tools.nsc.{Global, Settings}
 import scala.tools.nsc.reporters.StoreReporter
 import scala.tools.nsc.io.{VirtualDirectory, AbstractFile}
 import scala.reflect.internal.util.{NoPosition, BatchSourceFile, AbstractFileClassLoader}
 
+import java.io.File
+import java.nio.file.Path
+import java.net.{URL, URLClassLoader}
+import java.util.concurrent.{TimeoutException, Callable, FutureTask, TimeUnit}
+
 import scala.util.Try
+import scala.util.control.NonFatal
+import scala.concurrent.duration._
 import scala.language.reflectiveCalls
 
-import java.io.File
-import java.net.{URL, URLClassLoader}
+class Eval(artifacts: Seq[Path], scalacOptions: Seq[String], 
+  security: Boolean, timeout: Duration) {
 
-class Eval(settings: Settings, security: Boolean) {
-  val secured = new Secured(security)
-  def apply(code: String): EvalResponse = {
+  def apply(request: EvalRequest): EvalResponse = {
+    if (request.code.isEmpty) EvalResponse.empty
+    else {
+      try { runTimeout(request.code)
+      } catch { case NonFatal(e) ⇒ handleException(e) }
+    }
+  }
+
+  private val secured = new Secured(security)
+
+  private def eval(code: String): EvalResponse = {
     secured { compile(code) }
     val infos = check()
     if(!infos.contains(Error)) {
@@ -68,6 +84,40 @@ class Eval(settings: Settings, security: Boolean) {
     }
   }
 
+  private def runTimeout(code: String) =
+    withTimeout{eval(code)}(timeout).getOrElse(EvalResponse.empty.copy(timeout = true))
+
+  private def withTimeout[T](f: ⇒ T)(timeout: Duration): Option[T] = {
+    val task = new FutureTask(new Callable[T]() { def call = f })
+    val thread = new Thread(task)
+    try {
+      thread.start()
+      Some(task.get(timeout.toMillis, TimeUnit.MILLISECONDS))
+    } catch {
+      case e: TimeoutException ⇒ None
+    } finally {
+      if(thread.isAlive) thread.stop()
+    }
+  }
+
+  private def handleException(e: Throwable): EvalResponse = {
+    def search(e: Throwable) = {
+      e.getStackTrace.find(_.getFileName == "(inline)").map(v ⇒ 
+        (e, Some(v.getLineNumber))
+      )
+    }
+    def loop(e: Throwable): Option[(Throwable, Option[Int])] = {
+      val s = search(e)
+      if(s.isEmpty)
+        if(e.getCause != null) loop(e.getCause)
+        else Some((e, None))
+      else s
+    }
+    EvalResponse.empty.copy(runtimeError = loop(e).map{ case (err, line) ⇒
+      RuntimeError(err.toString, line)
+    })
+  }
+
   private def check(): Map[Severity, List[CompilationInfo]] = {
     val infos =
       reporter.infos.map { info ⇒
@@ -115,10 +165,10 @@ class Eval(settings: Settings, security: Boolean) {
     reset()
     val run = new compiler.Run
     val sourceFiles = List(new BatchSourceFile("(inline)", code))
-
     run.compileSources(sourceFiles)
   }
   private val reporter = new StoreReporter()
+  private val settings = toSettings(artifacts, scalacOptions)
   private val artifactLoader = {
     val loaderFiles =
       settings.classpath.value.split(File.pathSeparator).map(a ⇒ {

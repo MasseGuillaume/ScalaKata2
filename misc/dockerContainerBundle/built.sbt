@@ -59,5 +59,5 @@ securityManager in Backend := true
 
 organization := "masseguillaume"
 name         := "scalakata-bundle"
-version      := "1.1.3"
+version      := "1.1.4"
 description  := "Docker Container with various librairies"

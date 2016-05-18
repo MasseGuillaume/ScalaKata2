@@ -3,7 +3,7 @@ package com.scalakata
 import language.experimental.macros
 
 object KataMacro {
-  def instrument(c: reflect.macros.whitebox.Context)(annottees: c.Expr[Any]*): c.Expr[Instrumented] = {
+  def instrument(c: reflect.macros.whitebox.Context)(annottees: c.Expr[Any]*): c.Expr[Any] = {
     import c.universe._
 
     def instrumentOne(tree: Tree, instrumentation: TermName) = {
@@ -70,53 +70,52 @@ object KataMacro {
       }
     }
 
-    c.Expr[Instrumented]{
-      annottees.map(_.tree).toList match {
-        case q"class $name { ..$body }" :: Nil ⇒ {
-          val instrumentation = TermName(c.freshName)
-          val offset = c.enclosingPosition.end + 
-          (
-            " " +
-            s"""|class $name {
-                |""".stripMargin
-          ).length
+    c.Expr[Any]{
+      try {
+        annottees.map(_.tree).toList match {
+          case q"class $name { ..$body }" :: Nil ⇒ {
+            
+            val offset = c.enclosingPosition.end + 
+            (
+              " " +
+              s"""|class $name {
+                  |""".stripMargin
+            ).length
 
-          q"""
-          class $name extends Instrumented {
-            private val $instrumentation = scala.collection.mutable.Map[_root_.com.scalakata.RangePosition, Render]()
-            def offset$$ = $offset
-            def instrumentation$$: _root_.com.scalakata.Instrumentation = ${instrumentation}.toList.sorted
-            ..${body.map(t ⇒ instrumentOne(t, instrumentation))}
+            val instrumentation = TermName(c.freshName)
+            q"""
+            class $name extends Instrumented {
+              private val $instrumentation = scala.collection.mutable.Map[_root_.com.scalakata.RangePosition, Render]()
+              def offset$$ = $offset
+              def instrumentation$$: _root_.com.scalakata.Instrumentation = ${instrumentation}.toList.sorted
+              ..${body.map(t ⇒ instrumentOne(t, instrumentation))}
+            }
+            """
           }
-          """
         }
-        case _  ⇒ {
-          q""
+      } catch {
+        case scala.util.control.NonFatal(e) ⇒ {
+          println(e)
+          c.error(c.enclosingPosition, s"exception: ${e.toString}")
+          q"..$annottees"
         }
       }
     }
   }
 }
-
- // } catch {
- //        case scala.util.control.NonFatal(e) ⇒ {
- //          println(s"compiler bug ${e.toString}")
- //          q""
- //        }
- //      }
-
+ 
 trait Instrumented {
   def instrumentation$: Instrumentation
   def offset$: Int
 }
 
-class FailedInstrumented(e: Throwable) extends Instrumented {
+class FailedInstrumented(e: String) extends Instrumented {
   def instrumentation$ = List(
-    RangePosition(0, 0, 0) -> Value(e.toString, "Throwable")
+    RangePosition(0, 0, 0) -> Value(e, "String")
   )
   def offset$ = 0
 }
 
 class instrument extends annotation.StaticAnnotation {
-  def macroTransform(annottees: Any*): Instrumented = macro KataMacro.instrument
+  def macroTransform(annottees: Any*): Any = macro KataMacro.instrument
 }

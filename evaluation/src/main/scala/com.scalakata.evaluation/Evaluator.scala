@@ -1,23 +1,21 @@
 package com.scalakata
 package evaluation
 
-import scala.tools.nsc.{Global, Settings}
+import scala.tools.nsc.Global
 import scala.tools.nsc.reporters.StoreReporter
 import scala.tools.nsc.io.{VirtualDirectory, AbstractFile}
 import scala.reflect.internal.util.{NoPosition, BatchSourceFile, AbstractFileClassLoader}
 
 import java.io.File
 import java.nio.file.Path
-import java.net.{URL, URLClassLoader}
+import java.net.URLClassLoader
 import java.util.concurrent.{TimeoutException, Callable, FutureTask, TimeUnit}
 
 import scala.util.Try
 import scala.util.control.NonFatal
 import scala.concurrent.duration._
-import scala.language.reflectiveCalls
 
-class Eval(artifacts: Seq[Path], scalacOptions: Seq[String], 
-  security: Boolean, timeout: Duration) {
+class Evaluator(artifacts: Seq[Path], scalacOptions: Seq[String], security: Boolean, timeout: Duration) {
 
   def apply(request: EvalRequest): EvalResponse = {
     if (request.code.isEmpty) EvalResponse.empty
@@ -72,8 +70,8 @@ class Eval(artifacts: Seq[Path], scalacOptions: Seq[String],
           secured {
             val baos = new java.io.ByteArrayOutputStream()
             val ps = new java.io.PrintStream(baos)
-            Console.setOut(ps)
-            (cons.newInstance().asInstanceOf[Instrumented].instrumentation$, baos.toString("UTF-8"))
+            val result = Console.withOut(ps)(cons.newInstance().asInstanceOf[Instrumented].instrumentation$)
+            (result, baos.toString("UTF-8"))
           }
         }
       }

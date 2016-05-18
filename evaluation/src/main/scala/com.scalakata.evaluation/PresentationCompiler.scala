@@ -1,23 +1,14 @@
 package com.scalakata
 package evaluation
 
-
 import java.nio.file.Path
-import java.math.BigInteger
-import java.security.MessageDigest
-import java.util.Random
-
 import scala.tools.nsc.interactive.Global
 
 import scala.tools.nsc.reporters.StoreReporter
-import scala.tools.nsc.io.VirtualDirectory
 import scala.reflect.internal.util._
 import scala.tools.nsc.interactive.Response
 
-import scala.concurrent.duration._
-
-class PresentationCompiler(artifacts: Seq[Path], scalacOptions: Seq[String], 
-  security: Boolean, timeout: Duration) {
+class PresentationCompiler(artifacts: Seq[Path], scalacOptions: Seq[String]) {
 
   def autocomplete(request: CompletionRequest): List[CompletionResponse] = {
     def completion(f: (compiler.Position, compiler.Response[List[compiler.Member]]) ⇒ Unit,

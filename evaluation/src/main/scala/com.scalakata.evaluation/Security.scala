@@ -1,8 +1,6 @@
 package com.scalakata
 
 import java.security._
-import java.io._
-
 
 class Secured(security: Boolean) {
   private var started = false

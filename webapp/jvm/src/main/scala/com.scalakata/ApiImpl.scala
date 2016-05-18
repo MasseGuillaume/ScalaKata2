@@ -7,17 +7,20 @@ import scala.concurrent.duration._
 
 class ApiImpl(artifacts: Seq[Path], scalacOptions: Seq[String], security: Boolean, timeout: FiniteDuration) extends Api {
 
-  def create() = new Eval(artifacts, scalacOptions, security, timeout)
+  def create() = new Evaluator(artifacts, scalacOptions, security, timeout)
   private var eval = create()
-  private val presentationCompiler = new PresentationCompiler(artifacts, scalacOptions, security, timeout)
+  private val presentationCompiler = new PresentationCompiler(artifacts, scalacOptions)
 
   def autocomplete(request: CompletionRequest) = presentationCompiler.autocomplete(request)
   def eval(request: EvalRequest) = {
-    val response = eval.apply(request)
-    if(paradiseCrash(response)) {
-      eval = create()
-    }
-    response
+    val response1 = eval.apply(request)
+    val response2 =
+      if(paradiseCrash(response1)) {
+        println("paradise crashed")
+        eval = create()
+        eval.apply(request)
+      } else response1
+    response2
   }
   def typeAt(request: TypeAtRequest) = presentationCompiler.typeAt(request)
 

@@ -1,11 +1,13 @@
 package com.scalakata
+package evaluation
 
 import org.specs2._
 
-class EvalSpecs extends Specification with EvalSetup { 
+class EvaluatorSpecs extends Specification with EvaluatorSetup { 
   def is = s2"""
-    Eval Specifications
+    Evaluator Specifications
       The Scala Compiler
+        macro gracefully crash               $gracefulMacro
         displays info/warning/errors         $reports
         show type infered type at position   $typeInferance
         autocompletes
@@ -27,6 +29,10 @@ class EvalSpecs extends Specification with EvalSetup {
           restrict reflection                $limitedReflection
         disallows non termination            $timeout
   """
+
+  def gracefulMacro = {
+    eval("@instrument class A extends AnyVal").complilationInfos.contains(Error)
+  }
 
   def reports = {
     eval("err").complilationInfos ==== Map(Error -> List(CompilationInfo("not found: value err", Some(RangePosition(56,56,56)) )))

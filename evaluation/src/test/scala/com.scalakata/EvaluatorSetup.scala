@@ -1,6 +1,7 @@
 package com.scalakata
+package evaluation
 
-trait EvalSetup {
+trait EvaluatorSetup {
   import scala.concurrent.duration._
   import java.nio.file.Paths
   import build.BuildInfo._
@@ -16,25 +17,26 @@ trait EvalSetup {
   }
 
   def eval(code: String) = {
-    compiler.eval(EvalRequest(wrap(code)))
+    evaluator(EvalRequest(wrap(code)))
   }
   def eval2(before: String, code: String) = {
-    compiler.eval(EvalRequest(before + System.lineSeparator + wrap(code)))
+    evaluator(EvalRequest(before + System.lineSeparator + wrap(code)))
   }
   def autocomplete(code: String, pos: Int) = {
-    compiler.autocomplete(CompletionRequest(wrap(code), shiftRequest(pos)))
+    presentationCompiler.autocomplete(CompletionRequest(wrap(code), shiftRequest(pos)))
   }
   def typeAt(code: String, pos: Int) = {
-    compiler.typeAt(TypeAtRequest(wrap(code), shiftRequest(pos)))
+    presentationCompiler.typeAt(TypeAtRequest(wrap(code), shiftRequest(pos)))
   }
 
   private val artifacts = (annotationClasspath ++ modelClasspath).distinct.map(v ⇒ Paths.get(v.toURI))
 
   private val scalacOptions = build.BuildInfo.scalacOptions.to[Seq]
-  private def compiler = new Compiler(
+  private def evaluator = new Evaluator(
     artifacts,
     scalacOptions,
     security = false,
     timeout = 30.seconds
   )
+  private def presentationCompiler = new PresentationCompiler(artifacts, scalacOptions)
 }

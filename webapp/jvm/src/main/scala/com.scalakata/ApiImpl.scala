@@ -15,7 +15,6 @@ class ApiImpl(artifacts: Seq[Path], scalacOptions: Seq[String], security: Boolea
   def eval(request: EvalRequest) = {
     val response = eval.apply(request)
     if(paradiseCrash(response)) {
-      println("restarting")
       eval = create()
     }
     response
@@ -23,7 +22,6 @@ class ApiImpl(artifacts: Seq[Path], scalacOptions: Seq[String], security: Boolea
   def typeAt(request: TypeAtRequest) = presentationCompiler.typeAt(request)
 
   def paradiseCrash(response: EvalResponse) = {
-    println(response)
     response.complilationInfos.get(Error).flatMap(_.headOption).map(_.message ==
       "macro annotation could not be expanded (the most common reason for that is that you need to enable the macro paradise plugin; another possibility is that you try to use macro annotation in the same compilation run that defines it)"
     ).getOrElse(false)

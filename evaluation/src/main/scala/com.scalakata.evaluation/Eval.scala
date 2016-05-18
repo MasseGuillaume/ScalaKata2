@@ -34,7 +34,7 @@ class Eval(artifacts: Seq[Path], scalacOptions: Seq[String],
     val infos = check()
     if(!infos.contains(Error)) {
       // Look for static class implementing Instrumented
-      def findEval: Option[Instrumentation] = {
+      def findEval: Option[(Instrumentation, String)] = {
         def removeExt(of: String) = {
           val classExt = ".class"
           if(of.endsWith(classExt)) of.slice(0, of.lastIndexOf(classExt))
@@ -70,13 +70,18 @@ class Eval(artifacts: Seq[Path], scalacOptions: Seq[String],
           val cl = Class.forName(c, false, classLoader)
           val cons = cl.getConstructor()
           secured {
-            cons.newInstance().asInstanceOf[Instrumented].instrumentation$
+            val baos = new java.io.ByteArrayOutputStream()
+            val ps = new java.io.PrintStream(baos)
+            Console.setOut(ps)
+            (cons.newInstance().asInstanceOf[Instrumented].instrumentation$, baos.toString("UTF-8"))
           }
         }
       }
 
+      val (instrumentation, console) = findEval.getOrElse((Nil, ""))
       EvalResponse.empty.copy(
-        instrumentation = findEval.getOrElse(Nil),
+        instrumentation = instrumentation,
+        console = console,
         complilationInfos = infos
       )
     } else {

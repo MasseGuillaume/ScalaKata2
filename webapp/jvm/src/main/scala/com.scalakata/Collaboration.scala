@@ -3,7 +3,6 @@ package com.scalakata
 import akka.actor._
 import akka.stream.OverflowStrategy
 import akka.stream.scaladsl._
-import akka.stream.ActorMaterializer
 
 trait Collaboration {
   def flow(room: String, username: String): Flow[DocChange, CollaborationEvent, Any]

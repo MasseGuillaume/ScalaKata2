@@ -3,7 +3,6 @@ package com.scalakata
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
-import akka.util.Timeout
 
 import com.typesafe.config.{ConfigFactory, Config}
 import scala.concurrent.duration._

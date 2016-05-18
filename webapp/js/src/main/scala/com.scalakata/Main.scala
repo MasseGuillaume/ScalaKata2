@@ -1,17 +1,14 @@
 package com.scalakata
 
-import autowire._
 import org.denigma.codemirror._
 import org.scalajs.dom
 import org.scalajs.dom.navigator
-import org.scalajs.dom.raw.{HTMLTextAreaElement, HTMLElement, Node}
+import org.scalajs.dom.raw.HTMLTextAreaElement
 import org.scalajs.dom.ext.Ajax
 import scalajs.concurrent.JSExecutionContext.Implicits.queue
 import scalajs.js
 import scalajs.js.annotation.JSExport
 import scalatags.JsDom.all._
-import scala.util.{Success, Failure}
-
 
 @JSExport
 object Main {

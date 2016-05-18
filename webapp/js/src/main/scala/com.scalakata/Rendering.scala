@@ -8,11 +8,9 @@ import org.scalajs.dom.raw.HTMLElement
 import scalajs.concurrent.JSExecutionContext.Implicits.queue
 import scalajs.js
 import scalatags.JsDom.all._
-import scala.concurrent.Future
 import org.scalajs.dom.KeyboardEvent
 
 object Rendering {
-  import Util._
   var toclear = false
   val modeScala = "text/x-scala"
   val stateButton = dom.document.getElementById("state")
@@ -233,6 +231,8 @@ object Rendering {
           nextline2(Pos.ch(0).line(pos.map(_ - 1).getOrElse(0)), node)
         }.toList
 
+      val consoleOut = List(nextline2(Pos.ch(0).line(0), span(response.console).render))
+
       def line(instr: (RangePosition, Render)) = {
         val (RangePosition(start, _, _), _) = instr
         doc.posFromIndex(start).line
@@ -262,7 +262,7 @@ object Rendering {
           }.
           toList
 
-      annotations = timeout ::: runtimeError ::: instrumentations ::: complilationInfos
+      annotations = timeout ::: runtimeError ::: instrumentations ::: complilationInfos ::: consoleOut
       editor.scrollIntoView(doc.getCursor(), dom.screen.height/2)
     }
   }

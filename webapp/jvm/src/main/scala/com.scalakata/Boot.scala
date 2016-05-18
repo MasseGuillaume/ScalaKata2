@@ -3,7 +3,6 @@ package com.scalakata
 import scala.concurrent.duration._
 
 import java.nio.file.Paths
-import java.net.URI
 import java.io.File
 
 object Boot {

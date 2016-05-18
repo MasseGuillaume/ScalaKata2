@@ -4,11 +4,10 @@ import woot._
 
 import Util._
 
-import scala.scalajs._
 import org.scalajs.dom.{Position ⇒ _, _}
 import org.denigma.codemirror._
 
-import upickle.default.{Reader, Writer, write ⇒ uwrite, read ⇒ uread}
+import upickle.default.{write ⇒ uwrite, read ⇒ uread}
 
 object Collaborative {
   def apply(editor: Editor): Unit = {

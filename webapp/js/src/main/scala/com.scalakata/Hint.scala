@@ -2,7 +2,6 @@ package com.scalakata
 
 import autowire._
 import org.denigma.codemirror._
-import org.scalajs.dom.raw.HTMLElement
 import org.scalajs.dom
 import scalajs.concurrent.JSExecutionContext.Implicits.queue
 import scalajs.js

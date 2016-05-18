@@ -1,7 +1,6 @@
 package com.scalakata
 
 import upickle.default._
-import autowire._
 
 import org.scalajs.dom
 import scala.concurrent.Future

@@ -52,10 +52,11 @@ case class EvalResponse(
   complilationInfos: Map[Severity, List[CompilationInfo]],
   timeout: Boolean,
   runtimeError: Option[RuntimeError],
-  instrumentation: List[(RangePosition, Render)]
+  instrumentation: List[(RangePosition, Render)],
+  console: String
 )
 object EvalResponse {
-  val empty = EvalResponse(Map.empty, false, None, Nil)
+  val empty = EvalResponse(Map.empty, false, None, Nil, "")
 }
 
 // TODO: scalacOptions & dependencies

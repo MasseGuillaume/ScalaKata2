@@ -10,11 +10,7 @@ import akka.actor.ActorSystem
 import akka.stream.Materializer
 import akka.stream.scaladsl._
 
-import scala.concurrent.duration._
-import scala.concurrent.{ExecutionContext, Future}
-import akka.util.Timeout
-
-import java.nio.file.Path
+import scala.concurrent.Future
 
 import upickle.default.{Reader, Writer, write ⇒ uwrite, read ⇒ uread}
 object AutowireServer extends autowire.Server[String, Reader, Writer]{

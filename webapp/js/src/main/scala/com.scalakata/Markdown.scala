@@ -2,7 +2,6 @@ package com.scalakata
 
 import scalajs.js
 import scala.scalajs.js.annotation.JSName
-import org.scalajs.dom.raw.HTMLElement
 
 @JSName("Markdown")
 @js.native

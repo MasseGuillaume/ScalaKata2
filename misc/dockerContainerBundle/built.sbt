@@ -45,6 +45,7 @@ scalacOptions ++= Seq(
   "-Ybackend:GenBCode",
   "-Ydelambdafy:method",
   "-Yinline-warnings",
+  "-Ywarn-unused-import",
   "-Yno-adapted-args",
   "-Yrangepos",
   "-Ywarn-dead-code",

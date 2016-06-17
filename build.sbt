@@ -95,7 +95,7 @@ lazy val webapp = crossProject.settings(
 ).settings(commonSettings: _*)
  .jsSettings(
   name := "Client",
-  libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.8.1"
+  libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.9.1"
 ).jvmSettings(Revolver.settings:_*)
  .jvmSettings(
   name := "Server",
@@ -105,7 +105,7 @@ lazy val webapp = crossProject.settings(
     "org.webjars.bower"  % "open-iconic"            % "1.1.1",
     "org.webjars.bower"  % "pagedown"               % "1.1.0",
     "org.webjars.bower"  % "iframe-resizer"         % "2.8.10"
-  ) 
+  )
 )
 
 def andSourceMap(aFile: java.io.File) = (
@@ -148,7 +148,7 @@ lazy val codemirror = project
   .settings(
     scalacOptions -= "-Ywarn-dead-code",
     libraryDependencies ++= Seq(
-      "org.scala-js" %%% "scalajs-dom"  % "0.8.1",
+      "org.scala-js" %%% "scalajs-dom"  % "0.9.1",
       "org.querki"   %%% "querki-jsext" % "0.5"
     )
   ).enablePlugins(ScalaJSPlugin)

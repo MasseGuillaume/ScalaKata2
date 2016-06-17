@@ -73,7 +73,7 @@ lazy val annotation = project
 lazy val evaluation = project
   .settings(commonSettings: _*)
   .settings(
-    libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.4.4",
+    libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.4.7",
     scalacOptions -= "-Xfatal-warnings", // Thread.stop()
     buildInfoPackage := "com.scalakata.build",
     sourceGenerators in Test <+= (buildInfo in Compile),
@@ -88,7 +88,7 @@ lazy val evaluation = project
 
 lazy val webapp = crossProject.settings(
   libraryDependencies ++= Seq(
-    "com.lihaoyi" %%% "scalatags" % "0.5.2",
+    "com.lihaoyi" %%% "scalatags" % "0.5.5",
     "com.lihaoyi" %%% "upickle"   % "0.4.0",
     "com.lihaoyi" %%% "autowire"  % "0.2.5"
   )
@@ -100,7 +100,7 @@ lazy val webapp = crossProject.settings(
  .jvmSettings(
   name := "Server",
   libraryDependencies ++= Seq(
-    "com.typesafe.akka" %% "akka-http-experimental" % "2.4.4",
+    "com.typesafe.akka" %% "akka-http-experimental" % "2.4.7",
     "org.webjars.bower"  % "codemirror"             % "5.14.2",
     "org.webjars.bower"  % "open-iconic"            % "1.1.1",
     "org.webjars.bower"  % "pagedown"               % "1.1.0",

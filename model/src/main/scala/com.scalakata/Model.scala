@@ -80,6 +80,13 @@ case class CompletionResponse(
   signature: String
 )
 
+case class KeepAlive(msg: String = "") extends AnyVal
+
+sealed trait RoomListEvent
+case class NewRoom(roomName: String, user: String) extends RoomListEvent
+case class CloseRoom(roomName: String) extends RoomListEvent
+case class UpdateRoom(roomName: String, users: Vector[String]) extends RoomListEvent
+case class SetRooms(rooms: Map[String, Vector[String]]) extends RoomListEvent
 
 sealed trait CollaborationEvent
 case class JoinedDoc(user: String) extends CollaborationEvent

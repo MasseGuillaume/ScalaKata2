@@ -1,7 +1,7 @@
 addSbtPlugin("com.eed3si9n"     % "sbt-buildinfo"        % "0.6.0")
 addSbtPlugin("com.typesafe.sbt" % "sbt-less"             % "1.1.0")
 addSbtPlugin("io.spray"         % "sbt-revolver"         % "0.8.0")
-addSbtPlugin("org.scala-js"     % "sbt-scalajs"          % "0.6.8")
+addSbtPlugin("org.scala-js"     % "sbt-scalajs"          % "0.6.10")
 addSbtPlugin("me.lessis"        % "bintray-sbt"          % "0.3.0")
 addSbtPlugin("com.timushev.sbt" % "sbt-updates"          % "0.1.8")
 addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.8.2")

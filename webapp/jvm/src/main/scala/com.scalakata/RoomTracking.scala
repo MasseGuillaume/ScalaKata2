@@ -10,12 +10,12 @@ trait RoomTracking {
 
 object RoomTracking {
 
-  def create(loby: Loby, system: ActorSystem): RoomTracking = {
+  def create(lobby: Lobby, system: ActorSystem): RoomTracking = {
     val clientTrackingActor = system.actorOf(Props(new Actor {
       var clients = Map.empty[String, ActorRef]
 
       def receive: Receive = {
-        case NewClient(username, ref) => clients = clients.updated(username, ref); ref ! SetRooms(loby.activeRooms)
+        case NewClient(username, ref) => clients = clients.updated(username, ref); ref ! SetRooms(lobby.activeRooms)
         case ClientExit(username)     => clients = clients - username
         case event: RoomListEvent     => clients.values.foreach(_ ! event)
         case KeepAlive                => // do nothing

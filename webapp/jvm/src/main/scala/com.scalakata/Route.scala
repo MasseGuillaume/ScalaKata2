@@ -19,7 +19,7 @@ object AutowireServer extends autowire.Server[String, Reader, Writer]{
 }
 
 class Route(api: Api, prod: Boolean)(implicit fm: Materializer, system: ActorSystem){
-  val lobby = new Loby(system)
+  val lobby = new Lobby(system)
   val collaboration = Collaboration.create(lobby, system)
   val roomTracking = RoomTracking.create(lobby, system)
   import system.dispatcher

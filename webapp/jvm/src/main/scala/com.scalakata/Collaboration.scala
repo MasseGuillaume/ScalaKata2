@@ -9,19 +9,19 @@ trait Collaboration {
 }
 
 object Collaboration {
-  def create(loby: Loby, system: ActorSystem): Collaboration = {
+  def create(lobby: Lobby, system: ActorSystem): Collaboration = {
     val lobbyActor =
       system.actorOf(Props(new Actor {
         def receive: Receive = {
           case HeartBeat ⇒ ()
           case NewParticipant(room, username, subscriber) ⇒ {
             context.watch(subscriber)
-            loby.join(room, username, subscriber)
+            lobby.join(room, username, subscriber)
           }
-          case ReceivedOperation(room, username, operation) ⇒ loby.applyOps(room, username, List(operation))
-          case ReceivedBatchOperation(room, username, operations) ⇒ loby.applyOps(room, username, operations)
-          case ParticipantLeft(room, username) ⇒ loby.leave(room, username)
-          case Terminated(sub) ⇒ loby.leave(sub)
+          case ReceivedOperation(room, username, operation) ⇒ lobby.applyOps(room, username, List(operation))
+          case ReceivedBatchOperation(room, username, operations) ⇒ lobby.applyOps(room, username, operations)
+          case ParticipantLeft(room, username) ⇒ lobby.leave(room, username)
+          case Terminated(sub) ⇒ lobby.leave(sub)
         }
       }))
 

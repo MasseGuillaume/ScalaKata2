@@ -2,7 +2,7 @@ package com.scalakata
 
 import akka.actor._
 
-class Loby(system: ActorSystem) {
+class Lobby(system: ActorSystem) {
   type RoomName = String
   type Username = String
   type Room = Map[Username, ActorRef]

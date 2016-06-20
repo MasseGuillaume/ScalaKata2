@@ -58,7 +58,6 @@ object Main {
     val stateButton = dom.document.getElementById("state")
     val shareButton = dom.document.getElementById("share")
 
-
     CodeMirror.commands.run = Rendering.run _
     CodeMirror.commands.typeAt = Hint.typeAt _
     CodeMirror.commands.autocomplete = Hint.autocomplete _

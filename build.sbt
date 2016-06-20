@@ -95,8 +95,11 @@ lazy val webapp = crossProject.settings(
 ).settings(commonSettings: _*)
  .jsSettings(
   name := "Client",
-  libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.9.1"
-).jvmSettings(Revolver.settings:_*)
+  libraryDependencies ++= Seq(
+    "org.scala-js" %%% "scalajs-dom" % "0.9.1",
+    "com.github.japgolly.scalajs-react" %%% "core" % "0.11.1"
+  )
+ ).jvmSettings(Revolver.settings:_*)
  .jvmSettings(
   name := "Server",
   libraryDependencies ++= Seq(
@@ -104,7 +107,11 @@ lazy val webapp = crossProject.settings(
     "org.webjars.bower"  % "codemirror"             % "5.14.2",
     "org.webjars.bower"  % "open-iconic"            % "1.1.1",
     "org.webjars.bower"  % "pagedown"               % "1.1.0",
-    "org.webjars.bower"  % "iframe-resizer"         % "2.8.10"
+    "org.webjars.bower"  % "iframe-resizer"         % "2.8.10",
+    "org.webjars"        % "drawer"                 % "3.2.0",
+    "org.webjars.npm"    % "iscroll"                % "5.1.3",
+    "org.webjars"        % "jquery"                 % "3.0.0",
+    "org.webjars.bower"  % "react"                  % "15.1.0"
   )
 )
 

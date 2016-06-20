@@ -201,6 +201,11 @@ kbd {
   }
 }
 
+.drawer-nav {
+  z-index: 30;
+  list-style-type: none;
+}
+
 ::-webkit-scrollbar:horizontal,
 .CodeMirror-simplescroll-horizontal div {
   height: 12px;
@@ -225,6 +230,46 @@ kbd {
 
 .cm-s-solarized {
   .solarized-pallette;
+
+  & ~ #react-room-list {
+    font-family:  Arial,Helvetica,sans-serif;;
+
+    .drawer-brand {
+      text-align: center;
+    }
+
+    .drawer-menu-item {
+      padding: 0;
+      text-decoration: none;
+
+      a {
+        padding: 12px;
+        display: block;
+        text-decoration: none;
+
+        -webkit-transition: background-color 0.3s ease;
+        -moz-transition: background-color 0.3s ease;
+        -o-transition: background-color 0.3s ease;
+        -ms-transition: background-color 0.3s ease;
+        transition: background-color 0.3s ease;
+      }
+    }
+
+    .drawer-menu-item-title {
+      margin-top: 0;
+      margin-bottom: 0;
+      width: auto;
+      display: block;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    .drawer-menu-item-subtitle {
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+  }
 
   & ~ #shared {
     position: fixed;
@@ -305,6 +350,26 @@ kbd {
         color: @base1;
       }
     }
+    & ~ #react-room-list {
+      background-color: @base02;
+
+      .drawer-brand {
+        color: @base00;
+        border-bottom: 1px solid @base01;
+      }
+
+      .drawer-menu-item a:hover {
+        background: @base03;
+      }
+
+      .drawer-menu-item-title {
+        color: @base00;
+      }
+
+      .drawer-menu-item-subtitle {
+        color: @base00;
+      }
+    }
 
     .CodeMirror-simplescroll-horizontal,
     .CodeMirror-simplescroll-vertical,
@@ -358,7 +423,28 @@ kbd {
         color: @base01;
       }
     }
-    
+
+    & ~ #react-room-list {
+      background-color: @base2;
+
+      .drawer-brand {
+        color: @base0;
+        border-bottom: 1px solid @base1;
+      }
+
+      .drawer-menu-item a:hover {
+        background: @base3;
+      }
+
+      .drawer-menu-item-title {
+        color: @base0;
+      }
+
+      .drawer-menu-item-subtitle {
+        color: @base0;
+      }
+    }
+
     ::-webkit-scrollbar-track,
     ::-webkit-scrollbar-corner {
       background: @base3;

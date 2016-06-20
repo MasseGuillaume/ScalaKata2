@@ -2,7 +2,7 @@ package com.scalakata
 
 object Template {
   import scalatags.Text.all._
-  import scalatags.Text.tags2.{title, noscript}
+  import scalatags.Text.tags2.{title, noscript, nav}
 
   def echo(code: String) = {
     "<!DOCTYPE html>" +
@@ -43,21 +43,24 @@ object Template {
         link(rel:="stylesheet", href:="/assets/lib/codemirror/lib/codemirror.css"),
         link(rel:="stylesheet", href:="/assets/lib/codemirror/theme/mdn-like.css"),
         link(rel:="stylesheet", href:="/assets/lib/open-iconic/font/css/open-iconic.css"),
+        link(rel:="stylesheet", href:="/assets/lib/drawer/css/drawer.min.css"),
 
 
         link(rel:="stylesheet", href:="/assets/main.css")
       ),
       body(`class` := "cm-s-solarized cm-s-dark")(
-        div(`id` := "code")(
+        div(`id` := "code", cls := "drawer drawer--right")(
           noscript("No Javscript, No Scala!"),
           textarea(id := "scalakata", style := "display: none;"),
           ul(`class` := "menu")(
             li(id := "state", `class` := "oi", "data-glyph".attr := "media-play"),
             li(id := "theme", "title".attr := "toggle theme (F2)", `class` := "oi", "data-glyph".attr := "sun"),
             li(id := "help", "title".attr := "help (F1)", `class` := "oi", "data-glyph".attr := "question-mark"),
-            li(id := "share", "title".attr := "share (F7)", `class` := "oi", "data-glyph".attr := "share-boxed")
+            li(id := "share", "title".attr := "share (F7)", `class` := "oi", "data-glyph".attr := "share-boxed"),
+            li(id := "rooms", "title".attr := "rooms list", `class` := "oi drawer-toggle", "data-glyph".attr := "list")
           ),
-          div(id := "shared")
+          div(id := "shared"),
+          nav(id := "react-room-list", cls := "drawer-nav", role := "navigation")
         ),
 
         script(src:="/assets/lib/codemirror/lib/codemirror.js"),
@@ -84,6 +87,13 @@ object Template {
 
         script(src:="/assets/lib/iframe-resizer/js/iframeResizer.min.js"),
 
+        script(src:="/assets/lib/jquery/jquery.min.js"),
+        script(src:="/assets/lib/iscroll/build/iscroll.js"),
+        script(src:="/assets/lib/drawer/js/drawer.min.js"),
+
+        script(src:="/assets/lib/react/react-with-addons.min.js"),
+        script(src:="/assets/lib/react/react-dom.min.js"),
+
         script(src:=s"/assets/$client"),
         raw("""<script>var codeReg = /<code>([\s\S]*?)<\/code>/;</script>"""),
         script("com.scalakata.Main().main()"),
@@ -97,7 +107,20 @@ object Template {
             ga('create', 'UA-42764457-1', 'auto');
             ga('send', 'pageview');
           }
-        """)
+        """),
+
+        script("""
+          $(document).ready(function() {
+            $('.drawer').drawer({
+              iscroll: {
+                mouseWheel: true,
+                scrollbars: true
+              }
+            });
+          });
+        """),
+
+        script("com.scalakata.RoomList().init('react-room-list');")
       )
     )
   }

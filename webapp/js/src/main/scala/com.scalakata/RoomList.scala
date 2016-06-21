@@ -71,7 +71,11 @@ object RoomList {
 
       def render(state: State): ReactTagOf[HTMLElement] = {
         ul(cls := "drawer-menu",
-          li(a(cls := "drawer-brand", s"Rooms (${state.rooms.size})")),
+          li(cls := "drawer-brand",
+            i(id := "close-drawer-btn", cls := "oi", "data-glyph".reactAttr := "chevron-right"),
+            span(s"Rooms (${state.rooms.size})")
+          ),
+
           state.rooms.map { case (roomName, users) =>
             li(cls := "drawer-menu-item",
               a(href := s"/room/$roomName",

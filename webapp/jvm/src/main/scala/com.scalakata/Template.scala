@@ -120,6 +120,13 @@ object Template {
           });
         """),
 
+        script("""
+          $(document).on('click', '#close-drawer-btn', function() {
+            $('.drawer').drawer('close');
+          });
+        """),
+
+
         script("com.scalakata.RoomList().init('react-room-list');")
       )
     )

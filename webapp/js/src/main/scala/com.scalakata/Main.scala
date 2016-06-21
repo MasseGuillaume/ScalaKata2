@@ -58,7 +58,7 @@ object Main {
     val themeButton = dom.document.getElementById("theme")
     val stateButton = dom.document.getElementById("state")
     val shareButton = dom.document.getElementById("share")
-    
+
 
     CodeMirror.commands.run = Rendering.run _
     CodeMirror.commands.typeAt = Hint.typeAt _
@@ -91,13 +91,15 @@ object Main {
           val sharedDiv = dom.document.getElementById("shared")
           sharedDiv.setAttribute("style", "display: block")
 
-          val scalaKataLink = s"${dom.window.location}gist/$gistId"
+          val loc = dom.window.location
+          val baseUrl = loc.protocol + "//" + loc.host
+          val scalaKataLink = s"$baseUrl/gist/$gistId"
           val gitHubLink = s"https://gist.github.com/anonymous/$gistId"
 
           val close = i(`class` := "oi", "data-glyph".attr := "circle-x").render
 
-          close.addEventListener("click", (e: dom.Event) ⇒ 
-            sharedDiv.setAttribute("style", "display: none")            
+          close.addEventListener("click", (e: dom.Event) ⇒
+            sharedDiv.setAttribute("style", "display: none")
           )
 
           while (sharedDiv.firstChild != null) {
@@ -106,7 +108,7 @@ object Main {
           sharedDiv.appendChild(div(
             "Shared as:", a(href := scalaKataLink, target := "_blank")(scalaKataLink),
             "(", a(href := gitHubLink, target := "_blank")("GitHub"), ")",
-            close            
+            close
           ).render)
         }
     }

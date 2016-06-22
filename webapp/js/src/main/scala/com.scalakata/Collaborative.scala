@@ -47,14 +47,14 @@ object Collaborative {
     }
 
     val protocol =
-      if(location.protocol == "https:") "wss"
+      if(window.location.protocol == "https:") "wss"
       else "ws"
     val username = java.util.UUID.randomUUID().toString()//prompt("Please enter your username", "")
-    val room = location.pathname.drop("/room/".length)
-    val uri = s"$protocol://${location.host}/collaborative/$room?username=$username"
+    val room = window.location.pathname.drop("/room/".length)
+    val uri = s"$protocol://${window.location.host}/collaborative/$room?username=$username"
     val socket = new WebSocket(uri)
-    
-    socket.onmessage = { e: raw.MessageEvent ⇒
+
+    socket.onmessage = { e: raw.MessageEvent =>
       uread[CollaborationEvent](e.data.toString) match {
         case HeartBeat ⇒ ()
         case JoinedDoc(user) ⇒ console.log(s"joined $user")
@@ -75,8 +75,8 @@ object Collaborative {
         change(e.asInstanceOf[EditorChange])
       })
 
-      setInterval(() ⇒ socket.send(uwrite(HeartBeat)), 10000)
-      
+      window.setInterval(() ⇒ socket.send(uwrite(HeartBeat)), 10000)
+
       // editor.on("cursorActivity", (_, e) ⇒ {
       //   console.log("cursorActivity", e)
       // })
@@ -89,8 +89,8 @@ object Collaborative {
     def doChange(added: Seq[String], removed: Seq[String], from: Position): Unit = {
       if(onAir) { doc.foreach{ d ⇒
         val pos = editor.getDoc().indexFromPos(from)
-                
-        def indexed(changes: Seq[String]): Seq[(Char, Int)] = 
+
+        def indexed(changes: Seq[String]): Seq[(Char, Int)] =
           changes.mkString(nl.toString).zipWithIndex.map{ case (c, i) ⇒ (c, pos + i)}
 
 
@@ -115,7 +115,7 @@ object Collaborative {
 
     def change(editorChange: EditorChange): Unit = {
       import editorChange._
-      doChange(text, removed, from) 
+      doChange(text, removed, from)
     }
   }
 }

@@ -3,7 +3,6 @@ package com.scalakata
 import autowire._
 import org.denigma.codemirror._
 import org.scalajs.dom
-import org.scalajs.dom.navigator
 import org.scalajs.dom.raw.HTMLElement
 import scalajs.concurrent.JSExecutionContext.Implicits.queue
 import scalajs.js
@@ -14,7 +13,7 @@ object Rendering {
   var toclear = false
   val modeScala = "text/x-scala"
   val stateButton = dom.document.getElementById("state")
-  val isMac = navigator.userAgent.contains("Mac")
+  val isMac = dom.window.navigator.userAgent.contains("Mac")
   val ctrlS = if(isMac) "⌘" else "Ctrl"
 
   def clear(doc: Doc): Unit = {
@@ -50,7 +49,7 @@ object Rendering {
     })
 
     editor.on("change", (_, _) ⇒ {
-      dom.localStorage.setItem(localStorageKey, doc.getValue())
+      dom.window.localStorage.setItem(localStorageKey, doc.getValue())
       resetDefault()
     })
     resetDefault()
@@ -156,7 +155,7 @@ object Rendering {
             script("iFrameResize({'checkOrigin': false, 'heightCalculationMethod': 'min'})")
           ).render
 
-        dom.setTimeout( () ⇒ {
+        dom.window.setTimeout( () ⇒ {
           echoForm.submit()
         }, 0)
 
@@ -263,7 +262,7 @@ object Rendering {
           toList
 
       annotations = timeout ::: runtimeError ::: instrumentations ::: complilationInfos ::: consoleOut
-      editor.scrollIntoView(doc.getCursor(), dom.screen.height/2)
+      editor.scrollIntoView(doc.getCursor(), dom.window.screen.height/2)
     }
   }
 

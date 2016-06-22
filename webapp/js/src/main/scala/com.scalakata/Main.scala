@@ -2,7 +2,6 @@ package com.scalakata
 
 import org.denigma.codemirror._
 import org.scalajs.dom
-import org.scalajs.dom.navigator
 import org.scalajs.dom.raw.HTMLTextAreaElement
 import org.scalajs.dom.ext.Ajax
 import scalajs.concurrent.JSExecutionContext.Implicits.queue
@@ -14,7 +13,7 @@ import scalatags.JsDom.all._
 object Main {
   @JSExport
   def main(): Unit = {
-    val isMac = navigator.userAgent.contains("Mac")
+    val isMac = dom.window.navigator.userAgent.contains("Mac")
 
     dom.document.body.className =
       if (isMac) "mac"
@@ -58,7 +57,6 @@ object Main {
     val themeButton = dom.document.getElementById("theme")
     val stateButton = dom.document.getElementById("state")
     val shareButton = dom.document.getElementById("share")
-    
 
     CodeMirror.commands.run = Rendering.run _
     CodeMirror.commands.typeAt = Hint.typeAt _
@@ -96,8 +94,8 @@ object Main {
 
           val close = i(`class` := "oi", "data-glyph".attr := "circle-x").render
 
-          close.addEventListener("click", (e: dom.Event) ⇒ 
-            sharedDiv.setAttribute("style", "display: none")            
+          close.addEventListener("click", (e: dom.Event) ⇒
+            sharedDiv.setAttribute("style", "display: none")
           )
 
           while (sharedDiv.firstChild != null) {
@@ -106,7 +104,7 @@ object Main {
           sharedDiv.appendChild(div(
             "Shared as:", a(href := scalaKataLink, target := "_blank")(scalaKataLink),
             "(", a(href := gitHubLink, target := "_blank")("GitHub"), ")",
-            close            
+            close
           ).render)
         }
     }
@@ -130,12 +128,12 @@ object Main {
           }
         })
 
-        val path = dom.location.pathname
+        val path = dom.window.location.pathname
         if(path != "/") {
           if(path.startsWith("/room/")) {
             Collaborative(editor)
           } else if(path.startsWith("/gist/")) {
-            val gistId = dom.location.pathname.drop("/gist/".length)
+            val gistId = dom.window.location.pathname.drop("/gist/".length)
             GitHub.fetch(gistId)
               .recover { case _ ⇒ Util.wrap(s"// Failed to load gist") }
               .foreach { content ⇒
@@ -149,7 +147,7 @@ object Main {
             }
           }
         } else {
-          val storage = dom.localStorage.getItem(Rendering.localStorageKey)
+          val storage = dom.window.localStorage.getItem(Rendering.localStorageKey)
           if(storage != null) {
             doc.setValue(storage)
             Rendering.run(editor)

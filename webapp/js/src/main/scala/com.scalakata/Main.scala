@@ -89,7 +89,9 @@ object Main {
           val sharedDiv = dom.document.getElementById("shared")
           sharedDiv.setAttribute("style", "display: block")
 
-          val scalaKataLink = s"${dom.window.location}gist/$gistId"
+          val loc = dom.window.location
+          val baseUrl = loc.protocol + "//" + loc.host
+          val scalaKataLink = s"$baseUrl/gist/$gistId"
           val gitHubLink = s"https://gist.github.com/anonymous/$gistId"
 
           val close = i(`class` := "oi", "data-glyph".attr := "circle-x").render

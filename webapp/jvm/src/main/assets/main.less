@@ -1,6 +1,18 @@
 @import "solarized.less";
 @import "codemirror.less";
 
+.create-room {
+  cursor: pointer;
+  margin: 20px;
+  i {
+    margin-right: 20px;
+    vertical-align: middle;
+  }
+  span {
+    font-size: 20px;
+  }
+}
+
 body.mac kbd.pc { display: none }
 body.pc kbd.mac { display: none }
 
@@ -354,6 +366,7 @@ kbd {
     }
     & ~ #react-room-list {
       background-color: @base02;
+      a, * { color: @base00; }
 
       .drawer-brand {
         color: @base00;
@@ -366,14 +379,6 @@ kbd {
 
       .drawer-menu-item a:hover {
         background: @base03;
-      }
-
-      .drawer-menu-item-title {
-        color: @base00;
-      }
-
-      .drawer-menu-item-subtitle {
-        color: @base00;
       }
     }
 
@@ -432,6 +437,7 @@ kbd {
 
     & ~ #react-room-list {
       background-color: @base2;
+      a, * { color: @base0; }
 
       .drawer-brand {
         color: @base0;
@@ -444,14 +450,6 @@ kbd {
 
       .drawer-menu-item a:hover {
         background: @base3;
-      }
-
-      .drawer-menu-item-title {
-        color: @base0;
-      }
-
-      .drawer-menu-item-subtitle {
-        color: @base0;
       }
     }
 

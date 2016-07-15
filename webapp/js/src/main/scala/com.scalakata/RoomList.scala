@@ -69,11 +69,22 @@ object RoomList {
         closeWebSocket >> clearWebSocket
       }
 
+      def createRoom(e: ReactEventI) = {
+        val name = window.prompt("Room name", "")
+        if(name != "") window.location.replace(s"/room/$name")
+        Callback.log(s"Redirect to room $name")
+      }
+
       def render(state: State): ReactTagOf[HTMLElement] = {
         ul(cls := "drawer-menu",
           li(cls := "drawer-brand",
             i(id := "close-drawer-btn", cls := "oi", "data-glyph".reactAttr := "chevron-right"),
             span(s"Rooms (${state.rooms.size})")
+          ),
+
+          li(cls := "create-room", onClick ==> createRoom)(
+            i(cls := "oi", "data-glyph".reactAttr := "plus"),
+            span("Create room")
           ),
 
           state.rooms.map { case (roomName, users) =>

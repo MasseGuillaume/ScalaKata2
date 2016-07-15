@@ -27,7 +27,7 @@ object ScalaKataPlugin extends AutoPlugin {
       readyPort: Option[Int],
       serverUri: URI,
       security: Boolean,
-      timeout: Duration,
+      timeout: FiniteDuration,
       classPath: Seq[Path],
       scalacOptions: Seq[String]
     ) {
@@ -49,7 +49,7 @@ object ScalaKataPlugin extends AutoPlugin {
     lazy val startArgs = TaskKey[StartArgs]("start-args", "Arguments to pass to the main method")
     lazy val startArgs2 = TaskKey[Seq[String]]("start-args2", "Arguments to pass to the main method")
     lazy val securityManager = SettingKey[Boolean]("security-manager", "Use jvm security manager")
-    lazy val timeout = SettingKey[Duration]("timeout", "maximum time to wait for evaluation response")
+    lazy val timeout = SettingKey[FiniteDuration]("timeout", "maximum time to wait for evaluation response")
 
 
     lazy val scalaKataSettings: Seq[Def.Setting[_]] =

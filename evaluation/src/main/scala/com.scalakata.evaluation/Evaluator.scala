@@ -17,7 +17,7 @@ import scala.concurrent.duration._
 
 class Evaluator(artifacts: Seq[Path], scalacOptions: Seq[String], security: Boolean, timeout: Duration) {
 
-  def apply(request: EvalRequest): EvalResponse = {
+  def apply(request: EvalRequest): EvalResponse = synchronized {
     if (request.code.isEmpty) EvalResponse.empty
     else {
       try { runTimeout(request.code)

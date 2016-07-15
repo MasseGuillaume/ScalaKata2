@@ -1,22 +1,11 @@
 libraryDependencies ++= Seq(
   // typelevel stack
-  "org.typelevel"                %% "cats"                     % "0.4.1"  ,
-  "com.chuusai"                  %% "shapeless"                % "2.3.0"  ,
+  "org.typelevel"                %% "cats"                     % "0.6.0"  ,
+  // "com.chuusai"                  %% "shapeless"                % "2.3.1"  ,
   "org.spire-math"               %% "spire"                    % "0.11.0" ,
-  "org.spire-math"               %% "algebra"                  % "0.4.0"  ,
+  "org.spire-math"               %% "algebra"                  % "0.4.2"  ,
   "com.github.julien-truffaut"   %% "monocle-core"             % "1.2.1"  ,
   "org.scodec"                   %% "scodec-core"              % "1.9.0"  ,
-
-  // incubators
-  "com.github.stacycurl"         %% "delta-core"               % "1.0.18" ,
-  "org.atnos"                    %% "eff-cats"                 % "1.4",
-  "com.squants"                  %% "squants"                  % "0.5.3",
-  "com.slamdata"                 %% "matryoshka-core"          % "0.9.0",
-
-  // scalaz
-  "org.scalaz"                   %% "scalaz-core"              % "7.2.2" ,
-  "org.scalaz.stream"            %% "scalaz-stream"            % "0.8.1" ,
-
 
   // misc
   "com.lihaoyi"                  %% "fastparse"                % "0.3.7" ,
@@ -60,5 +49,5 @@ securityManager in Backend := true
 
 organization := "masseguillaume"
 name         := "scalakata-bundle"
-version      := "1.1.4"
+version      := "1.1.5"
 description  := "Docker Container with various librairies"

@@ -1,11 +1,7 @@
 lazy val commonSettings = Seq(
-  commands += Command.command("cls") { state =>
-    println("\033c") // xterm clear
-    state
-  },
   scalaVersion := "2.11.8",
   organization := "com.scalakata",
-  version := "1.1.4",
+  version := "1.1.5",
   description := "Scala Interactive Playground",
   licenses := Seq("MIT" -> url("http://www.opensource.org/licenses/mit-license.html")),
   homepage := Some(url("http://scalakata.com")),

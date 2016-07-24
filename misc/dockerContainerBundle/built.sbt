@@ -14,7 +14,11 @@ libraryDependencies ++= Seq(
   "org.scala-lang.modules"       %% "scala-async"              % "0.9.5" ,
   "org.scala-lang.modules"       %% "scala-parser-combinators" % "1.0.4" ,
   "org.scala-lang.modules"       %% "scala-pickling"           % "0.10.1",
-  "org.scala-lang.modules"       %% "scala-xml"                % "1.0.5"
+  "org.scala-lang.modules"       %% "scala-xml"                % "1.0.5" ,
+
+  // quill
+  "io.getquill"                  %% "quill-jdbc"               % "0.8.0"  ,
+  "com.h2database"               %  "h2"                       % "1.4.192"
 )
 
 scalaVersion := "2.11.8"

@@ -1,7 +1,7 @@
 libraryDependencies ++= Seq(
   // typelevel stack
   "org.typelevel"                %% "cats"                     % "0.6.0"  ,
-  // "com.chuusai"                  %% "shapeless"                % "2.3.1"  ,
+  "com.chuusai"                  %% "shapeless"                % "2.3.1"  ,
   "org.spire-math"               %% "spire"                    % "0.11.0" ,
   "org.spire-math"               %% "algebra"                  % "0.4.2"  ,
   "com.github.julien-truffaut"   %% "monocle-core"             % "1.2.1"  ,
@@ -12,7 +12,8 @@ libraryDependencies ++= Seq(
   "org.scalaz.stream"            %% "scalaz-stream"            % "0.8.2a" ,
 
   // misc
-  "com.lihaoyi"                  %% "fastparse"                % "0.3.7" ,
+  "com.lihaoyi"                  %% "fastparse"     % "0.3.7",
+  "ai.x"                         %% "diff"          % "1.1.0",
 
   // scala modules
   "org.scala-lang.modules"       %% "scala-async"              % "0.9.5" ,
@@ -56,6 +57,6 @@ enablePlugins(ScalaKataPlugin)
 securityManager in Backend := true
 
 organization := "masseguillaume"
-name         := "scalakata-bundle"
+name         := "scalakata-bundle-quill"
 version      := "1.1.5"
 description  := "Docker Container with various librairies"

@@ -57,6 +57,6 @@ enablePlugins(ScalaKataPlugin)
 securityManager in Backend := true
 
 organization := "masseguillaume"
-name         := "scalakata-bundle-quill"
+name         := "scalakata-bundle-quill-stream"
 version      := "1.1.5"
 description  := "Docker Container with various librairies"

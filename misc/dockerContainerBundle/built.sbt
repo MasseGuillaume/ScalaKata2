@@ -6,6 +6,10 @@ libraryDependencies ++= Seq(
   "org.spire-math"               %% "algebra"                  % "0.4.2"  ,
   "com.github.julien-truffaut"   %% "monocle-core"             % "1.2.1"  ,
   "org.scodec"                   %% "scodec-core"              % "1.9.0"  ,
+  
+  // scalaz
+  "org.scalaz"                   %% "scalaz-core"              % "7.2.4"  ,
+  "org.scalaz.stream"            %% "scalaz-stream"            % "0.8.2a" ,
 
   // misc
   "com.lihaoyi"                  %% "fastparse"                % "0.3.7" ,

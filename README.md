@@ -23,6 +23,10 @@ And add the following line to `build.sbt`
 enablePlugins(ScalaKataPlugin)
 ```
 
+To start scalakata:
+
+`kstart`
+
 ### Docker container
 
 `sudo docker run -p 7331:7331 --name scalakata masseguillaume/scalakata:v1.1.5`

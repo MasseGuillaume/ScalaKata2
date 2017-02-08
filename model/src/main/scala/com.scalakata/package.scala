@@ -41,7 +41,7 @@ package object scalakata {
   private val sublime = "http://sublime-text-unofficial-documentation.readthedocs.org/en/latest/reference/keyboard_shortcuts_osx.html"
 
   val help = html"""|<h1>Welcome to Scala Kata !</h1>
-                    |Scala Kata is an interractive playground.
+                    |Scala Kata is an interactive playground.
                     |Evaluate expressions with $Ctrl $Cmd + $Enter.
                     |Clear the output with $Esc.
                     |<pre>

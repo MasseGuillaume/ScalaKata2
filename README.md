@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/MasseGuillaume/ScalaKata2.png?label=ready&title=Ready)](https://waffle.io/MasseGuillaume/ScalaKata2)
 # ScalaKata
 
 [![Stories in Ready](https://img.shields.io/waffle/label/MasseGuillaume/ScalaKata2.svg?style=flat-square)](https://waffle.io/MasseGuillaume/ScalaKata2) 
